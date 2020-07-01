@@ -1,0 +1,23 @@
+app-config:
+  nome: NutricaoEsportiva
+  enable-rabbit: false
+
+spring:
+  jpa:
+    database: HSQL
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.HSQLDialect
+
+  datasource:
+    url:
+    jdbcUrl: jdbc:hsqldb:mem:nutricaoesportiva
+    username: sa
+    password:
+    driverClassName: org.hsqldb.jdbc.JDBCDriver
+
+  flyway:
+    enabled: false
