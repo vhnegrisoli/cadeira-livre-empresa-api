@@ -1,5 +1,5 @@
 app-config:
-  nome: NutricaoEsportiva
+  nome: CadeiraLivreEmpresaApi
   enable-rabbit: false
 
 spring:

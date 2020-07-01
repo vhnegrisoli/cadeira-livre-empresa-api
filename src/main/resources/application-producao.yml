@@ -1,16 +1,16 @@
 spring:
 
   rabbitmq:
-    host: skunk.rmq.cloudamqp.com
-    username: yfsypxcf
-    password: wrX6LNWtKlsRd0l1ICC5TNEWf0yCpF1f
-    virtual-host: yfsypxcf
+    host: ${RABBIT_MQ_HOST}
+    username: ${RABBIT_MQ_USER}
+    password: ${RABBIT_MQ_PASSWORD}
+    virtual-host: ${RABBIT_MQ_USER}
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    jdbc-url: jdbc:postgresql://ec2-54-235-246-201.compute-1.amazonaws.com:5432/d92mg9h3sucp78
-    username: mvhrsysowbxmxt
-    password: 9a95933171eaf333afbbc9f7d2705dffab7c87c650d01a2888c16496df721a2a
+    jdbc-url: ${DATABASE_HOST}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
     initialization-mode: always
     initialize: true
     continue-on-error: true
@@ -28,15 +28,16 @@ spring:
           lob.non_contextual_creation: true
 
   redis:
-    host: redis-15905.c11.us-east-1-3.ec2.cloud.redislabs.com
-    port: 15905
-    password: AFecWasRJo7puz0vdbM6v6kc3CIx8CuH
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+    user: ${REDIS_USER}
     pool:
       max-active: 120
       max-idle: 40
 
 server:
-  port: 8091
+  port: 8095
 
 management:
   health:

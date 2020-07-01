@@ -52,12 +52,12 @@ server:
 
 app-config:
   queue:
-    usuario-log: usuario-log.queue
+    usuario-cadeira-livre-empresa-cadastro: usuario-cadeira-livre-empresa-cadastro.queue
     enviar-notificacao: enviar-notificacao.queue
   topic:
     biot-admin: biot-admin.topic
   key:
-    usuario-log: usuario-log.queue
+    usuario-cadeira-livre-empresa-cadastro: usuario-cadeira-livre-empresa-cadastro.queue
     enviar-notificacao: enviar-notificacao.queue
 
   firebase:

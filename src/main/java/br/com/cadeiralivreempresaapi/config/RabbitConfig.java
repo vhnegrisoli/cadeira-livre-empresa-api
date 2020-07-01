@@ -16,10 +16,10 @@ public class RabbitConfig {
 
     @Value("${app-config.topic.biot-admin}")
     private String biotAdminTopic;
-    @Value("${app-config.queue.usuario-log}")
-    private String usuarioLogMq;
-    @Value("${app-config.key.usuario-log}")
-    private String usuarioLogKey;
+    @Value("${app-config.queue.usuario-cadeira-livre-empresa-cadastro}")
+    private String usuarioCadeiraLivreEmpresaCadastroMq;
+    @Value("${app-config.key.usuario-cadeira-livre-empresa-cadastro}")
+    private String usuarioCadeiraLivreEmpresaCadastroKey;
     @Value("${app-config.queue.enviar-notificacao}")
     private String enviarNotificacaoMq;
     @Value("${app-config.key.enviar-notificacao}")
@@ -36,13 +36,14 @@ public class RabbitConfig {
     }
 
     @Bean
-    Queue usuarioLogMq() {
-        return new Queue(usuarioLogMq, true);
+    Queue usuarioCadeiraLivreEmpresaCadastroMq() {
+        return new Queue(usuarioCadeiraLivreEmpresaCadastroMq, true);
     }
 
     @Bean
-    public Binding usuarioLogBinding(TopicExchange exchange) {
-        return BindingBuilder.bind(usuarioLogMq()).to(exchange).with(usuarioLogKey);
+    public Binding usuarioCadeiraLivreEmpresaCadastroBinding(TopicExchange exchange) {
+        return BindingBuilder.bind(usuarioCadeiraLivreEmpresaCadastroMq())
+            .to(exchange).with(usuarioCadeiraLivreEmpresaCadastroKey);
     }
 
     @Bean
