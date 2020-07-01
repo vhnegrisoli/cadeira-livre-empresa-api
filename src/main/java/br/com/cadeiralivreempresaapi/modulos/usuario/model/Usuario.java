@@ -3,6 +3,7 @@ package br.com.cadeiralivreempresaapi.modulos.usuario.model;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioRequest;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo;
+import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -71,6 +72,10 @@ public class Usuario {
 
     @Column(name = "TOKEN_NOTIFICACAO")
     private String tokenNotificacao;
+
+    @Column(name = "SITUACAO", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ESituacaoUsuario situacao;
 
     @Transient
     public Integer getIdade() {
