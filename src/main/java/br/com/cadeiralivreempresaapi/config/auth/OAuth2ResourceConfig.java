@@ -11,8 +11,9 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.PROPRIETARIO;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.ADMIN;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.USER;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.SOCIO;
 import static java.util.Arrays.asList;
 
 @Configuration
@@ -51,12 +52,9 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
             .antMatchers(permitAll).permitAll()
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .antMatchers("/api/notificacoes/usuario/**").hasRole(ADMIN.name())
-            .antMatchers("/api/usuarios/**").hasAnyRole(ADMIN.name(), USER.name())
-            .antMatchers("/api/dieta/**").hasAnyRole(ADMIN.name(), USER.name())
-            .antMatchers("/api/periodos/**").hasAnyRole(ADMIN.name(), USER.name())
-            .antMatchers("/api/taco/alimentos/**").hasAnyRole(ADMIN.name(), USER.name())
-            .antMatchers("/api/notificacoes/**").hasAnyRole(ADMIN.name(), USER.name())
-            .antMatchers("/api/esportes/**").hasAnyRole(ADMIN.name(), USER.name());
+            .antMatchers("/api/usuarios/**").hasAnyRole(ADMIN.name())
+            .antMatchers("/api/empresas/**")
+            .hasAnyRole(ADMIN.name(), PROPRIETARIO.name(), SOCIO.name());
     }
 
     @Override
