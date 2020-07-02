@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 public enum ETipoEmpresa {
 
     SALAO("Salão de Beleza"),
+    CABELO("Cabeleireiro/a"),
     BARBEARIA("Barbearia");
 
     private String tipoEmpresa;

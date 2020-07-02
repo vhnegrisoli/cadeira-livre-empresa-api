@@ -4,14 +4,12 @@ spring:
 
   rabbitmq:
     host: localhost
-#    host: sqlvhnegrisoli.ddns.net
     port: 5672
     username: biotadmin
     password: biotadmin
 
   datasource:
     driver-class-name: org.postgresql.Driver
-#    jdbc-url: jdbc:postgresql://sqlvhnegrisoli.ddns.net:5432/nutricao_esportiva
     url: jdbc:postgresql://localhost:5432/cadeira_livre_empresa
     username: postgres
     password: 1y5h8j
@@ -35,7 +33,6 @@ spring:
           lob.non_contextual_creation: true
 
   redis:
-#    host: sqlvhnegrisoli.ddns.net
     host: localhost
     port: 6379
     pool:

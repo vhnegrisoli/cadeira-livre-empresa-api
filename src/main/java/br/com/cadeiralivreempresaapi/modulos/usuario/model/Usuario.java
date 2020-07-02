@@ -4,7 +4,6 @@ import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioRequest;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +17,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo.FEMININO;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo.MASCULINO;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.USER;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.*;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data
@@ -41,7 +38,6 @@ public class Usuario {
     @Column(name = "NOME", nullable = false, length = 120)
     private String nome;
 
-    @JsonIgnore
     @Column(name = "SENHA", nullable = false)
     private String senha;
 
@@ -90,19 +86,15 @@ public class Usuario {
             && dataAtual.getMonthValue() == dataNascimento.getMonthValue();
     }
 
-    @JsonIgnore
     public boolean isNovoCadastro() {
         return isEmpty(id);
     }
 
-    @JsonIgnore
-    public boolean isMasculino() {
-        return !isEmpty(sexo) && sexo.equals(MASCULINO);
-    }
-
-    @JsonIgnore
-    public boolean isFeminino() {
-        return !isEmpty(sexo) && sexo.equals(FEMININO);
+    public boolean possuiPermissaoCadastrarEmpresa() {
+        return permissoes
+            .stream()
+            .map(Permissao::getPermissao)
+            .anyMatch(List.of(ADMIN, PROPRIETARIO, SOCIO)::contains);
     }
 
     public boolean possuiToken(String novaToken) {

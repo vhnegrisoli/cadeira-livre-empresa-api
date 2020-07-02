@@ -2,6 +2,7 @@ package br.com.cadeiralivreempresaapi.modulos.usuario.dto;
 
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo;
+import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Permissao;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -18,7 +19,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.ADMIN;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.USER;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.PROPRIETARIO;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.SOCIO;
 
 @Data
 @AllArgsConstructor
@@ -34,13 +36,18 @@ public class UsuarioAutenticado {
     private List<String> permissoes;
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime ultimoAcesso;
+    private ESituacaoUsuario situacao;
 
     public boolean isAdmin() {
         return permissoes.contains(ADMIN.name());
     }
 
-    public boolean isUser() {
-        return permissoes.contains(USER.name());
+    public boolean isProprietario() {
+        return permissoes.contains(PROPRIETARIO.name());
+    }
+
+    public boolean isSocio() {
+        return permissoes.contains(SOCIO.name());
     }
 
     public static UsuarioAutenticado of(Usuario usuario) {

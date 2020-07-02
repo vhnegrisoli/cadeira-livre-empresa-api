@@ -92,6 +92,11 @@ public class UsuarioService {
             });
     }
 
+    public Usuario buscarPorId(Integer id) {
+        return usuarioRepository.findById(id)
+            .orElseThrow(USUARIO_NAO_ENCONTRADO::getException);
+    }
+
     @Transactional
     public UsuarioAutenticado getUsuarioAutenticadoAtualizaUltimaData() {
         var usuarioAtualizado = usuarioRepository
