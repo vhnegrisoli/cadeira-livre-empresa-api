@@ -34,7 +34,7 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
             "/login/**",
             "/oauth/token",
             "/oauth/authorize",
-            "/api/usuarios/novo",
+            "/api/usuarios/proprietario",
             "/api/usuarios/is-authenticated",
             "/swagger-ui.html**",
             "/swagger-resources/**",
@@ -52,7 +52,7 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
             .antMatchers(permitAll).permitAll()
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .antMatchers("/api/notificacoes/usuario/**").hasRole(ADMIN.name())
-            .antMatchers("/api/usuarios/**").hasAnyRole(ADMIN.name())
+            .antMatchers("/api/usuarios/**").hasAnyRole(ADMIN.name(), PROPRIETARIO.name(), SOCIO.name())
             .antMatchers("/api/empresas/**")
             .hasAnyRole(ADMIN.name(), PROPRIETARIO.name(), SOCIO.name());
     }

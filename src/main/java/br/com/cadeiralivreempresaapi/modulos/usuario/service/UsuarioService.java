@@ -3,6 +3,7 @@ package br.com.cadeiralivreempresaapi.modulos.usuario.service;
 import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
+import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioFiltros;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioRequest;
@@ -18,7 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.PROPRIETARIO;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.SOCIO;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioException.*;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario.of;
 import static org.springframework.util.ObjectUtils.isEmpty;
@@ -34,15 +38,45 @@ public class UsuarioService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AutenticacaoService autenticacaoService;
+    @Autowired
+    private PermissaoService permissaoService;
+    @Autowired
+    private EmpresaService empresaService;
 
     @Transactional
-    public void save(UsuarioRequest usuarioRequest) {
+    public SuccessResponseDetails salvarProprietario(UsuarioRequest usuarioRequest) {
+        var usuario = of(usuarioRequest);
+        usuario.setPermissoes(List.of(permissaoService.buscarPorCodigo(PROPRIETARIO)));
+        salvarUsuario(usuario);
+        return new SuccessResponseDetails("Proprietário inserido com sucesso!");
+    }
+
+    @Transactional
+    public SuccessResponseDetails salavarSocio(UsuarioRequest usuarioRequest, Integer empresaId) {
+        var usuario = of(usuarioRequest);
+        usuario.setPermissoes(List.of(permissaoService.buscarPorCodigo(SOCIO)));
+        var socio = salvarUsuario(usuario);
+        empresaService.inserirSocio(socio, empresaId);
+        return new SuccessResponseDetails("Sócio inserido com sucesso!");
+    }
+
+    private Usuario salvarUsuario(Usuario usuario) {
+        validarDadosUsuario(usuario);
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public SuccessResponseDetails editarDadosUsuario(UsuarioRequest usuarioRequest, Integer id) {
+        validarPermissoesUsuario(id);
+        usuarioRequest.setId(id);
         var usuario = of(usuarioRequest);
         validarDadosUsuario(usuario);
-        usuario.setSenha(passwordEncoder.encode(usuarioRequest.getSenha()));
-        usuario.setDataCadastro(LocalDateTime.now());
-        usuario.setUltimoAcesso(LocalDateTime.now());
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        usuario.setPermissoes(buscarPorId(usuarioRequest.getId()).getPermissoes());
+        usuario.setSituacao(buscarPorId(usuario.getId()).getSituacao());
         usuarioRepository.save(usuario);
+        return new SuccessResponseDetails("Usuário alterado com sucesso!");
     }
 
     private void validarDadosUsuario(Usuario usuario) {
@@ -126,6 +160,13 @@ public class UsuarioService {
             return new SuccessResponseDetails("Token de notificação atualizado com sucesso!");
         }
         return new SuccessResponseDetails("O usuário já possui esse token de notificação.");
+    }
+
+    private void validarPermissoesUsuario(Integer usuarioId) {
+        var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
+        if (!usuarioAutenticado.isAdmin() && !usuarioAutenticado.getId().equals(usuarioId)) {
+            throw new ValidacaoException("Você não possui permissão para alterar os dados desse usuário.");
+        }
     }
 }
 

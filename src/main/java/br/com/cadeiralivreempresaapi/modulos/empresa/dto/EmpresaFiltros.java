@@ -12,10 +12,6 @@ public class EmpresaFiltros {
     private String nome;
     private ETipoEmpresa tipoEmpresa;
     private ESituacaoEmpresa situacao;
-    private String socioProprietarioNome;
-    private String socioProprietarioEmail;
-    private String socioProprietarioCpf;
-    private Integer proprietarioId;
     private Integer socioId;
 
     public EmpresaPredicate toPredicate() {
@@ -24,10 +20,6 @@ public class EmpresaFiltros {
             .comNome(nome)
             .comTipoEmpresa(tipoEmpresa)
             .comSituacao(situacao)
-            .comSocioProprietarioNome(socioProprietarioNome)
-            .comSocioProprietarioEmail(socioProprietarioEmail)
-            .comSocioProprietarioCpf(socioProprietarioCpf)
-            .comProprietarioId(proprietarioId)
             .comSocioId(socioId);
     }
 }

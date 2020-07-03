@@ -1,9 +1,11 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.model;
 
+import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaRequest;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ETipoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +14,10 @@ import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa.ATIVA;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data
 @Entity
@@ -27,9 +31,14 @@ public class Empresa {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "FK_USUARIO", nullable = false)
-    private Usuario usuario;
+    @NotNull
+    @JoinTable(name = "EMPRESA_SOCIOS", joinColumns = {
+        @JoinColumn(name = "FK_EMPRESA", foreignKey = @ForeignKey(name = "FK_EMPRESA_PK"),
+            referencedColumnName = "ID")}, inverseJoinColumns = {
+        @JoinColumn(name = "FK_USUARIO", foreignKey = @ForeignKey(name = "FK_USUARIO_PK"),
+            referencedColumnName = "ID")})
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Usuario> socios;
 
     @Column(name = "NOME", nullable = false)
     private String nome;
@@ -57,10 +66,24 @@ public class Empresa {
         situacao = ATIVA;
     }
 
-    public static Empresa of(EmpresaRequest request, Usuario usuario) {
+    public static Empresa of(EmpresaRequest request) {
         var empresa = new Empresa();
         BeanUtils.copyProperties(request, empresa);
-        empresa.setUsuario(usuario);
         return empresa;
+    }
+
+    public void adicionarProprietario(Usuario usuario) {
+        validarPermissaoUsuarioProprietario(usuario);
+        if (isEmpty(socios)) {
+            socios = List.of(usuario);
+        } else {
+            socios.add(usuario);
+        }
+    }
+
+    private void validarPermissaoUsuarioProprietario(Usuario usuario) {
+        if (!usuario.isProprietario()) {
+            throw new ValidacaoException("Para salvar uma empresa, o usuário deve ser um proprietário.");
+        }
     }
 }

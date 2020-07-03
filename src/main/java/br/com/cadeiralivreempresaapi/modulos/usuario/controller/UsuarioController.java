@@ -23,7 +23,7 @@ public class UsuarioController {
     @Autowired
     private AutenticacaoService autenticacaoService;
 
-    @GetMapping("/check-session")
+    @GetMapping("check-session")
     public String checkSession() {
         return "O usuário " + autenticacaoService.getUsuarioAutenticado().getNome() + " está logado.";
     }
@@ -33,29 +33,34 @@ public class UsuarioController {
         return autenticacaoService.logout(request);
     }
 
-    @PostMapping("/novo")
-     public SuccessResponseDetails novoUsuario(@RequestBody UsuarioRequest usuarioRequest) {
-        usuarioService.save(usuarioRequest);
-        return new SuccessResponseDetails("Usuário inserido com sucesso!");
+    @PostMapping("proprietario")
+    public SuccessResponseDetails salvarProprietario(@RequestBody UsuarioRequest usuarioRequest) {
+        return usuarioService.salvarProprietario(usuarioRequest);
     }
 
-    @PutMapping("/alterar-acesso")
-    public SuccessResponseDetails alterarDadosUsuario(@RequestBody UsuarioRequest usuarioRequest) {
-        usuarioService.save(usuarioRequest);
-        return new SuccessResponseDetails("Usuário alterado com sucesso!");
+    @PostMapping("socio/empresa/{empresaId}")
+    public SuccessResponseDetails salavarSocio(@RequestBody UsuarioRequest usuarioRequest,
+                                               @PathVariable Integer empresaId) {
+        return usuarioService.salavarSocio(usuarioRequest, empresaId);
     }
 
-    @GetMapping("/get-token")
+    @PutMapping("{id}/alterar-acesso")
+    public SuccessResponseDetails alterarDadosUsuario(@RequestBody UsuarioRequest usuarioRequest,
+                                                      @PathVariable Integer id) {
+        return usuarioService.editarDadosUsuario(usuarioRequest, id);
+    }
+
+    @GetMapping("get-token")
     public TokenResponse getAuthorizationToken(@RequestHeader Map<String, String> headers) {
         return new TokenResponse(headers.get(AUTHORIZATION));
     }
 
-    @GetMapping("/usuario-autenticado")
+    @GetMapping("usuario-autenticado")
     public UsuarioAutenticado getUsuarioAutenticado() {
         return usuarioService.getUsuarioAutenticadoAtualizaUltimaData();
     }
 
-    @GetMapping("/is-authenticated")
+    @GetMapping("is-authenticated")
     public boolean verificarSeEstaAutenticado() {
         return autenticacaoService.existeUsuarioAutenticado();
     }

@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.ADMIN;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.PROPRIETARIO;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.SOCIO;
 
 @Data
 @AllArgsConstructor
@@ -40,14 +38,6 @@ public class UsuarioAutenticado {
 
     public boolean isAdmin() {
         return permissoes.contains(ADMIN.name());
-    }
-
-    public boolean isProprietario() {
-        return permissoes.contains(PROPRIETARIO.name());
-    }
-
-    public boolean isSocio() {
-        return permissoes.contains(SOCIO.name());
     }
 
     public static UsuarioAutenticado of(Usuario usuario) {
@@ -70,6 +60,7 @@ public class UsuarioAutenticado {
             .getAuthorities()
             .stream()
             .map(GrantedAuthority::getAuthority)
+                .map(permissao -> permissao.replace("ROLE_", ""))
             .collect(Collectors.toList()));
         return usuarioAutenticado;
     }

@@ -13,7 +13,8 @@ public enum UsuarioException {
     USUARIO_DATA_NASCIMENTO_IGUAL_HOJE(
         new ValidacaoException("A data de nascimento não pode ser igual à data de hoje.")),
     USUARIO_DATA_NASCIMENTO_MAIOR_HOJE(
-        new ValidacaoException("A data de nascimento não pode ser superior à data de hoje."));
+        new ValidacaoException("A data de nascimento não pode ser superior à data de hoje.")),
+    PERMISSAO_NAO_ENCONTRADA(new ValidacaoException("A permissão não foi encontrada."));
 
     @Getter
     private ValidacaoException exception;

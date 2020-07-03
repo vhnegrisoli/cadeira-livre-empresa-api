@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -22,25 +23,21 @@ public class EmpresaResponse {
     private Integer id;
     private String nome;
     private String cnpj;
-    private String razapSocial;
+    private String razaoSocial;
     private ESituacaoEmpresa situacao;
-    private Integer proprietarioId;
-    private String proprietarioNome;
-    private String proprietarioEmail;
-    private String proprietarioCpf;
-    private List<SocioResponse> socios;
+    private List<ProprietarioSocioResponse> proprietarioSocios;
     @JsonFormat(pattern = "dd/MM/yyyy HH:mmn:ss")
     private LocalDateTime dataCadastro;
     private ETipoEmpresa tipoEmpresa;
 
-    public static EmpresaResponse of(Empresa empresa, List<SocioResponse> socios) {
+    public static EmpresaResponse of(Empresa empresa) {
         var response = new EmpresaResponse();
         BeanUtils.copyProperties(empresa, response);
-        response.setProprietarioId(empresa.getUsuario().getId());
-        response.setProprietarioNome(empresa.getUsuario().getNome());
-        response.setProprietarioEmail(empresa.getUsuario().getEmail());
-        response.setProprietarioCpf(empresa.getUsuario().getCpf());
-        response.setSocios(socios);
+        response.setProprietarioSocios(empresa
+            .getSocios()
+            .stream()
+            .map(ProprietarioSocioResponse::of)
+            .collect(Collectors.toList()));
         return response;
     }
 }

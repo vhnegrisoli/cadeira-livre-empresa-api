@@ -3,10 +3,12 @@ package br.com.cadeiralivreempresaapi.modulos.empresa.service;
 import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
-import br.com.cadeiralivreempresaapi.modulos.empresa.dto.*;
+import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaFiltros;
+import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaPageResponse;
+import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaRequest;
+import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaResponse;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.repository.EmpresaRepository;
-import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
@@ -15,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class EmpresaService {
@@ -27,14 +27,11 @@ public class EmpresaService {
     private UsuarioService usuarioService;
     @Autowired
     private AutenticacaoService autenticacaoService;
-    @Autowired
-    private FuncionarioRepository funcionarioRepository;
 
     @Transactional
     public SuccessResponseDetails salvar(EmpresaRequest request) {
-        var usuario = usuarioService.buscarPorId(autenticacaoService.getUsuarioAutenticadoId());
-        validarUsuarioComPermissaoParaGerenciarEmpresa(usuario);
-        var empresa = Empresa.of(request, usuario);
+        var empresa = Empresa.of(request);
+        empresa.adicionarProprietario(usuarioService.buscarPorId(autenticacaoService.getUsuarioAutenticadoId()));
         validarNovaEmpresa(empresa);
         empresaRepository.save(empresa);
         return new SuccessResponseDetails("A empresa " + empresa.getNome() + " foi criada com sucesso!");
@@ -42,19 +39,15 @@ public class EmpresaService {
 
     @Transactional
     public SuccessResponseDetails editar(EmpresaRequest request, Integer id) {
-        var usuario = usuarioService.buscarPorId(autenticacaoService.getUsuarioAutenticadoId());
-        validarUsuarioComPermissaoParaGerenciarEmpresa(usuario);
-        var empresa = Empresa.of(request, usuario);
+        var empresa = Empresa.of(request);
         empresa.setId(id);
+        validarPermissaoDoUsuario(autenticacaoService.getUsuarioAutenticado(), id);
         validarEdicaoEmpresa(empresa);
+        var empresaExistente = buscarPorId(id);
+        empresa.setSocios(empresaExistente.getSocios());
+        empresa.setSituacao(empresaExistente.getSituacao());
         empresaRepository.save(empresa);
         return new SuccessResponseDetails("A empresa " + empresa.getNome() + " foi alterada com sucesso!");
-    }
-
-    private void validarUsuarioComPermissaoParaGerenciarEmpresa(Usuario usuario) {
-        if (!usuario.possuiPermissaoCadastrarEmpresa()) {
-            throw new ValidacaoException("Você não tem permissão para salvar uma empresa.");
-        }
     }
 
     private void validarNovaEmpresa(Empresa empresa) {
@@ -94,9 +87,8 @@ public class EmpresaService {
     public EmpresaResponse buscarPorIdComSocios(Integer id) {
         var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
         var empresa = buscarPorId(id);
-        var socios = funcionarioRepository.buscarSociosDaEmpresa(id);
-        validarPermissaoDoUsuarioParaVisualizarEmpresa(usuarioAutenticado, empresa, socios);
-        return EmpresaResponse.of(empresa, socios);
+        validarPermissaoDoUsuario(usuarioAutenticado, empresa.getId());
+        return EmpresaResponse.of(empresa);
     }
 
     public Page<EmpresaPageResponse> buscarTodas(PageRequest pageable, EmpresaFiltros filtros) {
@@ -108,38 +100,26 @@ public class EmpresaService {
 
     private void tratarPermissoesBuscaEmpresas(UsuarioAutenticado usuarioAutenticado, EmpresaFiltros filtros) {
         if (!usuarioAutenticado.isAdmin()) {
-            if (usuarioAutenticado.isProprietario()) {
-                filtros.setProprietarioId(usuarioAutenticado.getId());
-            }
-            if (usuarioAutenticado.isSocio()) {
-                filtros.setSocioId(usuarioAutenticado.getId());
-            }
+            filtros.setSocioId(usuarioAutenticado.getId());
         }
-    }
-
-    private void validarPermissaoDoUsuarioParaVisualizarEmpresa(UsuarioAutenticado usuarioAutenticado,
-                                                                Empresa empresa,
-                                                                List<SocioResponse> socios) {
-        if (!usuarioAutenticado.isAdmin()
-            && !isProprietario(usuarioAutenticado, empresa)
-            || !isSocioEmpresa(usuarioAutenticado, socios)) {
-            throw new ValidacaoException("Você não tem permissão para visualizar esta empresa.");
-        }
-    }
-
-    private boolean isProprietario(UsuarioAutenticado usuarioAutenticado, Empresa empresa) {
-        return usuarioAutenticado.getId().equals(empresa.getUsuario().getId());
-    }
-
-    private boolean isSocioEmpresa(UsuarioAutenticado usuarioAutenticado, List<SocioResponse> socios) {
-        return socios
-            .stream()
-            .map(SocioResponse::getSocioId)
-            .anyMatch(socioId -> usuarioAutenticado.getId().equals(socioId));
     }
 
     public Empresa buscarPorId(Integer id) {
         return empresaRepository
             .findById(id).orElseThrow(() -> new ValidacaoException("A empresa não foi encontrada."));
+    }
+
+    private void validarPermissaoDoUsuario(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
+        if (!usuarioAutenticado.isAdmin()
+            && !empresaRepository.existsByIdAndSocios(empresaId, Usuario.of(usuarioAutenticado))) {
+            throw new ValidacaoException("Usuário sem permissão para visualizar essa empresa.");
+        }
+    }
+
+    public void inserirSocio(Usuario usuario, Integer empresaId) {
+        var empresa = buscarPorId(empresaId);
+        validarPermissaoDoUsuario(autenticacaoService.getUsuarioAutenticado(), empresa.getId());
+        empresa.getSocios().add(usuario);
+        empresaRepository.save(empresa);
     }
 }

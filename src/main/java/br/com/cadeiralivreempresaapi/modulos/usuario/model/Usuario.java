@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.*;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.PROPRIETARIO;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario.ATIVO;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data
@@ -73,12 +74,17 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     private ESituacaoUsuario situacao;
 
-    @Transient
+    @PrePersist
+    public void prePersist() {
+        dataCadastro = LocalDateTime.now();
+        ultimoAcesso = dataCadastro;
+        situacao = ATIVO;
+    }
+
     public Integer getIdade() {
         return isEmpty(dataNascimento) ? 0 : Period.between(dataNascimento, LocalDate.now()).getYears();
     }
 
-    @Transient
     public boolean isAniversario() {
         var dataAtual = LocalDate.now();
         return !isEmpty(dataNascimento)
@@ -86,15 +92,15 @@ public class Usuario {
             && dataAtual.getMonthValue() == dataNascimento.getMonthValue();
     }
 
-    public boolean isNovoCadastro() {
-        return isEmpty(id);
-    }
-
-    public boolean possuiPermissaoCadastrarEmpresa() {
+    public boolean isProprietario() {
         return permissoes
             .stream()
             .map(Permissao::getPermissao)
-            .anyMatch(List.of(ADMIN, PROPRIETARIO, SOCIO)::contains);
+            .anyMatch(permissao -> permissao.equals(PROPRIETARIO));
+    }
+
+    public boolean isNovoCadastro() {
+        return isEmpty(id);
     }
 
     public boolean possuiToken(String novaToken) {
@@ -109,7 +115,6 @@ public class Usuario {
         var usuario = new Usuario();
         BeanUtils.copyProperties(usuarioRequest, usuario);
         usuario.setDataCadastro(LocalDateTime.now());
-        usuario.setPermissoes(List.of(new Permissao(USER.getId(), USER, USER.getDescricao())));
         return usuario;
     }
 

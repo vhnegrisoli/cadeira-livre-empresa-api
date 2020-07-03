@@ -15,7 +15,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.ADMIN;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.USER;
 
 @Configuration
 @EnableAuthorizationServer
@@ -50,7 +49,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             .withClient(applicationClient)
             .secret(bcryptPasswordEncoder.encode(applicationSecret))
             .authorizedGrantTypes("password")
-            .authorities(ADMIN.name(), USER.name())
+            .authorities(ADMIN.name())
             .scopes("read", "write", "trust")
             .resourceIds("oauth2-resource")
             .accessTokenValiditySeconds(TOKEN_VALIDITY_SECONDS);
