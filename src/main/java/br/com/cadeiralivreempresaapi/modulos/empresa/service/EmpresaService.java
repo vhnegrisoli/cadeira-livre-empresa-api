@@ -1,6 +1,5 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.service;
 
-import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaFiltros;
@@ -18,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static br.com.cadeiralivreempresaapi.modulos.empresa.exception.EmpresaMessages.*;
+
 @Service
 public class EmpresaService {
 
@@ -34,7 +35,7 @@ public class EmpresaService {
         empresa.adicionarProprietario(usuarioService.buscarPorId(autenticacaoService.getUsuarioAutenticadoId()));
         validarNovaEmpresa(empresa);
         empresaRepository.save(empresa);
-        return new SuccessResponseDetails("A empresa " + empresa.getNome() + " foi criada com sucesso!");
+        return EMPRESA_CRIADA_SUCESSO;
     }
 
     @Transactional
@@ -47,7 +48,7 @@ public class EmpresaService {
         empresa.setSocios(empresaExistente.getSocios());
         empresa.setSituacao(empresaExistente.getSituacao());
         empresaRepository.save(empresa);
-        return new SuccessResponseDetails("A empresa " + empresa.getNome() + " foi alterada com sucesso!");
+        return EMPRESA_ALTERADA_SUCESSO;
     }
 
     private void validarNovaEmpresa(Empresa empresa) {
@@ -62,25 +63,25 @@ public class EmpresaService {
 
     private void validarEmpresaExistentePorRazaoSocialAoSalvar(Empresa empresa) {
         if (empresaRepository.existsByRazaoSocial(empresa.getRazaoSocial())) {
-            throw new ValidacaoException("Não é possível salvar a empresa pois já existe outra Razão Social salva.");
+            throw RAZAO_SOCIAL_EXISTENTE;
         }
     }
 
     private void validarEmpresaExistentePorCnpjAoSalvar(Empresa empresa) {
         if (empresaRepository.existsByCnpj(empresa.getCnpj())) {
-            throw new ValidacaoException("Não é possível salvar a empresa pois já existe outro CNPJ salvo.");
+            throw CNPJ_EXISTENTE;
         }
     }
 
     private void validarEmpresaExistentePorRazaoSocialAoEditar(Empresa empresa) {
         if (empresaRepository.existsByRazaoSocialAndIdNot(empresa.getRazaoSocial(), empresa.getId())) {
-            throw new ValidacaoException("Não é possível editar a empresa pois já existe outra Razão Social salva.");
+            throw RAZAO_SOCIAL_EXISTENTE;
         }
     }
 
     private void validarEmpresaExistentePorCnpjAoEditar(Empresa empresa) {
         if (empresaRepository.existsByCnpjAndIdNot(empresa.getCnpj(), empresa.getId())) {
-            throw new ValidacaoException("Não é possível editar a empresa pois já existe outro CNPJ salvo.");
+            throw CNPJ_EXISTENTE;
         }
     }
 
@@ -106,13 +107,17 @@ public class EmpresaService {
 
     public Empresa buscarPorId(Integer id) {
         return empresaRepository
-            .findById(id).orElseThrow(() -> new ValidacaoException("A empresa não foi encontrada."));
+            .findById(id).orElseThrow(() -> EMPRESA_NAO_ENCONTRADA);
+    }
+
+    public Boolean existeEmpresaParaUsuario(Integer empresaId, Integer usuarioId) {
+        return empresaRepository.existsByIdAndSocios(empresaId, new Usuario(usuarioId));
     }
 
     private void validarPermissaoDoUsuario(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
         if (!usuarioAutenticado.isAdmin()
             && !empresaRepository.existsByIdAndSocios(empresaId, Usuario.of(usuarioAutenticado))) {
-            throw new ValidacaoException("Usuário sem permissão para visualizar essa empresa.");
+            throw EMPRESA_USUARIO_SEM_PERMISSAO;
         }
     }
 

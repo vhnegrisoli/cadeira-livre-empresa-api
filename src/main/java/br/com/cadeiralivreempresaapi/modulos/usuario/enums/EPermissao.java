@@ -9,8 +9,7 @@ public enum EPermissao {
     ADMIN(1, "Administrador"),
     PROPRIETARIO(2, "Proprietário"),
     SOCIO(3, "Sócio"),
-    GERENTE(4, "Gerente"),
-    FUNCIONARIO(5, "Funcionário");
+    FUNCIONARIO(4, "Funcionário");
 
     @Getter
     private Integer id;

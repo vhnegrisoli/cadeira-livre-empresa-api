@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 
 import static br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado.of;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioException.USUARIO_NAO_ENCONTRADO;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioException.USUARIO_SEM_SESSAO;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioMessages.*;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -36,10 +35,10 @@ public class AutenticacaoService {
             }
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            throw USUARIO_SEM_SESSAO.getException();
+            throw SEM_SESSAO;
         }
         if (isEmpty(usuarioAutenticado)) {
-            throw USUARIO_NAO_ENCONTRADO.getException();
+            throw USUARIO_NAO_ENCONTRADO;
         } else {
             return of(usuarioAutenticado);
         }
@@ -55,11 +54,9 @@ public class AutenticacaoService {
     }
 
     public SuccessResponseDetails logout(HttpServletRequest request) {
-        var usuario = getUsuarioAutenticado();
         var oauth2AccessToken = tokenStore.readAccessToken(getTokenHeader(request));
         tokenStore.removeAccessToken(oauth2AccessToken);
-        return new SuccessResponseDetails("O usuário " + usuario.getNome() + " foi deslogado com sucesso!"
-            + " Token revogada: " + oauth2AccessToken.getValue());
+        return USUARIO_DESLOGADO_SUCESSO;
     }
 
     private String getTokenHeader(HttpServletRequest request) {

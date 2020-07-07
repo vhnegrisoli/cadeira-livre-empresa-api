@@ -1,6 +1,5 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.model;
 
-import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaRequest;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ETipoEmpresa;
@@ -17,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa.ATIVA;
+import static br.com.cadeiralivreempresaapi.modulos.empresa.exception.EmpresaMessages.USUARIO_NAO_PROPRIETARIO;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data
@@ -66,6 +66,10 @@ public class Empresa {
         situacao = ATIVA;
     }
 
+    public Empresa(Integer id) {
+        this.id = id;
+    }
+
     public static Empresa of(EmpresaRequest request) {
         var empresa = new Empresa();
         BeanUtils.copyProperties(request, empresa);
@@ -83,7 +87,7 @@ public class Empresa {
 
     private void validarPermissaoUsuarioProprietario(Usuario usuario) {
         if (!usuario.isProprietario()) {
-            throw new ValidacaoException("Para salvar uma empresa, o usuário deve ser um proprietário.");
+            throw USUARIO_NAO_PROPRIETARIO;
         }
     }
 }

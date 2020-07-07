@@ -44,6 +44,12 @@ public class UsuarioController {
         return usuarioService.salavarSocio(usuarioRequest, empresaId);
     }
 
+    @PostMapping("funcionario/empresa/{empresaId}")
+    public SuccessResponseDetails salvarFuncionario(@RequestBody UsuarioRequest usuarioRequest,
+                                                    @PathVariable Integer empresaId) {
+        return usuarioService.salavarFuncionario(usuarioRequest, empresaId);
+    }
+
     @PutMapping("{id}/alterar-acesso")
     public SuccessResponseDetails alterarDadosUsuario(@RequestBody UsuarioRequest usuarioRequest,
                                                       @PathVariable Integer id) {

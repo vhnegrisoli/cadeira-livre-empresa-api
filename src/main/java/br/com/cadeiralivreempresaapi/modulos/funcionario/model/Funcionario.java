@@ -1,7 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.funcionario.model;
 
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
-import br.com.cadeiralivreempresaapi.modulos.funcionario.enums.ESituacaoFuncionario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +33,16 @@ public class Funcionario {
     @Column(name = "DATA_CADASTRO", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
-    @Column(name = "SITUACAO", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ESituacaoFuncionario situacao;
+    @PrePersist
+    public void prePersist() {
+        dataCadastro = LocalDateTime.now();
+    }
+
+    public static Funcionario of(Usuario usuario, Empresa empresa) {
+        return Funcionario
+            .builder()
+            .usuario(usuario)
+            .empresa(empresa)
+            .build();
+    }
 }

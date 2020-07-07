@@ -1,9 +1,9 @@
 package br.com.cadeiralivreempresaapi.modulos.usuario.service;
 
-import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
+import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioFiltros;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioRequest;
@@ -21,9 +21,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.PROPRIETARIO;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.SOCIO;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioException.*;
+import static br.com.cadeiralivreempresaapi.modulos.empresa.exception.EmpresaMessages.PROPRIETARIO_CRIADO_SUCESSO;
+import static br.com.cadeiralivreempresaapi.modulos.empresa.exception.EmpresaMessages.SOCIO_CRIADO_SUCESSO;
+import static br.com.cadeiralivreempresaapi.modulos.funcionario.exception.FuncionarioMessages.FUNCIONARIO_CRIADO_SUCESSO;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.*;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioMessages.*;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario.of;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -42,22 +44,31 @@ public class UsuarioService {
     private PermissaoService permissaoService;
     @Autowired
     private EmpresaService empresaService;
+    @Autowired
+    private FuncionarioService funcionarioService;
 
     @Transactional
     public SuccessResponseDetails salvarProprietario(UsuarioRequest usuarioRequest) {
         var usuario = of(usuarioRequest);
         usuario.setPermissoes(List.of(permissaoService.buscarPorCodigo(PROPRIETARIO)));
         salvarUsuario(usuario);
-        return new SuccessResponseDetails("Proprietário inserido com sucesso!");
+        return PROPRIETARIO_CRIADO_SUCESSO;
     }
 
     @Transactional
     public SuccessResponseDetails salavarSocio(UsuarioRequest usuarioRequest, Integer empresaId) {
         var usuario = of(usuarioRequest);
         usuario.setPermissoes(List.of(permissaoService.buscarPorCodigo(SOCIO)));
-        var socio = salvarUsuario(usuario);
-        empresaService.inserirSocio(socio, empresaId);
-        return new SuccessResponseDetails("Sócio inserido com sucesso!");
+        empresaService.inserirSocio(salvarUsuario(usuario), empresaId);
+        return SOCIO_CRIADO_SUCESSO;
+    }
+
+    @Transactional
+    public SuccessResponseDetails salavarFuncionario(UsuarioRequest usuarioRequest, Integer empresaId) {
+        var usuario = of(usuarioRequest);
+        usuario.setPermissoes(List.of(permissaoService.buscarPorCodigo(FUNCIONARIO)));
+        funcionarioService.salvarFuncionario(salvarUsuario(usuario), empresaId);
+        return FUNCIONARIO_CRIADO_SUCESSO;
     }
 
     private Usuario salvarUsuario(Usuario usuario) {
@@ -76,7 +87,7 @@ public class UsuarioService {
         usuario.setPermissoes(buscarPorId(usuarioRequest.getId()).getPermissoes());
         usuario.setSituacao(buscarPorId(usuario.getId()).getSituacao());
         usuarioRepository.save(usuario);
-        return new SuccessResponseDetails("Usuário alterado com sucesso!");
+        return USUARIO_ALTERADO_SUCESSO;
     }
 
     private void validarDadosUsuario(Usuario usuario) {
@@ -92,19 +103,19 @@ public class UsuarioService {
                 var cpfValidator = new CPFValidator();
                 cpfValidator.assertValid(usuario.getCpf());
             } catch (Exception ex) {
-                throw new ValidacaoException("O CPF está inválido.");
+                throw CPF_INVALIDO;
             }
         } else {
-            throw new ValidacaoException("O CPF deve ser informado.");
+            throw CPF_NAO_INFORMADO;
         }
     }
 
     private void validarDataNascimento(Usuario usuario) {
         if (usuario.getDataNascimento().isEqual(LocalDate.now())) {
-            throw USUARIO_DATA_NASCIMENTO_IGUAL_HOJE.getException();
+            throw DATA_NASCIMENTO_IGUAL_HOJE;
         }
         if (usuario.getDataNascimento().isAfter(LocalDate.now())) {
-            throw USUARIO_DATA_NASCIMENTO_MAIOR_HOJE.getException();
+            throw DATA_NASCIMENTO_MAIOR_HOJE;
         }
     }
 
@@ -112,7 +123,7 @@ public class UsuarioService {
         usuarioRepository.findByEmail(usuario.getEmail())
             .ifPresent(usuarioExistente -> {
                 if (usuario.isNovoCadastro() || !usuario.getId().equals(usuarioExistente.getId())) {
-                    throw USUARIO_EMAIL_JA_CADASTRADO.getException();
+                    throw EMAIL_JA_CADASTRADO;
                 }
             });
     }
@@ -121,21 +132,21 @@ public class UsuarioService {
         usuarioRepository.findByCpf(usuario.getCpf())
             .ifPresent(usuarioExistente -> {
                 if (usuario.isNovoCadastro() || !usuario.getId().equals(usuarioExistente.getId())) {
-                    throw USUARIO_CPF_JA_CADASTRADO.getException();
+                    throw CPF_JA_CADASTRADO;
                 }
             });
     }
 
     public Usuario buscarPorId(Integer id) {
         return usuarioRepository.findById(id)
-            .orElseThrow(USUARIO_NAO_ENCONTRADO::getException);
+            .orElseThrow(() -> USUARIO_NAO_ENCONTRADO);
     }
 
     @Transactional
     public UsuarioAutenticado getUsuarioAutenticadoAtualizaUltimaData() {
         var usuarioAtualizado = usuarioRepository
             .findById(autenticacaoService.getUsuarioAutenticadoId())
-            .orElseThrow(USUARIO_NAO_ENCONTRADO::getException);
+            .orElseThrow(() -> USUARIO_NAO_ENCONTRADO);
         return UsuarioAutenticado.of(atualizarUltimoAcesso(usuarioAtualizado));
     }
 
@@ -153,19 +164,19 @@ public class UsuarioService {
     public SuccessResponseDetails atualizarTokenNotificacao(String token) {
         var usuario = usuarioRepository
             .findById(autenticacaoService.getUsuarioAutenticadoId())
-            .orElseThrow(USUARIO_NAO_ENCONTRADO::getException);
+            .orElseThrow(() -> USUARIO_NAO_ENCONTRADO);
         if (!usuario.possuiToken(token)) {
             usuario.setTokenNotificacao(token);
             usuarioRepository.save(usuario);
-            return new SuccessResponseDetails("Token de notificação atualizado com sucesso!");
+            return TOKEN_ATUALIZADO;
         }
-        return new SuccessResponseDetails("O usuário já possui esse token de notificação.");
+        return TOKEN_EXISTENTE;
     }
 
     private void validarPermissoesUsuario(Integer usuarioId) {
         var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
         if (!usuarioAutenticado.isAdmin() && !usuarioAutenticado.getId().equals(usuarioId)) {
-            throw new ValidacaoException("Você não possui permissão para alterar os dados desse usuário.");
+            throw SEM_PERMISSAO_EDITAR;
         }
     }
 }

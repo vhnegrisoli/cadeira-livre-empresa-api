@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.PatternUtil.DATE_TIME_PATTERN;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -26,7 +28,7 @@ public class EmpresaResponse {
     private String razaoSocial;
     private ESituacaoEmpresa situacao;
     private List<ProprietarioSocioResponse> proprietarioSocios;
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mmn:ss")
+    @JsonFormat(pattern = DATE_TIME_PATTERN)
     private LocalDateTime dataCadastro;
     private ETipoEmpresa tipoEmpresa;
 

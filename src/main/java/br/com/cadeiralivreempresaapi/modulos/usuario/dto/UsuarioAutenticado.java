@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.ADMIN;
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.PatternUtil.DATE_TIME_PATTERN;
 
 @Data
 @AllArgsConstructor
@@ -32,12 +32,20 @@ public class UsuarioAutenticado {
     private String cpf;
     private ESexo sexo;
     private List<String> permissoes;
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+    @JsonFormat(pattern = DATE_TIME_PATTERN)
     private LocalDateTime ultimoAcesso;
     private ESituacaoUsuario situacao;
 
     public boolean isAdmin() {
-        return permissoes.contains(ADMIN.name());
+        return permissoes.contains(EPermissao.ADMIN.name());
+    }
+
+    public boolean isSocioOuProprietario() {
+        return permissoes.contains(EPermissao.SOCIO.name()) || permissoes.contains(EPermissao.PROPRIETARIO.name());
+    }
+
+    public boolean isFuncionario() {
+        return permissoes.contains(EPermissao.FUNCIONARIO.name());
     }
 
     public static UsuarioAutenticado of(Usuario usuario) {

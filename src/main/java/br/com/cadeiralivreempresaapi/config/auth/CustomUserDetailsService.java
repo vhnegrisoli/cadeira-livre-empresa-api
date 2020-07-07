@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioException.USUARIO_ACESSO_INVALIDO;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioMessages.ACESSO_INVALIDO;
 
 @Service("customUserDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             .map(usuario -> new UserDetailsImpl(
                 usuario,
                 getPermissoes(usuario)))
-            .orElseThrow(USUARIO_ACESSO_INVALIDO::getException);
+            .orElseThrow(() -> ACESSO_INVALIDO);
     }
 
     private List<SimpleGrantedAuthority> getPermissoes(Usuario usuario) {

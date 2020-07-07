@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioException.PERMISSAO_NAO_ENCONTRADA;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioMessages.PERMISSAO_NAO_ENCONTRADA;
 
 @Service
 public class PermissaoService {
@@ -18,12 +18,12 @@ public class PermissaoService {
 
     public Permissao buscarPorCodigo(EPermissao permissao) {
         return permissaoRepository.findByPermissao(permissao)
-            .orElseThrow(PERMISSAO_NAO_ENCONTRADA::getException);
+            .orElseThrow(() -> PERMISSAO_NAO_ENCONTRADA);
     }
 
     public Permissao buscarPorId(Integer id) {
         return permissaoRepository.findById(id)
-            .orElseThrow(PERMISSAO_NAO_ENCONTRADA::getException);
+            .orElseThrow(() -> PERMISSAO_NAO_ENCONTRADA);
     }
 
     public List<Permissao> buscarPorCodigos(List<EPermissao> permissoes) {
