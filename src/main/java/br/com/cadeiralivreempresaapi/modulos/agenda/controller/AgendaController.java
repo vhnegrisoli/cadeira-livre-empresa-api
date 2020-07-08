@@ -1,0 +1,10 @@
+package br.com.cadeiralivreempresaapi.modulos.agenda.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/agenda")
+public class AgendaController {
+
+}

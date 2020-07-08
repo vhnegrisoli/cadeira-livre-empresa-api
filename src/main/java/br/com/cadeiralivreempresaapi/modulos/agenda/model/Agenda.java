@@ -27,6 +27,10 @@ public class Agenda {
     @JoinColumn(name = "FK_FUNCIONARIO")
     private Funcionario funcionario;
 
+    @ManyToOne
+    @JoinColumn(name = "FK_HORARIO", nullable = false)
+    private Horario horario;
+
     @Column(name = "SITUACAO", nullable = false)
     @Enumerated(EnumType.STRING)
     private ESituacaoAgenda situacao;
@@ -36,9 +40,6 @@ public class Agenda {
 
     @Column(name = "DESCRICAO_SERVICO", nullable = false)
     private String descricaoServico;
-
-    @Column(name = "HORARIO", nullable = false)
-    private LocalTime horario;
 
     @Column(name = "CLIENTE_ID")
     private String clienteId;
