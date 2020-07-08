@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 
 import static br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado.of;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioMessages.*;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.messages.UsuarioMessages.*;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j

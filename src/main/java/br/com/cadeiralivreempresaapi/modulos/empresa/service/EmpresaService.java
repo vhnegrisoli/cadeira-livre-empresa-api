@@ -17,7 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static br.com.cadeiralivreempresaapi.modulos.empresa.exception.EmpresaMessages.*;
+import static br.com.cadeiralivreempresaapi.modulos.empresa.messages.EmpresaMessages.*;
 
 @Service
 public class EmpresaService {
@@ -42,9 +42,8 @@ public class EmpresaService {
     public SuccessResponseDetails editar(EmpresaRequest request, Integer id) {
         var empresa = Empresa.of(request);
         empresa.setId(id);
-        validarPermissaoDoUsuario(autenticacaoService.getUsuarioAutenticado(), id);
-        validarEdicaoEmpresa(empresa);
         var empresaExistente = buscarPorId(id);
+        validarEdicaoEmpresa(empresa);
         empresa.setSocios(empresaExistente.getSocios());
         empresa.setSituacao(empresaExistente.getSituacao());
         empresaRepository.save(empresa);
@@ -86,9 +85,7 @@ public class EmpresaService {
     }
 
     public EmpresaResponse buscarPorIdComSocios(Integer id) {
-        var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
         var empresa = buscarPorId(id);
-        validarPermissaoDoUsuario(usuarioAutenticado, empresa.getId());
         return EmpresaResponse.of(empresa);
     }
 
@@ -106,6 +103,7 @@ public class EmpresaService {
     }
 
     public Empresa buscarPorId(Integer id) {
+        validarPermissaoDoUsuario(autenticacaoService.getUsuarioAutenticado(), id);
         return empresaRepository
             .findById(id).orElseThrow(() -> EMPRESA_NAO_ENCONTRADA);
     }
@@ -123,7 +121,6 @@ public class EmpresaService {
 
     public void inserirSocio(Usuario usuario, Integer empresaId) {
         var empresa = buscarPorId(empresaId);
-        validarPermissaoDoUsuario(autenticacaoService.getUsuarioAutenticado(), empresa.getId());
         empresa.getSocios().add(usuario);
         empresaRepository.save(empresa);
     }

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa.ATIVA;
-import static br.com.cadeiralivreempresaapi.modulos.empresa.exception.EmpresaMessages.USUARIO_NAO_PROPRIETARIO;
+import static br.com.cadeiralivreempresaapi.modulos.empresa.messages.EmpresaMessages.USUARIO_NAO_PROPRIETARIO;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data

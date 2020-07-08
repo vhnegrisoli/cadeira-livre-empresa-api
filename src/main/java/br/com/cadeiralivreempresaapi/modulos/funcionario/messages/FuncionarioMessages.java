@@ -1,4 +1,4 @@
-package br.com.cadeiralivreempresaapi.modulos.funcionario.exception;
+package br.com.cadeiralivreempresaapi.modulos.funcionario.messages;
 
 import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
 import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;

@@ -21,11 +21,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static br.com.cadeiralivreempresaapi.modulos.empresa.exception.EmpresaMessages.PROPRIETARIO_CRIADO_SUCESSO;
-import static br.com.cadeiralivreempresaapi.modulos.empresa.exception.EmpresaMessages.SOCIO_CRIADO_SUCESSO;
-import static br.com.cadeiralivreempresaapi.modulos.funcionario.exception.FuncionarioMessages.FUNCIONARIO_CRIADO_SUCESSO;
+import static br.com.cadeiralivreempresaapi.modulos.empresa.messages.EmpresaMessages.PROPRIETARIO_CRIADO_SUCESSO;
+import static br.com.cadeiralivreempresaapi.modulos.empresa.messages.EmpresaMessages.SOCIO_CRIADO_SUCESSO;
+import static br.com.cadeiralivreempresaapi.modulos.funcionario.messages.FuncionarioMessages.FUNCIONARIO_CRIADO_SUCESSO;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.*;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioMessages.*;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.messages.UsuarioMessages.*;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario.of;
 import static org.springframework.util.ObjectUtils.isEmpty;
 

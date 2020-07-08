@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.model;
 
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioRequest;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,4 +28,12 @@ public class Horario {
 
     @Column(name = "HORARIO", nullable = false)
     private LocalTime horario;
+
+    public static Horario of(HorarioRequest request) {
+        return Horario
+            .builder()
+            .empresa(new Empresa(request.getEmpresaId()))
+            .horario(request.getHorario())
+            .build();
+    }
 }

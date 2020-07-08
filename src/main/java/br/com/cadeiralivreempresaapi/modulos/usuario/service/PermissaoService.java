@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioMessages.PERMISSAO_NAO_ENCONTRADA;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.messages.UsuarioMessages.PERMISSAO_NAO_ENCONTRADA;
 
 @Service
 public class PermissaoService {

@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import static br.com.cadeiralivreempresaapi.modulos.funcionario.exception.FuncionarioMessages.FUNCIONARIO_NAO_ENCONTRADO;
-import static br.com.cadeiralivreempresaapi.modulos.funcionario.exception.FuncionarioMessages.FUNCIONARIO_USUARIO_SEM_PERMISSAO;
+import static br.com.cadeiralivreempresaapi.modulos.funcionario.messages.FuncionarioMessages.FUNCIONARIO_NAO_ENCONTRADO;
+import static br.com.cadeiralivreempresaapi.modulos.funcionario.messages.FuncionarioMessages.FUNCIONARIO_USUARIO_SEM_PERMISSAO;
 
 @Service
 public class FuncionarioService {

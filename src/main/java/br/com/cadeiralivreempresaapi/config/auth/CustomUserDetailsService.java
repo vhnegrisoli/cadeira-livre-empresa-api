@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.exception.UsuarioMessages.ACESSO_INVALIDO;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.messages.UsuarioMessages.ACESSO_INVALIDO;
 
 @Service("customUserDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {

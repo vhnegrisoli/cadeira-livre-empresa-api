@@ -13,6 +13,6 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class HorarioRequest {
 
-    private Integer id;
+    private Integer empresaId;
     private LocalTime horario;
 }
