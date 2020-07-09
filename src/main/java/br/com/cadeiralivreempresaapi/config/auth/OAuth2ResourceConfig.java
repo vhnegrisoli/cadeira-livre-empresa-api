@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.config.auth;
 
+import br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -11,9 +12,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.PROPRIETARIO;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.ADMIN;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.SOCIO;
 import static java.util.Arrays.asList;
 
 @Configuration
@@ -55,10 +53,20 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
             .antMatchers("/api/usuarios/get-token").authenticated()
             .antMatchers("/api/usuarios/is-authenticated").authenticated()
             .antMatchers("/api/usuarios/atualizar-token-notificacao").authenticated()
-            .antMatchers("/api/notificacoes/usuario/**").hasRole(ADMIN.name())
-            .antMatchers("/api/usuarios/**").hasAnyRole(ADMIN.name(), PROPRIETARIO.name(), SOCIO.name())
+            .antMatchers("/api/notificacoes/usuario/**").hasRole(EPermissao.ADMIN.name())
+            .antMatchers("/api/usuarios/**")
+            .hasAnyRole(EPermissao.ADMIN.name(), EPermissao.PROPRIETARIO.name(), EPermissao.SOCIO.name())
             .antMatchers("/api/empresas/**")
-            .hasAnyRole(ADMIN.name(), PROPRIETARIO.name(), SOCIO.name());
+            .hasAnyRole(EPermissao.ADMIN.name(), EPermissao.PROPRIETARIO.name(), EPermissao.SOCIO.name())
+            .antMatchers(HttpMethod.POST, "/api/horarios/**")
+            .hasAnyRole(EPermissao.ADMIN.name(), EPermissao.PROPRIETARIO.name(), EPermissao.SOCIO.name())
+            .antMatchers(HttpMethod.PUT, "/api/horarios/**")
+            .hasAnyRole(EPermissao.ADMIN.name(), EPermissao.PROPRIETARIO.name(), EPermissao.SOCIO.name())
+            .antMatchers(HttpMethod.DELETE, "/api/horarios/**")
+            .hasAnyRole(EPermissao.ADMIN.name(), EPermissao.PROPRIETARIO.name(), EPermissao.SOCIO.name())
+            .antMatchers(HttpMethod.GET, "/api/horarios/**")
+            .hasAnyRole(EPermissao.ADMIN.name(), EPermissao.PROPRIETARIO.name(), EPermissao.SOCIO.name(),
+                EPermissao.FUNCIONARIO.name());
     }
 
     @Override

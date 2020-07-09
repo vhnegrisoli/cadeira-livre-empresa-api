@@ -1,16 +1,22 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.service;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Horario;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.HorarioRepository;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
+import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
+import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
+import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.messages.AgendaHorarioMessages.*;
 import static org.springframework.util.ObjectUtils.isEmpty;
@@ -24,6 +30,10 @@ public class HorarioService {
     private EmpresaService empresaService;
     @Autowired
     private AgendaRepository agendaRepository;
+    @Autowired
+    private AutenticacaoService autenticacaoService;
+    @Autowired
+    private FuncionarioRepository funcionarioRepository;
 
     @Transactional
     public SuccessResponseDetails salvarHorario(HorarioRequest request) {
@@ -47,13 +57,9 @@ public class HorarioService {
     }
 
     @Transactional
-    public SuccessResponseDetails removerHorario(HorarioRequest request, Integer id) {
-        validarDadosRequest(request);
-        var horario = Horario.of(request);
-        horario.setId(id);
-        var empresa = empresaService.buscarPorId(request.getEmpresaId());
-        validarHorarioExistenteParaEmpresa(horario.getHorario(), empresa.getId());
-        validarAgendaMarcadaParaHorario(id);
+    public SuccessResponseDetails removerHorario(Integer id) {
+        var horario = buscarPorId(id);
+        validarAgendaMarcadaParaHorario(horario.getId());
         horarioRepository.delete(horario);
         return HORARIO_REMOVIDO_SUCESSO;
     }
@@ -77,5 +83,38 @@ public class HorarioService {
         if (horarioRepository.existsByEmpresaIdAndHorario(empresaId, horario)) {
             throw HORARIO_JA_EXISTENTE;
         }
+    }
+
+    public List<HorarioResponse> buscarHorariosPorEmpresa(Integer empresaId) {
+        validarPermissoesUsuario(empresaId);
+        return horarioRepository.findByEmpresaIdOrderByHorario(empresaId)
+            .stream()
+            .map(HorarioResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    private Horario buscarPorId(Integer id) {
+        var horario = horarioRepository.findById(id)
+            .orElseThrow(() -> HORARIO_NAO_ENCONTRADO);
+        validarPermissoesUsuario(horario.getEmpresa().getId());
+        return horario;
+    }
+
+    private void validarPermissoesUsuario(Integer empresaId) {
+        var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
+        if (!isSocioProprietarioValido(usuarioAutenticado, empresaId)
+            && !isFuncionarioValido(usuarioAutenticado, empresaId)) {
+            throw HORARIO_SEM_PERMISSAO;
+        }
+    }
+
+    private boolean isSocioProprietarioValido(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
+        return usuarioAutenticado.isSocioOuProprietario()
+            && empresaService.existeEmpresaParaUsuario(empresaId, usuarioAutenticado.getId());
+    }
+
+    private boolean isFuncionarioValido(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
+        return usuarioAutenticado.isFuncionario()
+            && funcionarioRepository.existsByUsuarioIdAndEmpresaId(usuarioAutenticado.getId(), empresaId);
     }
 }

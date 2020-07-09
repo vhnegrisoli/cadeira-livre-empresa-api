@@ -6,4 +6,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 public interface FuncionarioRepository extends JpaRepository<Funcionario, Integer>,
     QuerydslPredicateExecutor<Funcionario> {
+
+    Boolean existsByUsuarioIdAndEmpresaId(Integer id, Integer empresaId);
 }
