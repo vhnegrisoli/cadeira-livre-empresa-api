@@ -89,6 +89,20 @@ mvn test
 
 O deploy da aplicação está sendo realizado no Heroku
 
+## Documentação
+
+A API estará sendo documentada com Swagger e poderá ser consultada no endereço:
+
+https://cadeira-livre-empresa-api.herokuapp.com/swagger-ui.html
+
+### Endpoints
+
+![Documentação do Swagger - Endpoints](https://uploaddeimagens.com.br/images/002/773/100/original/Swagger_Docs_Cadeira_Livre.png?1594866289)
+
+### Especificação dos requests e responses
+
+![Documentação do Swagger - Requests e Responses](https://uploaddeimagens.com.br/images/002/773/102/original/Swagger_Docs_Cadeira_Livre_2.png?1594866388)
+
 ## Autores
 
 * **Victor Hugo Negrisoli** - *Desenvolvedor Back-End Pleno* - [vhnegrisoli](https://github.com/vhnegrisoli)
