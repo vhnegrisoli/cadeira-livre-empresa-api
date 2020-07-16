@@ -75,4 +75,9 @@ public class UsuarioController {
     public SuccessResponseDetails atualizarTokenNotificacao(@RequestParam("token") String token) {
         return usuarioService.atualizarTokenNotificacao(token);
     }
+
+    @PutMapping("{id}/alterar-situacao")
+    public SuccessResponseDetails alterarSituacao(@PathVariable Integer id) {
+        return usuarioService.alterarSituacao(id);
+    }
 }

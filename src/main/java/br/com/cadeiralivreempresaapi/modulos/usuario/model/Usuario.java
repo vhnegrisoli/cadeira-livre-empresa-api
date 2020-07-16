@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.PROPRIETARIO;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.*;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario.ATIVO;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -92,11 +92,22 @@ public class Usuario {
             && dataAtual.getMonthValue() == dataNascimento.getMonthValue();
     }
 
-    public boolean isProprietario() {
+    public boolean isAtivo() {
+        return ATIVO.equals(situacao);
+    }
+
+    public boolean isSocioOuProprietario() {
         return permissoes
             .stream()
             .map(Permissao::getPermissao)
-            .anyMatch(permissao -> permissao.equals(PROPRIETARIO));
+            .anyMatch(permissao -> permissao.equals(PROPRIETARIO) || permissao.equals(SOCIO));
+    }
+
+    public boolean isFuncionario() {
+        return permissoes
+            .stream()
+            .map(Permissao::getPermissao)
+            .anyMatch(permissao -> permissao.equals(FUNCIONARIO));
     }
 
     public boolean isNovoCadastro() {

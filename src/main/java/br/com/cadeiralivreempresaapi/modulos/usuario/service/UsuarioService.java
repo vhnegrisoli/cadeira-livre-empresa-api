@@ -7,6 +7,7 @@ import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioServ
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioFiltros;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioRequest;
+import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.repository.UsuarioRepository;
 import br.com.caelum.stella.validation.CPFValidator;
@@ -179,5 +180,29 @@ public class UsuarioService {
             throw SEM_PERMISSAO_EDITAR;
         }
     }
-}
 
+    @Transactional
+    public SuccessResponseDetails alterarSituacao(Integer id) {
+        var usuario = buscarPorId(id);
+        validarUsuarioFuncionario(usuario);
+        validarUsuarioSocio(usuario);
+        usuario.setSituacao(usuario.isAtivo()
+            ? ESituacaoUsuario.INATIVO
+            : ESituacaoUsuario.ATIVO);
+        usuarioRepository.save(usuario);
+        return USUARIO_ALTERACAO_SITUACAO_SUCESSO;
+    }
+
+    private void validarUsuarioFuncionario(Usuario usuario) {
+        if (usuario.isFuncionario()) {
+            funcionarioService.validarUsuario(usuario.getId());
+        }
+    }
+
+    private void validarUsuarioSocio(Usuario usuario) {
+        var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
+        if (usuario.isSocioOuProprietario() && !usuarioAutenticado.isAdmin()) {
+            throw SEM_PERMISSAO_ALTERAR_SITUACAO;
+        }
+    }
+}

@@ -6,6 +6,7 @@ import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaFiltros;
 import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaPageResponse;
 import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaRequest;
 import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaResponse;
+import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.repository.EmpresaRepository;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
@@ -44,6 +45,7 @@ public class EmpresaService {
         empresa.setId(id);
         var empresaExistente = buscarPorId(id);
         validarEdicaoEmpresa(empresa);
+        validarEmpresaAtiva(empresaExistente);
         empresa.setSocios(empresaExistente.getSocios());
         empresa.setSituacao(empresaExistente.getSituacao());
         empresaRepository.save(empresa);
@@ -81,6 +83,12 @@ public class EmpresaService {
     private void validarEmpresaExistentePorCnpjAoEditar(Empresa empresa) {
         if (empresaRepository.existsByCnpjAndIdNot(empresa.getCnpj(), empresa.getId())) {
             throw CNPJ_EXISTENTE;
+        }
+    }
+
+    private void validarEmpresaAtiva(Empresa empresa) {
+        if (!empresa.isAtiva()) {
+            throw EMPRESA_INATIVA;
         }
     }
 
@@ -123,5 +131,16 @@ public class EmpresaService {
         var empresa = buscarPorId(empresaId);
         empresa.getSocios().add(usuario);
         empresaRepository.save(empresa);
+    }
+
+    @Transactional
+    public SuccessResponseDetails alterarSituacao(Integer id) {
+        var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
+        validarPermissaoDoUsuario(usuarioAutenticado, id);
+        var empresa = buscarPorId(id);
+        empresa.setSituacao(empresa.isAtiva()
+            ? ESituacaoEmpresa.INATIVA
+            : ESituacaoEmpresa.ATIVA);
+        return EMPRESA_SITUACAO_ALTERADA_SUCESSO;
     }
 }

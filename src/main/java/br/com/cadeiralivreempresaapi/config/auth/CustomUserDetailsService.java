@@ -1,6 +1,7 @@
 package br.com.cadeiralivreempresaapi.config.auth;
 
 import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
+import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws ValidacaoException {
-
         return usuarioRepository
-            .findByEmail(email)
+            .findByEmailAndSituacao(email, ESituacaoUsuario.ATIVO)
             .map(usuario -> new UserDetailsImpl(
                 usuario,
                 getPermissoes(usuario)))

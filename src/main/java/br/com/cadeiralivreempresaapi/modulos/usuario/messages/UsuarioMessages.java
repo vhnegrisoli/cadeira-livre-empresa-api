@@ -20,8 +20,12 @@ public interface UsuarioMessages {
     ValidacaoException PERMISSAO_NAO_ENCONTRADA = new ValidacaoException("A permissão não foi encontrada.");
     PermissaoException SEM_PERMISSAO_EDITAR = new PermissaoException("Você não possui permissão para alterar os "
         + "dados desse usuário.");
+    PermissaoException SEM_PERMISSAO_ALTERAR_SITUACAO = new PermissaoException("Você não possui permissão para alterar "
+        + "a situação desse usuário.");
     SuccessResponseDetails TOKEN_ATUALIZADO = new SuccessResponseDetails("Token de notificação atualizado com sucesso!");
     SuccessResponseDetails TOKEN_EXISTENTE = new SuccessResponseDetails("O usuário já possui esse token de notificação.");
     SuccessResponseDetails USUARIO_ALTERADO_SUCESSO = new SuccessResponseDetails("Usuário alterado com sucesso!");
     SuccessResponseDetails USUARIO_DESLOGADO_SUCESSO = new SuccessResponseDetails("O usuário foi deslogado com sucesso!");
+    SuccessResponseDetails USUARIO_ALTERACAO_SITUACAO_SUCESSO = new SuccessResponseDetails("A situação do usuário"
+        + " foi alterada com sucesso!");
 }

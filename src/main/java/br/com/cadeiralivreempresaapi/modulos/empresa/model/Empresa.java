@@ -70,6 +70,10 @@ public class Empresa {
         this.id = id;
     }
 
+    public boolean isAtiva() {
+        return ATIVA.equals(situacao);
+    }
+
     public static Empresa of(EmpresaRequest request) {
         var empresa = new Empresa();
         BeanUtils.copyProperties(request, empresa);
@@ -86,7 +90,7 @@ public class Empresa {
     }
 
     private void validarPermissaoUsuarioProprietario(Usuario usuario) {
-        if (!usuario.isProprietario()) {
+        if (!usuario.isSocioOuProprietario()) {
             throw USUARIO_NAO_PROPRIETARIO;
         }
     }

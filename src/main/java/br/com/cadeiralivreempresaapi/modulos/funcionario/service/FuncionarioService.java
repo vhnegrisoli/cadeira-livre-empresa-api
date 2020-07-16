@@ -47,6 +47,12 @@ public class FuncionarioService {
         return FuncionarioResponse.of(funcionario);
     }
 
+    public void validarUsuario(Integer usuarioId) {
+        var funcionario = funcionarioRepository.findByUsuarioId(usuarioId)
+            .orElseThrow(() -> FUNCIONARIO_NAO_ENCONTRADO);
+        validarPermissoesDoUsuario(funcionario);
+    }
+
     private void validarFiltrosUsuario(FuncionarioFiltros filtros) {
         var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
         if (!usuarioAutenticado.isAdmin()) {

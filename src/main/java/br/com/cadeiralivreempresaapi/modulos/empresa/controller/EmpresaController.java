@@ -37,4 +37,9 @@ public class EmpresaController {
     public Page<EmpresaPageResponse> buscarTodas(PageRequest pageable, EmpresaFiltros filtros) {
         return empresaService.buscarTodas(pageable, filtros);
     }
+
+    @PutMapping("{id}/alterar-situacao")
+    public SuccessResponseDetails alterarSituacao(@PathVariable Integer id) {
+        return empresaService.alterarSituacao(id);
+    }
 }
