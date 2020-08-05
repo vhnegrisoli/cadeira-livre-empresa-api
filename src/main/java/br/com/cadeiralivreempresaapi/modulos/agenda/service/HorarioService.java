@@ -102,7 +102,8 @@ public class HorarioService {
 
     private void validarPermissoesUsuario(Integer empresaId) {
         var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
-        if (!isSocioProprietarioValido(usuarioAutenticado, empresaId)
+        if (!usuarioAutenticado.isAdmin()
+            && !isSocioProprietarioValido(usuarioAutenticado, empresaId)
             && !isFuncionarioValido(usuarioAutenticado, empresaId)) {
             throw HORARIO_SEM_PERMISSAO;
         }
