@@ -15,4 +15,5 @@ public class HorarioRequest {
 
     private Integer empresaId;
     private LocalTime horario;
+    private Integer diaSemanaId;
 }

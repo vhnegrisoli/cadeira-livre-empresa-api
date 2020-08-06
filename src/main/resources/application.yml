@@ -39,6 +39,12 @@ spring:
       max-active: 120
       max-idle: 40
 
+  flyway:
+    enabled: true
+    out-of-order: true
+    baseline-on-migrate: true
+    ignore-missing-migrations: true
+
 oauth-clients:
   cadeira-livre-empresa-api:
     client: cadeira-livre-empresa-api-client

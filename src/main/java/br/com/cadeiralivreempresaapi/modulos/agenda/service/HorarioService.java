@@ -1,9 +1,11 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.service;
 
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.DiaDaSemanaResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Horario;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
+import br.com.cadeiralivreempresaapi.modulos.agenda.repository.DiaDaSemanaRepository;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.HorarioRepository;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
@@ -26,6 +28,8 @@ public class HorarioService {
 
     @Autowired
     private HorarioRepository horarioRepository;
+    @Autowired
+    private DiaDaSemanaRepository diaDaSemanaRepository;
     @Autowired
     private EmpresaService empresaService;
     @Autowired
@@ -57,14 +61,14 @@ public class HorarioService {
     }
 
     @Transactional
-    public SuccessResponseDetails removerHorario(Integer id) {
+    public SuccessResponseDetails removerHorarioDoDia(Integer id) {
         var horario = buscarPorId(id);
-        validarAgendaMarcadaParaHorario(horario.getId());
+        validarAgendaMarcadaParaHorarioDoDia(horario.getId());
         horarioRepository.delete(horario);
         return HORARIO_REMOVIDO_SUCESSO;
     }
 
-    private void validarAgendaMarcadaParaHorario(Integer horarioId) {
+    private void validarAgendaMarcadaParaHorarioDoDia(Integer horarioId) {
         if (agendaRepository.existsByHorarioId(horarioId)) {
             throw AGENDA_EXISTENTE_HORARIO;
         }
@@ -76,6 +80,9 @@ public class HorarioService {
         }
         if (isEmpty(request.getHorario())) {
             throw HORARIO_NAO_INFORMADO;
+        }
+        if (isEmpty(request.getDiaSemanaId())) {
+            throw DIA_SEMANA_NAO_INFORMADO;
         }
     }
 
@@ -98,6 +105,13 @@ public class HorarioService {
             .orElseThrow(() -> HORARIO_NAO_ENCONTRADO);
         validarPermissoesUsuario(horario.getEmpresa().getId());
         return horario;
+    }
+
+    public List<DiaDaSemanaResponse> buscarDiasDaSemana() {
+        return diaDaSemanaRepository.findAll()
+            .stream()
+            .map(DiaDaSemanaResponse::of)
+            .collect(Collectors.toList());
     }
 
     private void validarPermissoesUsuario(Integer empresaId) {

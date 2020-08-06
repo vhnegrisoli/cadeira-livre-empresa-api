@@ -29,11 +29,16 @@ public class Horario {
     @Column(name = "HORARIO", nullable = false)
     private LocalTime horario;
 
+    @ManyToOne
+    @JoinColumn(name = "FK_DIA_DA_SEMANA", nullable = false)
+    private DiaDaSemana diaDaSemana;
+
     public static Horario of(HorarioRequest request) {
         return Horario
             .builder()
             .empresa(new Empresa(request.getEmpresaId()))
             .horario(request.getHorario())
+            .diaDaSemana(new DiaDaSemana(request.getDiaSemanaId()))
             .build();
     }
 }

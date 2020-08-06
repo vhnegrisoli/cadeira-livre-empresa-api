@@ -19,10 +19,12 @@ public class HorarioResponse {
     private Integer id;
     @JsonFormat(pattern = "HH:mm")
     private LocalTime horario;
+    private String diaDaSemana;
 
     public static HorarioResponse of(Horario horario) {
         var response = new HorarioResponse();
         BeanUtils.copyProperties(horario, response);
+        response.setDiaDaSemana(horario.getDiaDaSemana().getDiaNome());
         return response;
     }
 }
