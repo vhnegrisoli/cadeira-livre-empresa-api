@@ -28,12 +28,12 @@ public class HorarioController {
     }
 
     @PostMapping
-    public SuccessResponseDetails salvarHorario(@RequestBody HorarioRequest request) {
+    public HorarioResponse salvarHorario(@RequestBody HorarioRequest request) {
         return horarioService.salvarHorario(request);
     }
 
     @PutMapping("{id}")
-    public SuccessResponseDetails alterarHorario(@RequestBody HorarioRequest request, @PathVariable Integer id) {
+    public HorarioResponse alterarHorario(@RequestBody HorarioRequest request, @PathVariable Integer id) {
         return horarioService.alterarHorario(request, id);
     }
 
