@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,8 +42,8 @@ public class HorarioService {
     public SuccessResponseDetails salvarHorario(HorarioRequest request) {
         validarDadosRequest(request);
         var horario = Horario.of(request);
-        var empresa = empresaService.buscarPorId(request.getEmpresaId());
-        validarHorarioExistenteParaEmpresa(horario.getHorario(), empresa.getId());
+        horario.setEmpresa(empresaService.buscarPorId(request.getEmpresaId()));
+        validarHorarioExistenteParaEmpresa(horario);
         horarioRepository.save(horario);
         return HORARIO_CRIADO_SUCESSO;
     }
@@ -54,8 +53,8 @@ public class HorarioService {
         validarDadosRequest(request);
         var horario = Horario.of(request);
         horario.setId(id);
-        var empresa = empresaService.buscarPorId(request.getEmpresaId());
-        validarHorarioExistenteParaEmpresa(horario.getHorario(), empresa.getId());
+        horario.setEmpresa(empresaService.buscarPorId(request.getEmpresaId()));
+        validarHorarioExistenteParaEmpresa(horario);
         horarioRepository.save(horario);
         return HORARIO_ALTERADO_SUCESSO;
     }
@@ -86,8 +85,13 @@ public class HorarioService {
         }
     }
 
-    private void validarHorarioExistenteParaEmpresa(LocalTime horario, Integer empresaId) {
-        if (horarioRepository.existsByEmpresaIdAndHorario(empresaId, horario)) {
+    private void validarHorarioExistenteParaEmpresa(Horario horario) {
+        if (!diaDaSemanaRepository.existsById(horario.getDiaDaSemana().getId())) {
+            throw DIA_DA_SEMANA_NAO_EXISTENTE;
+        }
+        if (horarioRepository.existsByHorarioAndEmpresaIdAndDiaDaSemanaId(horario.getHorario(),
+            horario.getEmpresa().getId(),
+            horario.getDiaDaSemana().getId())) {
             throw HORARIO_JA_EXISTENTE;
         }
     }
