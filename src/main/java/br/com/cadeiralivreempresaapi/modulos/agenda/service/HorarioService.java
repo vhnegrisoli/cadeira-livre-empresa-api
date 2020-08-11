@@ -3,6 +3,7 @@ package br.com.cadeiralivreempresaapi.modulos.agenda.service;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.DiaDaSemanaResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.model.DiaDaSemana;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Horario;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.DiaDaSemanaRepository;
@@ -39,24 +40,24 @@ public class HorarioService {
     private FuncionarioRepository funcionarioRepository;
 
     @Transactional
-    public SuccessResponseDetails salvarHorario(HorarioRequest request) {
+    public HorarioResponse salvarHorario(HorarioRequest request) {
         validarDadosRequest(request);
         var horario = Horario.of(request);
         horario.setEmpresa(empresaService.buscarPorId(request.getEmpresaId()));
+        horario.setDiaDaSemana(buscarDiaDaSemanaPorId(horario.getDiaDaSemana().getId()));
         validarHorarioExistenteParaEmpresa(horario);
-        horarioRepository.save(horario);
-        return HORARIO_CRIADO_SUCESSO;
+        return HorarioResponse.of(horarioRepository.save(horario));
     }
 
     @Transactional
-    public SuccessResponseDetails alterarHorario(HorarioRequest request, Integer id) {
+    public HorarioResponse alterarHorario(HorarioRequest request, Integer id) {
         validarDadosRequest(request);
         var horario = Horario.of(request);
         horario.setId(id);
         horario.setEmpresa(empresaService.buscarPorId(request.getEmpresaId()));
+        horario.setDiaDaSemana(buscarDiaDaSemanaPorId(horario.getDiaDaSemana().getId()));
         validarHorarioExistenteParaEmpresa(horario);
-        horarioRepository.save(horario);
-        return HORARIO_ALTERADO_SUCESSO;
+        return HorarioResponse.of(horarioRepository.save(horario));
     }
 
     @Transactional
@@ -86,9 +87,6 @@ public class HorarioService {
     }
 
     private void validarHorarioExistenteParaEmpresa(Horario horario) {
-        if (!diaDaSemanaRepository.existsById(horario.getDiaDaSemana().getId())) {
-            throw DIA_DA_SEMANA_NAO_EXISTENTE;
-        }
         if (horarioRepository.existsByHorarioAndEmpresaIdAndDiaDaSemanaId(horario.getHorario(),
             horario.getEmpresa().getId(),
             horario.getDiaDaSemana().getId())) {
@@ -116,6 +114,11 @@ public class HorarioService {
             .stream()
             .map(DiaDaSemanaResponse::of)
             .collect(Collectors.toList());
+    }
+
+    public DiaDaSemana buscarDiaDaSemanaPorId(Integer id) {
+        return diaDaSemanaRepository.findById(id)
+            .orElseThrow(() -> DIA_DA_SEMANA_NAO_EXISTENTE);
     }
 
     private void validarPermissoesUsuario(Integer empresaId) {
