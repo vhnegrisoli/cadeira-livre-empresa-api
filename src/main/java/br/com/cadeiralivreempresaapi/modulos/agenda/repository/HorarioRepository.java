@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface HorarioRepository extends JpaRepository<Horario, Integer> {
 
-    Boolean existsByEmpresaIdAndHorario(Integer empresaId, LocalTime horario);
+    Boolean existsByHorarioAndEmpresaIdAndDiaDaSemanaId(LocalTime horario, Integer empresaId, Integer diaDaSemaanId);
 
     List<Horario> findByEmpresaIdOrderByHorario(Integer empresaId);
 }

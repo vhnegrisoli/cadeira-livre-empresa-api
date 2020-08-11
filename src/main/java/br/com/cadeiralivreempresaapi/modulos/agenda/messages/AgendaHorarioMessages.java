@@ -6,7 +6,8 @@ import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetai
 
 public interface AgendaHorarioMessages {
 
-    ValidacaoException HORARIO_JA_EXISTENTE = new ValidacaoException("Este horário já está registrado para esta empresa.");
+    ValidacaoException HORARIO_JA_EXISTENTE = new ValidacaoException("Este horário já está registrado para esta "
+        + "empresa neste dia.");
     ValidacaoException HORARIO_NAO_ENCONTRADO = new ValidacaoException("O horário não foi encontrado.");
     ValidacaoException HORARIO_NAO_INFORMADO = new ValidacaoException("O horário deve ser informado.");
     ValidacaoException DIA_SEMANA_NAO_INFORMADO = new ValidacaoException("O dia da semana deve ser informado.");
