@@ -86,6 +86,9 @@ public class HorarioService {
     }
 
     private void validarHorarioExistenteParaEmpresa(Horario horario) {
+        if (!diaDaSemanaRepository.existsById(horario.getDiaDaSemana().getId())) {
+            throw DIA_DA_SEMANA_NAO_EXISTENTE;
+        }
         if (horarioRepository.existsByHorarioAndEmpresaIdAndDiaDaSemanaId(horario.getHorario(),
             horario.getEmpresa().getId(),
             horario.getDiaDaSemana().getId())) {

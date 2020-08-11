@@ -13,6 +13,7 @@ public interface AgendaHorarioMessages {
     ValidacaoException DIA_SEMANA_NAO_INFORMADO = new ValidacaoException("O dia da semana deve ser informado.");
     ValidacaoException EMPRESA_NAO_INFORMADA = new ValidacaoException("A empresa deve ser informada.");
     ValidacaoException AGENDA_EXISTENTE_HORARIO = new ValidacaoException("Já existe um agendamento para este horário.");
+    ValidacaoException DIA_DA_SEMANA_NAO_EXISTENTE = new ValidacaoException("Este dia da semana não existe.");
     PermissaoException HORARIO_SEM_PERMISSAO = new PermissaoException("Usuário sem permissão para visualizar"
         + " este horário.");
     SuccessResponseDetails HORARIO_CRIADO_SUCESSO = new SuccessResponseDetails("Horário inserido com sucesso!");
