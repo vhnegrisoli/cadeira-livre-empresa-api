@@ -19,4 +19,7 @@ public interface AgendaHorarioMessages {
     SuccessResponseDetails HORARIO_CRIADO_SUCESSO = new SuccessResponseDetails("Horário inserido com sucesso!");
     SuccessResponseDetails HORARIO_ALTERADO_SUCESSO = new SuccessResponseDetails("Horário alterado com sucesso!");
     SuccessResponseDetails HORARIO_REMOVIDO_SUCESSO = new SuccessResponseDetails("Horário removido com sucesso!");
+
+    SuccessResponseDetails SERVICO_CRIADO_SUCESSO = new SuccessResponseDetails("Serviço inserido com sucesso!");
+    SuccessResponseDetails SERVICO_ALTERADO_SUCESSO = new SuccessResponseDetails("Serviço inserido com sucesso!");
 }

@@ -15,7 +15,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.List;
+import java.util.Set;
 
 import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao.*;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario.ATIVO;
@@ -65,7 +65,7 @@ public class Usuario {
         @JoinColumn(name = "FK_PERMISSAO", foreignKey = @ForeignKey(name = "FK_PERMISSAO_PK"),
             referencedColumnName = "ID")})
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Permissao> permissoes;
+    private Set<Permissao> permissoes;
 
     @Column(name = "TOKEN_NOTIFICACAO")
     private String tokenNotificacao;

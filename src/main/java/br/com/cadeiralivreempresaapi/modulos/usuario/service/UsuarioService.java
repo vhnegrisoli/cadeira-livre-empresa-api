@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 import static br.com.cadeiralivreempresaapi.modulos.empresa.messages.EmpresaMessages.PROPRIETARIO_CRIADO_SUCESSO;
 import static br.com.cadeiralivreempresaapi.modulos.empresa.messages.EmpresaMessages.SOCIO_CRIADO_SUCESSO;
@@ -51,7 +51,7 @@ public class UsuarioService {
     @Transactional
     public SuccessResponseDetails salvarProprietario(UsuarioRequest usuarioRequest) {
         var usuario = of(usuarioRequest);
-        usuario.setPermissoes(List.of(permissaoService.buscarPorCodigo(PROPRIETARIO)));
+        usuario.setPermissoes(Set.of(permissaoService.buscarPorCodigo(PROPRIETARIO)));
         salvarUsuario(usuario);
         return PROPRIETARIO_CRIADO_SUCESSO;
     }
@@ -59,7 +59,7 @@ public class UsuarioService {
     @Transactional
     public SuccessResponseDetails salavarSocio(UsuarioRequest usuarioRequest, Integer empresaId) {
         var usuario = of(usuarioRequest);
-        usuario.setPermissoes(List.of(permissaoService.buscarPorCodigo(SOCIO)));
+        usuario.setPermissoes(Set.of(permissaoService.buscarPorCodigo(SOCIO)));
         empresaService.inserirSocio(salvarUsuario(usuario), empresaId);
         return SOCIO_CRIADO_SUCESSO;
     }
@@ -67,7 +67,7 @@ public class UsuarioService {
     @Transactional
     public SuccessResponseDetails salavarFuncionario(UsuarioRequest usuarioRequest, Integer empresaId) {
         var usuario = of(usuarioRequest);
-        usuario.setPermissoes(List.of(permissaoService.buscarPorCodigo(FUNCIONARIO)));
+        usuario.setPermissoes(Set.of(permissaoService.buscarPorCodigo(FUNCIONARIO)));
         funcionarioService.salvarFuncionario(salvarUsuario(usuario), empresaId);
         return FUNCIONARIO_CRIADO_SUCESSO;
     }
