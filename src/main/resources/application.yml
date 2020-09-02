@@ -11,6 +11,7 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/cadeira_livre_empresa
+    # url: jdbc:postgresql://sqlvhnegrisoli.ddns.net:5432/cadeira_livre_empresa
     username: postgres
     password: 1y5h8j
     initialization-mode: always

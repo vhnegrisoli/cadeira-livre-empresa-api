@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -18,7 +18,7 @@ public class UsuarioResponse {
     private String nome;
     private String email;
     private String cpf;
-    private List<Permissao> permissoes;
+    private Set<Permissao> permissoes;
 
     public static UsuarioResponse of(Usuario usuario) {
         return UsuarioResponse
