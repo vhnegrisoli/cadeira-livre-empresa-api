@@ -117,12 +117,12 @@ public class EmpresaService {
     }
 
     public Boolean existeEmpresaParaUsuario(Integer empresaId, Integer usuarioId) {
-        return empresaRepository.existsByIdAndSocios(empresaId, new Usuario(usuarioId));
+        return empresaRepository.existsByIdAndSociosId(empresaId, usuarioId);
     }
 
     private void validarPermissaoDoUsuario(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
         if (!usuarioAutenticado.isAdmin()
-            && !empresaRepository.existsByIdAndSocios(empresaId, Usuario.of(usuarioAutenticado))) {
+            && !empresaRepository.existsByIdAndSociosId(empresaId, usuarioAutenticado.getId())) {
             throw EMPRESA_USUARIO_SEM_PERMISSAO;
         }
     }

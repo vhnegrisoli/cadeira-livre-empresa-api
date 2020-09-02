@@ -1,14 +1,13 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.repository;
 
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
-import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 public interface EmpresaRepository extends JpaRepository<Empresa, Integer>,
     QuerydslPredicateExecutor<Empresa> {
 
-    Boolean existsByIdAndSocios(Integer id, Usuario usuario);
+    Boolean existsByIdAndSociosId(Integer id, Integer usuarioId);
 
     Boolean existsByRazaoSocial(String razaoSocial);
 
