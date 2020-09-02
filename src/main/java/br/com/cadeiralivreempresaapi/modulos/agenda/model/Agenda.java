@@ -1,6 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.model;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
+import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.model.Funcionario;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -69,4 +70,8 @@ public class Agenda {
 
     @Column(name = "DESCONTO")
     private Float desconto;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "TIPO_AGENDA", nullable = false)
+    private ETipoAgenda tipoAgenda;
 }
