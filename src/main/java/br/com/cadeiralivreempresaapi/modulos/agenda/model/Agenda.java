@@ -1,8 +1,9 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.model;
 
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.AgendaRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
-import br.com.cadeiralivreempresaapi.modulos.funcionario.model.Funcionario;
+import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Entity
@@ -27,8 +29,8 @@ public class Agenda {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "FK_FUNCIONARIO")
-    private Funcionario funcionario;
+    @JoinColumn(name = "FK_USUARIO")
+    private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "FK_HORARIO")
@@ -74,4 +76,23 @@ public class Agenda {
     @Enumerated(EnumType.STRING)
     @Column(name = "TIPO_AGENDA", nullable = false)
     private ETipoAgenda tipoAgenda;
+
+    public static Agenda of(AgendaRequest request) {
+        var cliente = request.getCliente();
+        return Agenda
+            .builder()
+            .clienteId(cliente.getId().toString())
+            .clienteNome(cliente.getNome())
+            .clienteEmail(cliente.getEmail())
+            .clienteCpf(cliente.getCpf())
+            .servicos(request
+                .getServicosIds()
+                .stream()
+                .map(Servico::new)
+                .collect(Collectors.toSet()))
+            .horario(new Horario(request.getHorarioId()))
+            .situacao(ESituacaoAgenda.RESERVA)
+            .tipoAgenda(ETipoAgenda.HORARIO_MARCADO)
+            .build();
+    }
 }

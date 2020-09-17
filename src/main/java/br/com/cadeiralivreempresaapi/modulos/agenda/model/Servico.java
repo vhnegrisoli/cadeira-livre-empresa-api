@@ -31,6 +31,10 @@ public class Servico {
     @Column(name = "PRECO", nullable = false)
     private Double preco;
 
+    public Servico(Integer id) {
+        this.id = id;
+    }
+
     public static Servico of(ServicoRequest request) {
         return Servico
             .builder()
