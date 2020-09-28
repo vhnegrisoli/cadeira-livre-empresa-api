@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.usuario.mocks;
 
+import br.com.cadeiralivreempresaapi.config.auth.UserDetailsImpl;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioRequest;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao;
@@ -7,11 +8,13 @@ import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Permissao;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UsuarioMocks {
 
@@ -136,5 +139,15 @@ public class UsuarioMocks {
             .senha("123456")
             .sexo(ESexo.MASCULINO)
             .build();
+    }
+
+    public static UserDetailsImpl umUserDetails() {
+        var usuario = umUsuario();
+        return new UserDetailsImpl(usuario, usuario
+            .getPermissoes()
+            .stream()
+            .map(permissao -> "ROLE_" + permissao.getPermissao())
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList()));
     }
 }
