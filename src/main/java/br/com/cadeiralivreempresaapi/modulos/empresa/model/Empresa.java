@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa.ATIVA;
@@ -83,10 +84,9 @@ public class Empresa {
     public void adicionarProprietario(Usuario usuario) {
         validarPermissaoUsuarioProprietario(usuario);
         if (isEmpty(socios)) {
-            socios = List.of(usuario);
-        } else {
-            socios.add(usuario);
+            socios = new ArrayList<>();
         }
+        socios.add(usuario);
     }
 
     private void validarPermissaoUsuarioProprietario(Usuario usuario) {
