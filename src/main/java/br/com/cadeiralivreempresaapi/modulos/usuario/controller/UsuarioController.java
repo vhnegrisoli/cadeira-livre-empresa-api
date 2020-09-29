@@ -39,15 +39,15 @@ public class UsuarioController {
     }
 
     @PostMapping("socio/empresa/{empresaId}")
-    public SuccessResponseDetails salavarSocio(@RequestBody UsuarioRequest usuarioRequest,
+    public SuccessResponseDetails salvarSocio(@RequestBody UsuarioRequest usuarioRequest,
                                                @PathVariable Integer empresaId) {
-        return usuarioService.salavarSocio(usuarioRequest, empresaId);
+        return usuarioService.salvarSocio(usuarioRequest, empresaId);
     }
 
     @PostMapping("funcionario/empresa/{empresaId}")
     public SuccessResponseDetails salvarFuncionario(@RequestBody UsuarioRequest usuarioRequest,
                                                     @PathVariable Integer empresaId) {
-        return usuarioService.salavarFuncionario(usuarioRequest, empresaId);
+        return usuarioService.salvarFuncionario(usuarioRequest, empresaId);
     }
 
     @PutMapping("{id}/alterar-acesso")

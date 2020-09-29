@@ -6,8 +6,6 @@ import br.com.cadeiralivreempresaapi.modulos.usuario.repository.PermissaoReposit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import static br.com.cadeiralivreempresaapi.modulos.usuario.messages.UsuarioMessages.PERMISSAO_NAO_ENCONTRADA;
 
 @Service
@@ -24,9 +22,5 @@ public class PermissaoService {
     public Permissao buscarPorId(Integer id) {
         return permissaoRepository.findById(id)
             .orElseThrow(() -> PERMISSAO_NAO_ENCONTRADA);
-    }
-
-    public List<Permissao> buscarPorCodigos(List<EPermissao> permissoes) {
-        return permissaoRepository.findByPermissaoIn(permissoes);
     }
 }

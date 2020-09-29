@@ -19,6 +19,10 @@ O projeto é subdividido em módulos, utiliza arquitetura de API REST e microsse
 * **Redis**
 * **PostgreSQL 11**
 * **REST API**
+* **Testes de Integração e Unitários**
+* **JUnit5**
+* **Mockito**
+* **Banco de dados em memória HSQL para testes de integração**
 
 ### Pré-requisitos
 
@@ -78,6 +82,9 @@ http://localhost:8091
 ```
 
 ## Executando testes automatizados
+
+Foram escritos testes de integração (banco de dados em memória HQSL) e testes unitários
+utilizando o JUnit5 e o Mockito.
 
 Para rodar apenas os testes:
 

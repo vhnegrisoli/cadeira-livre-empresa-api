@@ -33,6 +33,10 @@ public class Horario {
     @JoinColumn(name = "FK_DIA_DA_SEMANA", nullable = false)
     private DiaDaSemana diaDaSemana;
 
+    public Horario(Integer id) {
+        this.id = id;
+    }
+
     public static Horario of(HorarioRequest request) {
         return Horario
             .builder()

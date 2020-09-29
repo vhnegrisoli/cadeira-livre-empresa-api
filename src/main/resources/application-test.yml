@@ -14,7 +14,7 @@ spring:
 
   datasource:
     url:
-    jdbcUrl: jdbc:hsqldb:mem:nutricaoesportiva
+    jdbcUrl: jdbc:hsqldb:mem:cadeiralivreempresa
     username: sa
     password:
     driverClassName: org.hsqldb.jdbc.JDBCDriver

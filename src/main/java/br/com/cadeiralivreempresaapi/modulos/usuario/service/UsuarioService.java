@@ -1,11 +1,9 @@
 package br.com.cadeiralivreempresaapi.modulos.usuario.service;
 
-import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
-import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioFiltros;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioRequest;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
@@ -13,7 +11,6 @@ import br.com.cadeiralivreempresaapi.modulos.usuario.repository.UsuarioRepositor
 import br.com.caelum.stella.validation.CPFValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +54,7 @@ public class UsuarioService {
     }
 
     @Transactional
-    public SuccessResponseDetails salavarSocio(UsuarioRequest usuarioRequest, Integer empresaId) {
+    public SuccessResponseDetails salvarSocio(UsuarioRequest usuarioRequest, Integer empresaId) {
         var usuario = of(usuarioRequest);
         usuario.setPermissoes(Set.of(permissaoService.buscarPorCodigo(SOCIO)));
         empresaService.inserirSocio(salvarUsuario(usuario), empresaId);
@@ -65,14 +62,14 @@ public class UsuarioService {
     }
 
     @Transactional
-    public SuccessResponseDetails salavarFuncionario(UsuarioRequest usuarioRequest, Integer empresaId) {
+    public SuccessResponseDetails salvarFuncionario(UsuarioRequest usuarioRequest, Integer empresaId) {
         var usuario = of(usuarioRequest);
         usuario.setPermissoes(Set.of(permissaoService.buscarPorCodigo(FUNCIONARIO)));
         funcionarioService.salvarFuncionario(salvarUsuario(usuario), empresaId);
         return FUNCIONARIO_CRIADO_SUCESSO;
     }
 
-    private Usuario salvarUsuario(Usuario usuario) {
+    public Usuario salvarUsuario(Usuario usuario) {
         validarDadosUsuario(usuario);
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         return usuarioRepository.save(usuario);
@@ -85,8 +82,9 @@ public class UsuarioService {
         var usuario = of(usuarioRequest);
         validarDadosUsuario(usuario);
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-        usuario.setPermissoes(buscarPorId(usuarioRequest.getId()).getPermissoes());
-        usuario.setSituacao(buscarPorId(usuario.getId()).getSituacao());
+        var usuarioExistente = buscarPorId(usuarioRequest.getId());
+        usuario.setPermissoes(usuarioExistente.getPermissoes());
+        usuario.setSituacao(usuarioExistente.getSituacao());
         usuarioRepository.save(usuario);
         return USUARIO_ALTERADO_SUCESSO;
     }
@@ -155,10 +153,6 @@ public class UsuarioService {
     private Usuario atualizarUltimoAcesso(Usuario usuario) {
         usuario.setUltimoAcesso(LocalDateTime.now());
         return usuarioRepository.save(usuario);
-    }
-
-    public Page<Usuario> getUsuarios(PageRequest pageable, UsuarioFiltros filtros) {
-        return usuarioRepository.findAll(filtros.toPredicate().build(), pageable);
     }
 
     @Transactional
