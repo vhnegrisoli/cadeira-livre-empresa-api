@@ -152,17 +152,53 @@ public class UsuarioServiceIntegrationTest {
 
     @Test
     public void alterarSituacao_deveAtivar_quandoUsuarioEstiverInativoEForProprietario() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
+        alterarSituacao(2, ESituacaoUsuario.INATIVO);
+
+        var response = service.alterarSituacao(2);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A situação do usuário foi alterada com sucesso!");
+
+        var usuarioAlterado = usuarioRepository.findById(2).get();
+        assertThat(usuarioAlterado.isAtivo()).isTrue();
+
+        verify(funcionarioService, times(0)).validarUsuario(anyInt());
     }
 
     @Test
     public void alterarSituacao_deveAtivar_quandoUsuarioEstiverInativoEForSocio() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
+        alterarSituacao(6, ESituacaoUsuario.INATIVO);
+
+        var response = service.alterarSituacao(6);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A situação do usuário foi alterada com sucesso!");
+
+        var usuarioAlterado = usuarioRepository.findById(6).get();
+        assertThat(usuarioAlterado.isAtivo()).isTrue();
+
+        verify(funcionarioService, times(0)).validarUsuario(anyInt());
     }
 
     @Test
     public void alterarSituacao_deveAtivar_quandoUsuarioEstiverInativoEForFuncionario() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
+        alterarSituacao(10, ESituacaoUsuario.INATIVO);
+
+        var response = service.alterarSituacao(10);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A situação do usuário foi alterada com sucesso!");
+
+        var usuarioAlterado = usuarioRepository.findById(10).get();
+        assertThat(usuarioAlterado.isAtivo()).isTrue();
+
+        verify(funcionarioService, times(1)).validarUsuario(anyInt());
     }
 
     @Test
@@ -184,17 +220,53 @@ public class UsuarioServiceIntegrationTest {
 
     @Test
     public void alterarSituacao_deveInativar_quandoUsuarioEstiverAtivoEForProprietario() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
+        alterarSituacao(2, ESituacaoUsuario.ATIVO);
+
+        var response = service.alterarSituacao(2);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A situação do usuário foi alterada com sucesso!");
+
+        var usuarioAlterado = usuarioRepository.findById(2).get();
+        assertThat(usuarioAlterado.isAtivo()).isFalse();
+
+        verify(funcionarioService, times(0)).validarUsuario(anyInt());
     }
 
     @Test
     public void alterarSituacao_deveInativar_quandoUsuarioEstiverAtivoEForSocio() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
+        alterarSituacao(6, ESituacaoUsuario.ATIVO);
+
+        var response = service.alterarSituacao(6);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A situação do usuário foi alterada com sucesso!");
+
+        var usuarioAlterado = usuarioRepository.findById(6).get();
+        assertThat(usuarioAlterado.isAtivo()).isFalse();
+
+        verify(funcionarioService, times(0)).validarUsuario(anyInt());
     }
 
     @Test
     public void alterarSituacao_deveInativar_quandoUsuarioEstiverAtivoEForFuncionario() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
+        alterarSituacao(10, ESituacaoUsuario.ATIVO);
+
+        var response = service.alterarSituacao(10);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A situação do usuário foi alterada com sucesso!");
+
+        var usuarioAlterado = usuarioRepository.findById(10).get();
+        assertThat(usuarioAlterado.isAtivo()).isFalse();
+
+        verify(funcionarioService, times(1)).validarUsuario(anyInt());
     }
 
     private void alterarSituacao(Integer id, ESituacaoUsuario situacao) {
