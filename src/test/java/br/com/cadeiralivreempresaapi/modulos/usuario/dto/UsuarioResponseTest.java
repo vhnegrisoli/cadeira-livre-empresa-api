@@ -1,6 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.usuario.dto;
 
-import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UsuarioResponseTest {
 
     @Test
+    @DisplayName("Deve converter para dto UsuarioResponse quando informado Model de Usuario")
     public void of_deveConverterParaDtoDeResponse_quandoReceberModelDeUsuario() {
         var response = UsuarioResponse.of(umUsuario());
         assertThat(response).isNotNull();

@@ -6,11 +6,12 @@ import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.repository.UsuarioRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -23,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@ExtendWith(MockitoExtension.class)
 public class UsuarioServiceTest {
 
     @InjectMocks
@@ -42,6 +43,7 @@ public class UsuarioServiceTest {
     private FuncionarioService funcionarioService;
 
     @Test
+    @DisplayName("Deve salvar usuário proprietário quando dados estiverem corretos")
     public void salvarProprietario_deveSalvarUsuarioProprietario_quandoDadosEstiveremCorretos() {
         when(permissaoService.buscarPorCodigo(any())).thenReturn(umaPermissaoProprietario());
 
@@ -57,6 +59,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve salvar usuário sócio e enviar para service de empresa quando dados estiverem corretos")
     public void salvarSocio_deveSalvarUsuarioSocio_quandoDadosEstiveremCorretos() {
         when(permissaoService.buscarPorCodigo(any())).thenReturn(umaPermissaoSocio());
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(umUsuario());
@@ -74,6 +77,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve salvar usuário funcionário e enviar para service de funcionário quando dados estiverem corretos")
     public void salvarFuncionario_deveSalvarUsuarioFuncionario_quandoDadosEstiveremCorretos() {
         when(permissaoService.buscarPorCodigo(any())).thenReturn(umaPermissaoFuncionario());
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(umUsuario());
@@ -91,6 +95,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve salvar usuário quando dados estiverem corretos")
     public void salvarUsuario_deveSalvarUsuario_quandoDadosEstiveremCorretos() {
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(umUsuario());
 
@@ -103,6 +108,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando CPF estiver inválido")
     public void salvarUsuario_deveLancarException_quandoCpfForInvalido() {
         var usuario = umUsuario();
         usuario.setCpf("103.324.589-53");
@@ -116,6 +122,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando CPF estiver nulo")
     public void salvarUsuario_deveLancarException_quandoCpfForNulo() {
         var usuario = umUsuario();
         usuario.setCpf(null);
@@ -129,6 +136,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando data de nascimento for igual à data de hoje")
     public void salvarUsuario_deveLancarException_quandoDataNascimentoForIgualHoje() {
         var usuario = umUsuario();
         usuario.setDataNascimento(LocalDate.now());
@@ -142,6 +150,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando data de nascimento for superior à data de hoje")
     public void salvarUsuario_deveLancarException_quandoDataNascimentoForSuperiorHoje() {
         var usuario = umUsuario();
         usuario.setDataNascimento(LocalDate.now().plusDays(1));
@@ -155,6 +164,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando email já existir para usuário com ID diferente")
     public void salvarUsuario_deveLancarException_quandoEmailJaExistirSalvoParaOutroId() {
         when(usuarioRepository.findByEmail(anyString())).thenReturn(Optional.of(umUsuario()));
 
@@ -169,6 +179,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando email já existir para usuário")
     public void salvarUsuario_deveLancarException_quandoEmailJaExistir() {
         when(usuarioRepository.findByEmail(anyString())).thenReturn(Optional.of(umUsuario()));
 
@@ -183,6 +194,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando CPF já existir para usuário com ID diferente")
     public void salvarUsuario_deveLancarException_quandoCpfJaExistirSalvoParaOutroId() {
         when(usuarioRepository.findByCpf(anyString())).thenReturn(Optional.of(umUsuario()));
 
@@ -197,6 +209,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando CPF já existir para usuário")
     public void salvarUsuario_deveLancarException_quandoCpfJaExistir() {
         when(usuarioRepository.findByCpf(anyString())).thenReturn(Optional.of(umUsuario()));
 
@@ -211,6 +224,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve editar dados do usuário quando dados estiverem corretos")
     public void editarDadosUsuario_deveEditarDados_quandoDadosCorretosComPermissao() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
         when(usuarioRepository.findById(anyInt())).thenReturn(Optional.of(umUsuario()));
@@ -227,6 +241,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve editar dados do usuário quando usuário for admin")
     public void editarDadosUsuario_deveEditarDados_quandoDadosCorretosSendoAdmin() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
         when(usuarioRepository.findById(anyInt())).thenReturn(Optional.of(umUsuario()));
@@ -243,9 +258,9 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando usuário funcionário tentar editar dados e não tiver permissão")
     public void editarDadosUsuario_deveLancarException_quandoUsuarioNaoTiverPermissaoParaAlterarDados() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoFuncionario());
-        when(usuarioRepository.findById(anyInt())).thenReturn(Optional.of(umUsuario()));
 
         var request = umUsuarioRequest();
         assertThatExceptionOfType(PermissaoException.class)

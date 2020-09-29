@@ -5,8 +5,10 @@ import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.repository.UsuarioRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,18 +16,17 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.umUsuarioAutenticadoAdmin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
 
-@ActiveProfiles("test")
-@RunWith(SpringRunner.class)
-@Import(UsuarioService.class)
-@Sql(scripts = {"classpath:/usuarios_tests.sql"})
 @DataJpaTest
+@ActiveProfiles("test")
+@Import(UsuarioService.class)
+@ExtendWith(MockitoExtension.class)
+@Sql(scripts = {"classpath:/usuarios_tests.sql"})
 public class UsuarioServiceIntegrationTest {
 
     @Autowired
@@ -44,6 +45,7 @@ public class UsuarioServiceIntegrationTest {
     private FuncionarioService funcionarioService;
 
     @Test
+    @DisplayName("Deve buscar usuário quando encontrado por ID")
     public void buscarPorId_deveBuscarUsuario_quandoEncontrarPorId() {
         var usuario = service.buscarPorId(1);
 
@@ -53,6 +55,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando não encontrar usuário por ID")
     public void buscarPorId_deveLancarException_quandoNaoEncontrarPorId() {
         assertThatExceptionOfType(ValidacaoException.class)
             .isThrownBy(() -> service.buscarPorId(1000))
@@ -60,6 +63,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve atualizar última data e retornar usuário autenticado")
     public void getUsuarioAutenticadoAtualizaUltimaData_deveRetornarUsuarioAutenticadoEAtualizarUltimoAcesso_quandoSolicitado() {
         when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(1);
         var usuarioUltimoAcessoAnterior = usuarioRepository.findById(1).get().getUltimoAcesso();
@@ -69,6 +73,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando não encontrar usuário por ID ao atualizar último acesso")
     public void getUsuarioAutenticadoAtualizaUltimaData_deveLancarException_quandoNaoEncontrarUsuario() {
         when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(10000);
         assertThatExceptionOfType(ValidacaoException.class)
@@ -77,6 +82,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve atualizar token de notificação quando usuário não possuir token")
     public void atualizarTokenNotificacao_deveAtualizarToken_quandoUsuarioNaoPossuirToken() {
         when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(2);
 
@@ -94,6 +100,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve atualizar token de notificação quando usuário possuir token diferente")
     public void atualizarTokenNotificacao_deveAtualizarToken_quandoInformarUmNovoQueOUsuarioNaoPossui() {
         when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(1);
 
@@ -110,6 +117,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve não atualizar token de notificação quando usuário já possuir token informada")
     public void atualizarTokenNotificacao_deveNaoAtualizarToken_quandoInformarUmTokenQueUsuarioJaPossui() {
         when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(1);
 
@@ -126,6 +134,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception ao tentar atualizar token de notificação e não encontrar usuário por ID")
     public void atualizarTokenNotificacao_deveLancarException_quandoNaoEncontrarUsuario() {
         when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(10000);
         assertThatExceptionOfType(ValidacaoException.class)
@@ -134,6 +143,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve ativar usuário quando situação for INATIVA e usuário for admin com usuário autenticado admin")
     public void alterarSituacao_deveAtivar_quandoUsuarioEstiverInativoEForAdmin() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
@@ -151,6 +161,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve ativar usuário quando situação for INATIVA e usuário for proprietário com usuário autenticado admin")
     public void alterarSituacao_deveAtivar_quandoUsuarioEstiverInativoEForProprietario() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
@@ -168,6 +179,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve ativar usuário quando situação for INATIVA e usuário for sócio com usuário autenticado admin")
     public void alterarSituacao_deveAtivar_quandoUsuarioEstiverInativoEForSocio() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
@@ -185,6 +197,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve ativar usuário quando situação for INATIVA e usuário for funcionário com usuário autenticado admin")
     public void alterarSituacao_deveAtivar_quandoUsuarioEstiverInativoEForFuncionario() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
@@ -202,6 +215,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve inativar usuário quando situação for ATIVA e usuário for admin com usuário autenticado admin")
     public void alterarSituacao_deveInativar_quandoUsuarioEstiverAtivoEForAdmin() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
@@ -219,6 +233,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve inativar usuário quando situação for ATIVA e usuário for proprietário com usuário autenticado admin")
     public void alterarSituacao_deveInativar_quandoUsuarioEstiverAtivoEForProprietario() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
@@ -236,6 +251,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve inativar usuário quando situação for ATIVA e usuário for sócio com usuário autenticado admin")
     public void alterarSituacao_deveInativar_quandoUsuarioEstiverAtivoEForSocio() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
@@ -253,6 +269,7 @@ public class UsuarioServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve inativar usuário quando situação for ATIVA e usuário for funcionário com usuário autenticado admin")
     public void alterarSituacao_deveInativar_quandoUsuarioEstiverAtivoEForFuncionario() {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
