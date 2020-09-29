@@ -14,11 +14,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+@DataJpaTest
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @Import(PermissaoService.class)
 @Sql(scripts = {"classpath:/usuarios_tests.sql"})
-@DataJpaTest
 public class PermissaoServiceIntegrationTest {
 
     @Autowired
