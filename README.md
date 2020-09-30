@@ -1,5 +1,7 @@
 # Projeto Cadeira Livre Empresa API
 
+[![Build Status](https://travis-ci.com/vhnegrisoli/cadeira-livre-empresa-api.svg?branch=master)](https://travis-ci.com/vhnegrisoli/cadeira-livre-empresa-api)
+
 Projeto de Back-end do aplicativo Cadeira Livre Empresa.
 
 ## Resumo
