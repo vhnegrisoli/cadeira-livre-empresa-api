@@ -129,7 +129,7 @@ public class EmpresaService {
 
     public void inserirSocio(Usuario usuario, Integer empresaId) {
         var empresa = buscarPorId(empresaId);
-        empresa.getSocios().add(usuario);
+        empresa.adicionarProprietario(usuario);
         empresaRepository.save(empresa);
     }
 
