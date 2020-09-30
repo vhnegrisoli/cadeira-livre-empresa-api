@@ -1,6 +1,8 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.service;
 
 import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
+import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
+import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaFiltros;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ETipoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.repository.EmpresaRepository;
@@ -17,9 +19,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.umUsuarioAutenticadoSocio;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
@@ -68,5 +69,180 @@ public class EmpresaServiceIntegrationTest {
         assertThatExceptionOfType(PermissaoException.class)
             .isThrownBy(() -> service.buscarPorId(1000))
             .withMessage("Usuário sem permissão para visualizar essa empresa.");
+    }
+
+    @Test
+    @DisplayName("Deve salvar empresa quando dados estiverem corretos")
+    public void buscarPorIdComSocios_deveRetornarEmpresaComSocios_quandoEncontrarPorIdEUsuarioPossuirPermissao() {
+        var usuarioAutenticado = umUsuarioAutenticadoSocio();
+        usuarioAutenticado.setId(6);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(usuarioAutenticado);
+        var response = service.buscarPorIdComSocios(4);
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(4);
+        assertThat(response.getProprietarioSocios().size()).isEqualTo(2);
+        assertThat(response.getProprietarioSocios().get(0).getNome()).isEqualTo("Proprietario 1");
+        assertThat(response.getProprietarioSocios().get(1).getNome()).isEqualTo("Sócio 1 Update");
+        assertThat(response.getNome()).isEqualTo("Empresa 01 Edicao");
+        assertThat(response.getRazaoSocial()).isEqualTo("Empresa 01");
+        assertThat(response.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(response.getTipoEmpresa()).isEqualTo(ETipoEmpresa.SALAO);
+        assertThat(response.getSituacao()).isEqualTo(ESituacaoEmpresa.ATIVA);
+    }
+
+    @Test
+    @DisplayName("Deve salvar empresa quando dados estiverem corretos")
+    public void buscarPorIdComSocios_deveLancarException_quandoUsaurioNaoPossuirPermissao() {
+        var usuarioAutenticado = umUsuarioAutenticadoSocio();
+        usuarioAutenticado.setId(3);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(usuarioAutenticado);
+
+        assertThatExceptionOfType(PermissaoException.class)
+            .isThrownBy(() -> service.buscarPorIdComSocios(1000))
+            .withMessage("Usuário sem permissão para visualizar essa empresa.");
+    }
+
+    @Test
+    @DisplayName("Deve retornar todas paginadas sem filtros quando usuario for admin")
+    public void buscarTodas_deveRetornarTodasPaginadasSemFiltros_quandoUsuarioForAdmin() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
+
+        assertThat(service.buscarTodas(new PageRequest(), new EmpresaFiltros()))
+            .extracting("id", "cnpj", "nome", "tipoEmpresa", "situacao")
+            .containsExactly(
+                tuple(4, "26.343.835/0001-38", "Empresa 01 Edicao", ETipoEmpresa.SALAO, ESituacaoEmpresa.ATIVA),
+                tuple(7, "49.579.794/0001-89", "Empresa 02", ETipoEmpresa.SALAO, ESituacaoEmpresa.ATIVA)
+            );
+    }
+
+    @Test
+    @DisplayName("Deve retornar todas paginadas sem filtros quando usuario for proprietário")
+    public void buscarTodas_deveRetornarTodasPaginadasSemFiltros_quandoUsuarioForProprietario() {
+        var proprietario = umUsuarioAutenticadoProprietario();
+        proprietario.setId(3);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
+
+        assertThat(service.buscarTodas(new PageRequest(), new EmpresaFiltros()))
+            .extracting("id", "cnpj", "nome", "tipoEmpresa", "situacao")
+            .containsExactly(
+                tuple(7, "49.579.794/0001-89", "Empresa 02", ETipoEmpresa.SALAO, ESituacaoEmpresa.ATIVA)
+            );
+    }
+
+    @Test
+    @DisplayName("Deve retornar todas paginadas sem filtros quando usuario for sócio")
+    public void buscarTodas_deveRetornarTodasPaginadasSemFiltros_quandoUsuarioForSocio() {
+        var proprietario = umUsuarioAutenticadoSocio();
+        proprietario.setId(8);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
+
+        assertThat(service.buscarTodas(new PageRequest(), new EmpresaFiltros()))
+            .extracting("id", "cnpj", "nome", "tipoEmpresa", "situacao")
+            .containsExactly(
+                tuple(7, "49.579.794/0001-89", "Empresa 02", ETipoEmpresa.SALAO, ESituacaoEmpresa.ATIVA)
+            );
+    }
+
+    @Test
+    @DisplayName("Deve retornar true quando existir uma empresa para o usuário")
+    public void existeEmpresaParaUsuario_deveRetornarTrue_quandoExistirEmpresaParaUmUsuario() {
+        assertThat(service.existeEmpresaParaUsuario(4, 2)).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve retornar false quando não existir uma empresa para o usuário")
+    public void existeEmpresaParaUsuario_deveRetornarFalse_quandoNaoExistirEmpresaParaUmUsuario() {
+        assertThat(service.existeEmpresaParaUsuario(4, 7)).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve ativar empresa quando empresa estiver inativa e usuário possuir permissão sendo admin")
+    public void alterarSituacao_deveAtivarEmpresa_quandoUsuarioAdminPossirPermissaoEEmpresaEstiverInativa() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
+
+        alterarSituacao(4, ESituacaoEmpresa.INATIVA);
+        var empresaInativa = empresaRepository.findById(4).get();
+        assertThat(empresaInativa.isAtiva()).isFalse();
+
+        var response = service.alterarSituacao(4);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A situação da empresa foi alterada com sucesso!");
+
+        var empresaAtiva = empresaRepository.findById(4).get();
+        assertThat(empresaAtiva.isAtiva()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve ativar empresa quando empresa estiver inativa e usuário possuir permissão sendo proprietário")
+    public void alterarSituacao_deveAtivarEmpresa_quandoUsuarioProprietarioPossirPermissaoEEmpresaEstiverInativa() {
+        var proprietario = umUsuarioAutenticadoProprietario();
+        proprietario.setId(2);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
+
+        alterarSituacao(4, ESituacaoEmpresa.INATIVA);
+        var empresaInativa = empresaRepository.findById(4).get();
+        assertThat(empresaInativa.isAtiva()).isFalse();
+
+        var response = service.alterarSituacao(4);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A situação da empresa foi alterada com sucesso!");
+
+        var empresaAtiva = empresaRepository.findById(4).get();
+        assertThat(empresaAtiva.isAtiva()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve ativar empresa quando empresa estiver inativa e usuário possuir permissão sendo sócio")
+    public void alterarSituacao_deveAtivarEmpresa_quandoUsuarioSocioPossirPermissaoEEmpresaEstiverInativa() {
+        var socio = umUsuarioAutenticadoSocio();
+        socio.setId(6);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(socio);
+
+        alterarSituacao(4, ESituacaoEmpresa.INATIVA);
+        var empresaInativa = empresaRepository.findById(4).get();
+        assertThat(empresaInativa.isAtiva()).isFalse();
+
+        var response = service.alterarSituacao(4);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A situação da empresa foi alterada com sucesso!");
+
+        var empresaAtiva = empresaRepository.findById(4).get();
+        assertThat(empresaAtiva.isAtiva()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception quando usuário proprietário sem permissão tentar alterar a situação")
+    public void alterarSituacao_deveLancarException_quandoUsuarioProprietarioNaoPossuirPermissao() {
+        var proprietario = umUsuarioAutenticadoProprietario();
+        proprietario.setId(3);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
+
+        assertThatExceptionOfType(PermissaoException.class)
+            .isThrownBy(() -> service.alterarSituacao(4))
+            .withMessage("Usuário sem permissão para visualizar essa empresa.");
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception quando usuário sócio sem permissão tentar alterar a situação")
+    public void alterarSituacao_deveLancarException_quandoUsuarioSocioNaoPossuirPermissao() {
+        var socio = umUsuarioAutenticadoSocio();
+        socio.setId(8);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(socio);
+
+        assertThatExceptionOfType(PermissaoException.class)
+            .isThrownBy(() -> service.alterarSituacao(4))
+            .withMessage("Usuário sem permissão para visualizar essa empresa.");
+    }
+
+    private void alterarSituacao(Integer empresaId, ESituacaoEmpresa situacao) {
+        var empresa = empresaRepository.findById(empresaId).get();
+        empresa.setSituacao(situacao);
+        empresaRepository.save(empresa);
     }
 }
