@@ -6,6 +6,15 @@ import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetai
 
 public interface AgendaHorarioMessages {
 
+    ValidacaoException AGENDA_NAO_ENCONTRADA = new ValidacaoException("A agenda não foi encontrada.");
+    ValidacaoException AGENDA_SEM_DADOS = new ValidacaoException("É obrigatório informar os dados para a agenda.");
+    ValidacaoException CADEIRA_LIVRE_SEM_DESCONTO = new ValidacaoException("É obrigatório informar um desconto para "
+        + "a Cadeira Livre.");
+    ValidacaoException AGENDA_SEM_SERVICOS = new ValidacaoException("É obrigatório informar ao menos um serviço para a"
+        + " agenda.");
+    ValidacaoException AGENDA_SEM_EMPRESA = new ValidacaoException("É obrigatório informar uma empresa para a agenda");
+    ValidacaoException AGENDA_SEM_EMPRESA_VALIDA = new ValidacaoException("A empresa selecionada para a agenda está inválida.");
+
     ValidacaoException HORARIO_JA_EXISTENTE = new ValidacaoException("Este horário já está registrado para esta "
         + "empresa neste dia.");
     ValidacaoException HORARIO_NAO_ENCONTRADO = new ValidacaoException("O horário não foi encontrado.");
@@ -35,4 +44,6 @@ public interface AgendaHorarioMessages {
     SuccessResponseDetails SERVICO_CRIADO_SUCESSO = new SuccessResponseDetails("Serviço inserido com sucesso!");
     SuccessResponseDetails SERVICO_ALTERADO_SUCESSO = new SuccessResponseDetails("Serviço alterado com sucesso!");
     SuccessResponseDetails SERVICO_REMOVIDO_SUCESSO = new SuccessResponseDetails("Serviço removido com sucesso!");
+    SuccessResponseDetails CADEIRA_LIVRE_CRIADA_E_ENVIADA_SUCESSO = new SuccessResponseDetails("A Cadeira Livre foi"
+        + " criada e enviada para os usuários com sucesso!.");
 }
