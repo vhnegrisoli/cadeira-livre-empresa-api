@@ -1,7 +1,9 @@
 package br.com.cadeiralivreempresaapi.modulos.funcionario.service;
 
 import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
+import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
+import br.com.cadeiralivreempresaapi.modulos.funcionario.dto.FuncionarioFiltros;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
@@ -20,8 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
@@ -161,5 +162,168 @@ public class FuncionarioServiceIntegrationTest {
         assertThatExceptionOfType(PermissaoException.class)
             .isThrownBy(() -> service.buscarPorId(11))
             .withMessage("Usuário sem permissão para visualizar funcionários desta empresa.");
+    }
+
+    @Test
+    @DisplayName("Deve buscar todos sem filtros os funcionário quando usuário tiver permissão sendo admin")
+    public void buscarTodos_deveBuscarTodosOsFuncionarios_quandoUsuarioForAdmin() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
+
+        assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()))
+            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .containsExactly(
+                tuple(11, "Funcionário 1", "funcionario1@gmail.com",
+                    ESituacaoUsuario.INATIVO, "Empresa 01 Edicao", "26.343.835/0001-38"),
+                tuple(14, "Funcionário 2", "funcionario2@gmail.com",
+                    ESituacaoUsuario.ATIVO, "Empresa 02", "49.579.794/0001-89")
+            );
+    }
+
+    @Test
+    @DisplayName("Deve buscar os funcionários com filtros de cnpj e empresa quando usuário tiver permissão sendo admin")
+    public void buscarTodos_deveBuscarTodosOsFuncionariosComFiltrosCnpjEmpresa_quandoUsuarioForAdmin() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
+
+        var filtros = new FuncionarioFiltros();
+        filtros.setCpf("192");
+        filtros.setCnpj("343");
+        assertThat(service.buscarTodos(new PageRequest(), filtros))
+            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .containsExactly(
+                tuple(11, "Funcionário 1", "funcionario1@gmail.com",
+                    ESituacaoUsuario.INATIVO, "Empresa 01 Edicao", "26.343.835/0001-38")
+            );
+    }
+
+    @Test
+    @DisplayName("Deve buscar os funcionários com filtros de situaçao quando usuário tiver permissão sendo admin")
+    public void buscarTodos_deveBuscarTodosOsFuncionariosComFiltrosSituacao_quandoUsuarioForAdmin() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
+
+        var filtros = new FuncionarioFiltros();
+        filtros.setSituacao(ESituacaoUsuario.ATIVO);
+        assertThat(service.buscarTodos(new PageRequest(), filtros))
+            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .containsExactly(
+                tuple(14, "Funcionário 2", "funcionario2@gmail.com",
+                    ESituacaoUsuario.ATIVO, "Empresa 02", "49.579.794/0001-89")
+            );
+    }
+
+    @Test
+    @DisplayName("Deve buscar todos sem filtros os funcionário quando usuário tiver permissão sendo proprietário")
+    public void buscarTodos_deveBuscarTodosOsFuncionarios_quandoUsuarioForProprietario() {
+        var proprietario = umUsuarioAutenticadoProprietario();
+        proprietario.setId(2);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
+
+        assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()))
+            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .containsExactly(
+                tuple(11, "Funcionário 1", "funcionario1@gmail.com",
+                    ESituacaoUsuario.INATIVO, "Empresa 01 Edicao", "26.343.835/0001-38")
+            );
+    }
+
+    @Test
+    @DisplayName("Deve buscar todos sem filtros os funcionário quando usuário tiver permissão sendo sócio")
+    public void buscarTodos_deveBuscarTodosOsFuncionarios_quandoUsuarioForSocio() {
+        var socio = umUsuarioAutenticadoSocio();
+        socio.setId(6);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(socio);
+
+        assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()))
+            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .containsExactly(
+                tuple(11, "Funcionário 1", "funcionario1@gmail.com",
+                    ESituacaoUsuario.INATIVO, "Empresa 01 Edicao", "26.343.835/0001-38")
+            );
+    }
+
+    @Test
+    @DisplayName("Deve buscar todos sem filtros os funcionário quando usuário tiver permissão sendo funcionário")
+    public void buscarTodos_deveBuscarTodosOsFuncionarios_quandoUsuarioForFuncionario() {
+        var funcionario = umUsuarioAutenticadoFuncionario();
+        funcionario.setId(10);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(funcionario);
+
+        assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()))
+            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .containsExactly(
+                tuple(11, "Funcionário 1", "funcionario1@gmail.com",
+                    ESituacaoUsuario.INATIVO, "Empresa 01 Edicao", "26.343.835/0001-38")
+            );
+    }
+
+    @Test
+    @DisplayName("Deve não buscar dados quando usuário for proprietário e não possuir funcionário")
+    public void buscarTodos_deveNaoBuscarDados_quandoUsuarioProprietarioNaoPuderVisualizar() {
+        var proprietario = umUsuarioAutenticadoProprietario();
+        proprietario.setId(11);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
+
+        assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()).getTotalElements())
+            .isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("Deve não buscar dados quando usuário for sócio e não possuir funcionário")
+    public void buscarTodos_deveNaoBuscarDados_quandoUsuarioSocioNaoPuderVisualizar() {
+        var socio = umUsuarioAutenticadoSocio();
+        socio.setId(12);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(socio);
+
+        assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()).getTotalElements())
+            .isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("Deve não buscar dados quando usuário for funcionário e não possuir funcionário")
+    public void buscarTodos_deveNaoBuscarDados_quandoUsuarioFuncionarioNaoPuderVisualizar() {
+        var funcionario = umUsuarioAutenticadoFuncionario();
+        funcionario.setId(14);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(funcionario);
+
+        assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()).getTotalElements())
+            .isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("Deve não buscar dados quando usuário for proprietário e não possuir o funcionário no filtro")
+    public void buscarTodos_deveNaoBuscarDados_quandoUsuarioProprietarioNaoPossuirFuncionarioNoFiltro() {
+        var proprietario = umUsuarioAutenticadoProprietario();
+        proprietario.setId(11);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
+
+        var filtros = new FuncionarioFiltros();
+        filtros.setCpf("289.993.010-95");
+        assertThat(service.buscarTodos(new PageRequest(), filtros).getTotalElements())
+            .isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("Deve não buscar dados quando usuário for sócio e não possuir o funcionário no filtro")
+    public void buscarTodos_deveNaoBuscarDados_quandoUsuarioSocioNaoPossuirFuncionarioNoFiltro() {
+        var socio = umUsuarioAutenticadoSocio();
+        socio.setId(6);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(socio);
+
+        var filtros = new FuncionarioFiltros();
+        filtros.setCpf("289.993.010-95");
+        assertThat(service.buscarTodos(new PageRequest(), filtros).getTotalElements())
+            .isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("Deve não buscar dados quando usuário for funcionário e não possuir o funcionário no filtro")
+    public void buscarTodos_deveNaoBuscarDados_quandoUsuarioFuncionarioNaoPossuirFuncionarioNoFiltro() {
+        var funcionario = umUsuarioAutenticadoFuncionario();
+        funcionario.setId(10);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(funcionario);
+
+        var filtros = new FuncionarioFiltros();
+        filtros.setCpf("289.993.010-95");
+        assertThat(service.buscarTodos(new PageRequest(), filtros).getTotalElements())
+            .isEqualTo(0L);
     }
 }
