@@ -206,6 +206,7 @@
 				<version>2.22.2</version>
 				<configuration>
 					<argLine>-Dfile.encoding=UTF-8</argLine>
+					<skipTests>false</skipTests>
 				</configuration>
 				<dependencies>
 					<dependency>
