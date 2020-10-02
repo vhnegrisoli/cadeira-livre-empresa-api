@@ -13,3 +13,12 @@ INSERT INTO horario (id,fk_empresa,horario,fk_dia_da_semana) VALUES
   (41,7,'14:30:00',25),
   (42,7,'14:30:00',26),
   (43,7,'14:30:00',27);
+
+INSERT INTO servico (id, descricao, fk_empresa, preco) VALUES
+  (1, 'Corte exclusivo', 4, 15.90),
+  (1, 'Corte de cabelo', 7, 15.90),
+  (1, 'Corte e lavagem', 4, 15.90),
+  (1, 'Lavagem', 4, 15.90),
+  (1, 'Corte e barba', 7, 15.90),
+  (1, 'Barba', 7, 15.90),
+  (1, 'Corte, barba e lavagem', 4, 15.90);

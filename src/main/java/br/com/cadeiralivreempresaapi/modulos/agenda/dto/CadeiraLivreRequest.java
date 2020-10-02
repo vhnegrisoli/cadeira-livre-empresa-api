@@ -14,6 +14,7 @@ import java.util.List;
 public class CadeiraLivreRequest {
 
     private Integer horarioId;
+    private Integer empresaId;
     private List<Integer> servicosIds;
     private Float desconto;
 }

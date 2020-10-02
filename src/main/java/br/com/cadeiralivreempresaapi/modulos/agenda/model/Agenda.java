@@ -1,8 +1,10 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.model;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.AgendaRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.CadeiraLivreRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
+import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -13,8 +15,13 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.PERCENTUAL;
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 
 @Data
 @Entity
@@ -31,6 +38,10 @@ public class Agenda {
     @ManyToOne
     @JoinColumn(name = "FK_USUARIO")
     private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "FK_EMPRESA")
+    private Empresa empresa;
 
     @ManyToOne
     @JoinColumn(name = "FK_HORARIO")
@@ -94,5 +105,31 @@ public class Agenda {
             .situacao(ESituacaoAgenda.RESERVA)
             .tipoAgenda(ETipoAgenda.HORARIO_MARCADO)
             .build();
+    }
+
+    public static Agenda of(CadeiraLivreRequest request) {
+        return Agenda
+            .builder()
+            .servicos(request
+                .getServicosIds()
+                .stream()
+                .map(Servico::new)
+                .collect(Collectors.toSet()))
+            .horario(new Horario(request.getHorarioId()))
+            .situacao(ESituacaoAgenda.DISPNIVEL)
+            .desconto(request.getDesconto())
+            .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
+            .build();
+    }
+
+    public void calcularTotal(List<Servico> servicos, Float desconto) {
+        var totalServico = servicos
+            .stream()
+            .map(Servico::getPreco)
+            .mapToDouble(Double::doubleValue)
+            .sum();
+        total = isEmpty(desconto)
+            ? totalServico
+            : totalServico * (desconto / PERCENTUAL);
     }
 }

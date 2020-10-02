@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.messages.AgendaHorarioMessages.*;
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.SEPARAR_POR_VIRGULAS;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
@@ -91,6 +92,19 @@ public class ServicoService {
         }
     }
 
+    public void validarServicosExistentes(List<Servico> servicos) {
+        servicos
+            .stream()
+            .map(Servico::getId)
+            .forEach(this::validarServicoExistentePorId);
+    }
+
+    private void validarServicoExistentePorId(Integer id) {
+        if (!servicoRepository.existsById(id)) {
+            throw SERVICO_NAO_ENCONTRADO;
+        }
+    }
+
     public List<ServicoResponse> buscarServicosPorEmpresa(Integer empresaId) {
         validarPermissoesUsuario(empresaId);
         return servicoRepository.findByEmpresaIdOrderByDescricao(empresaId)
@@ -142,5 +156,12 @@ public class ServicoService {
     private boolean isFuncionarioValido(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
         return usuarioAutenticado.isFuncionario()
             && funcionarioRepository.existsByUsuarioIdAndEmpresaId(usuarioAutenticado.getId(), empresaId);
+    }
+
+    public String tratarNomesServicos(List<Servico> servicos) {
+        return servicos
+            .stream()
+            .map(Servico::getDescricao)
+            .collect(Collectors.joining(SEPARAR_POR_VIRGULAS));
     }
 }
