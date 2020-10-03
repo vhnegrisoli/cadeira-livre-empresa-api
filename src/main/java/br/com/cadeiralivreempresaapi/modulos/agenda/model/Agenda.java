@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -104,6 +103,7 @@ public class Agenda {
             .horario(new Horario(request.getHorarioId()))
             .situacao(ESituacaoAgenda.RESERVA)
             .tipoAgenda(ETipoAgenda.HORARIO_MARCADO)
+            .empresa(new Empresa(request.getEmpresaId()))
             .build();
     }
 
@@ -119,10 +119,11 @@ public class Agenda {
             .situacao(ESituacaoAgenda.DISPNIVEL)
             .desconto(request.getDesconto())
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
+            .empresa(new Empresa(request.getEmpresaId()))
             .build();
     }
 
-    public void calcularTotal(List<Servico> servicos, Float desconto) {
+    public void calcularTotal(Float desconto) {
         var totalServico = servicos
             .stream()
             .map(Servico::getPreco)

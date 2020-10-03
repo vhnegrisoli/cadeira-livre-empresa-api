@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.mocks;
 
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.horario.DiaDaSemanaResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.horario.HorarioRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.horario.HorarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.EDiaDaSemana;
@@ -28,6 +29,15 @@ public class HorarioMocks {
             .id(1)
             .dia(0)
             .diaCodigo(EDiaDaSemana.SEGUNDA_FEIRA)
+            .diaNome(EDiaDaSemana.SEGUNDA_FEIRA.getDiaDaSemana())
+            .build();
+    }
+
+    public static DiaDaSemanaResponse umDiaDaSemanaResponse() {
+        return DiaDaSemanaResponse
+            .builder()
+            .id(1)
+            .dia(0)
             .diaNome(EDiaDaSemana.SEGUNDA_FEIRA.getDiaDaSemana())
             .build();
     }

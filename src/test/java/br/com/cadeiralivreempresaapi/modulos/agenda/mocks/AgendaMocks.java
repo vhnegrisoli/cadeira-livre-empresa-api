@@ -36,7 +36,6 @@ public class AgendaMocks {
             .dataCadastro(LocalDateTime.now())
             .empresa(umaEmpresa())
             .horarioAgendamento(LocalTime.of(12, 0))
-            .total(25.00)
             .usuario(umUsuario())
             .build();
     }
@@ -53,7 +52,6 @@ public class AgendaMocks {
             .dataCadastro(LocalDateTime.now())
             .empresa(umaEmpresa())
             .horarioAgendamento(LocalTime.of(12, 0))
-            .total(25.00)
             .usuario(umUsuario())
             .build();
     }
@@ -63,6 +61,7 @@ public class AgendaMocks {
             .builder()
             .cliente(umClienteRequest())
             .horarioId(1)
+            .empresaId(1)
             .servicosIds(List.of(1))
             .build();
     }
