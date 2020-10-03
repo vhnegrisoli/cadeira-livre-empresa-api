@@ -67,7 +67,7 @@ public class Agenda {
     private LocalDateTime dataCadastro;
 
     @Column(name = "CLIENTE_ID")
-    private String clienteId;
+    private Integer clienteId;
 
     @Column(name = "CLIENTE_NOME")
     private String clienteNome;
@@ -92,7 +92,7 @@ public class Agenda {
         var cliente = request.getCliente();
         return Agenda
             .builder()
-            .clienteId(cliente.getId().toString())
+            .clienteId(cliente.getId())
             .clienteNome(cliente.getNome())
             .clienteEmail(cliente.getEmail())
             .clienteCpf(cliente.getCpf())
