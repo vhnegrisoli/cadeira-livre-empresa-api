@@ -1,6 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.mocks;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.ClienteRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.ClienteRequest;
 
 public class ClienteMocks {
 

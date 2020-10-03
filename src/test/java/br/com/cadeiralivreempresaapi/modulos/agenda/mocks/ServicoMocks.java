@@ -1,7 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.mocks;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.ServicoRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.ServicoResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.servico.ServicoRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.servico.ServicoResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Servico;
 
 import static br.com.cadeiralivreempresaapi.modulos.empresa.mocks.EmpresaMocks.umaEmpresa;

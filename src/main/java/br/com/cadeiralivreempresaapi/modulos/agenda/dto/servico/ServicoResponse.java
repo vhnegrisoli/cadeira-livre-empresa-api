@@ -1,4 +1,4 @@
-package br.com.cadeiralivreempresaapi.modulos.agenda.dto;
+package br.com.cadeiralivreempresaapi.modulos.agenda.dto.servico;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Servico;
 import lombok.AllArgsConstructor;

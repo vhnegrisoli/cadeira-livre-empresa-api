@@ -1,4 +1,4 @@
-package br.com.cadeiralivreempresaapi.modulos.agenda.dto;
+package br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +11,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CadeiraLivreRequest {
+public class AgendaRequest {
 
     private Integer horarioId;
-    private Integer empresaId;
     private List<Integer> servicosIds;
-    private Float desconto;
+    private ClienteRequest cliente;
+    private Integer empresaId;
 }

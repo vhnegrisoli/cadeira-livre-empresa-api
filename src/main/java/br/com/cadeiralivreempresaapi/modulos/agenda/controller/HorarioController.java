@@ -1,8 +1,8 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.controller;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.DiaDaSemanaResponse;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.horario.DiaDaSemanaResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.horario.HorarioRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.horario.HorarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.service.HorarioService;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import org.springframework.beans.factory.annotation.Autowired;

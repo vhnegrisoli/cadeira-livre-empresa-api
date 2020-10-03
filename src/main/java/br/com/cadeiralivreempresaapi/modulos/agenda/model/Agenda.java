@@ -1,7 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.model;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.AgendaRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.CadeiraLivreRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.AgendaRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;

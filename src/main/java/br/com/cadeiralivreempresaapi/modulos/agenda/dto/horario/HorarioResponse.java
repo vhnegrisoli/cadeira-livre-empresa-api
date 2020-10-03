@@ -1,4 +1,4 @@
-package br.com.cadeiralivreempresaapi.modulos.agenda.dto;
+package br.com.cadeiralivreempresaapi.modulos.agenda.dto.horario;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Horario;
 import com.fasterxml.jackson.annotation.JsonFormat;

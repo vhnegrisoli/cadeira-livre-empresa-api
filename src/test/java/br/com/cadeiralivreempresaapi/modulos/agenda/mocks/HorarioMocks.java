@@ -1,7 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.mocks;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.HorarioResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.horario.HorarioRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.horario.HorarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.EDiaDaSemana;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.DiaDaSemana;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Horario;

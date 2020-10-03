@@ -1,7 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.controller;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.ServicoRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.ServicoResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.servico.ServicoRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.servico.ServicoResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.service.ServicoService;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import org.springframework.beans.factory.annotation.Autowired;

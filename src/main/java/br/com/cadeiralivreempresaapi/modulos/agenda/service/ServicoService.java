@@ -1,7 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.service;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.ServicoRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.ServicoResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.servico.ServicoRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.servico.ServicoResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Servico;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.ServicoRepository;
