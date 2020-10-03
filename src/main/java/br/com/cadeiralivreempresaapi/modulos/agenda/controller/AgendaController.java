@@ -1,6 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.controller;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.CadeiraLivreRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.service.AgendaService;
 import org.springframework.beans.factory.annotation.Autowired;

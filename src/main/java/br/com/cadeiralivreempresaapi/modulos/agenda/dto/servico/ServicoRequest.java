@@ -1,19 +1,17 @@
-package br.com.cadeiralivreempresaapi.modulos.agenda.dto;
+package br.com.cadeiralivreempresaapi.modulos.agenda.dto.servico;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class HorarioRequest {
+public class ServicoRequest {
 
+    private String descricao;
+    private Double preco;
     private Integer empresaId;
-    private LocalTime horario;
-    private Integer diaSemanaId;
 }

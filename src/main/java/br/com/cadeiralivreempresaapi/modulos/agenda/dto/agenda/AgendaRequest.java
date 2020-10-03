@@ -1,4 +1,4 @@
-package br.com.cadeiralivreempresaapi.modulos.agenda.dto;
+package br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,4 +16,5 @@ public class AgendaRequest {
     private Integer horarioId;
     private List<Integer> servicosIds;
     private ClienteRequest cliente;
+    private Integer empresaId;
 }

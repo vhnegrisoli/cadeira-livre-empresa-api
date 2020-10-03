@@ -1,7 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.model;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.AgendaRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.CadeiraLivreRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.AgendaRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,7 +66,7 @@ public class Agenda {
     private LocalDateTime dataCadastro;
 
     @Column(name = "CLIENTE_ID")
-    private String clienteId;
+    private Integer clienteId;
 
     @Column(name = "CLIENTE_NOME")
     private String clienteNome;
@@ -92,7 +91,7 @@ public class Agenda {
         var cliente = request.getCliente();
         return Agenda
             .builder()
-            .clienteId(cliente.getId().toString())
+            .clienteId(cliente.getId())
             .clienteNome(cliente.getNome())
             .clienteEmail(cliente.getEmail())
             .clienteCpf(cliente.getCpf())
@@ -104,6 +103,7 @@ public class Agenda {
             .horario(new Horario(request.getHorarioId()))
             .situacao(ESituacaoAgenda.RESERVA)
             .tipoAgenda(ETipoAgenda.HORARIO_MARCADO)
+            .empresa(new Empresa(request.getEmpresaId()))
             .build();
     }
 
@@ -119,10 +119,11 @@ public class Agenda {
             .situacao(ESituacaoAgenda.DISPNIVEL)
             .desconto(request.getDesconto())
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
+            .empresa(new Empresa(request.getEmpresaId()))
             .build();
     }
 
-    public void calcularTotal(List<Servico> servicos, Float desconto) {
+    public void calcularTotal(Float desconto) {
         var totalServico = servicos
             .stream()
             .map(Servico::getPreco)
