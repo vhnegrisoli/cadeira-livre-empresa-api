@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.messages.AgendaHorarioMessages.*;
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.ESPACO;
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.SEPARAR_POR_VIRGULAS;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -159,9 +160,13 @@ public class ServicoService {
     }
 
     public String tratarNomesServicos(List<Servico> servicos) {
-        return servicos
+        var servicosString = servicos
             .stream()
-            .map(Servico::getDescricao)
+            .map(servico -> ESPACO.toString().concat(servico.getDescricao()))
             .collect(Collectors.joining(SEPARAR_POR_VIRGULAS));
+        if (!isEmpty(servicosString) && servicosString.charAt(0) == ESPACO) {
+            return servicosString.substring(1);
+        }
+        return servicosString;
     }
 }
