@@ -45,11 +45,18 @@ public class ServicoServiceTest {
     @Test
     @DisplayName("Deve salvar novo serviço quando dados estiverem corretos")
     public void salvarNovoServico_deveSalvarNovoServico_quandoDadosEstiveremCorretos() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
+        when(repository.save(any())).thenReturn(umServico());
+        when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
+
         var response = service.salvarNovoServico(umServicoRequest());
 
         assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getMessage()).isEqualTo("Serviço inserido com sucesso!");
+        assertThat(response.getId()).isEqualTo(1);
+        assertThat(response.getDescricao()).isEqualTo("Corte de cabelo");
+        assertThat(response.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(response.getEmpresa()).isEqualTo("Empresa 01");
+        assertThat(response.getPreco()).isEqualTo(25.00);
 
         verify(repository, times(1)).existsByDescricaoAndEmpresaId(anyString(), anyInt());
         verify(empresaService, times(1)).buscarPorId(anyInt());
@@ -155,11 +162,19 @@ public class ServicoServiceTest {
     @Test
     @DisplayName("Deve editar serviço quando dados estiverem corretos")
     public void atualizarServico_deveAtualizarServico_quandoDadosEstiveremCorretos() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
+        when(repository.save(any())).thenReturn(umServico());
+        when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
+
         var response = service.atualizarServico(umServicoRequest(), 1);
 
         assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getMessage()).isEqualTo("Serviço alterado com sucesso!");
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(1);
+        assertThat(response.getDescricao()).isEqualTo("Corte de cabelo");
+        assertThat(response.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(response.getEmpresa()).isEqualTo("Empresa 01");
+        assertThat(response.getPreco()).isEqualTo(25.00);
 
         verify(repository, times(1)).existsByDescricaoAndEmpresaIdAndIdNot(anyString(), anyInt(), anyInt());
         verify(empresaService, times(1)).buscarPorId(anyInt());

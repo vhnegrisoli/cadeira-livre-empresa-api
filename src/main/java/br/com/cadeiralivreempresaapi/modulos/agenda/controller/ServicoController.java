@@ -17,12 +17,12 @@ public class ServicoController {
     private ServicoService servicoService;
 
     @PostMapping
-    public SuccessResponseDetails salvarNovoServico(@RequestBody ServicoRequest request) {
+    public ServicoResponse salvarNovoServico(@RequestBody ServicoRequest request) {
         return servicoService.salvarNovoServico(request);
     }
 
     @PutMapping("{id}")
-    public SuccessResponseDetails atualizarServico(@RequestBody ServicoRequest request,
+    public ServicoResponse atualizarServico(@RequestBody ServicoRequest request,
                                                    @PathVariable Integer id) {
         return servicoService.atualizarServico(request, id);
     }

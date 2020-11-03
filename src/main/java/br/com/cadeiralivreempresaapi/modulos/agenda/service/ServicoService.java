@@ -39,17 +39,16 @@ public class ServicoService {
     private AgendaRepository agendaRepository;
 
     @Transactional
-    public SuccessResponseDetails salvarNovoServico(ServicoRequest request) {
+    public ServicoResponse salvarNovoServico(ServicoRequest request) {
         validarDadosServico(request);
         var servico = Servico.of(request);
         validarServicoExistente(servico);
         definirEmpresaParaServico(servico);
-        servicoRepository.save(servico);
-        return SERVICO_CRIADO_SUCESSO;
+        return buscarServicoPorId(servicoRepository.save(servico).getId());
     }
 
     @Transactional
-    public SuccessResponseDetails atualizarServico(ServicoRequest request,
+    public ServicoResponse atualizarServico(ServicoRequest request,
                                                    Integer id) {
         validarDadosServico(request);
         var servico = Servico.of(request);
@@ -57,7 +56,7 @@ public class ServicoService {
         validarServicoExistente(servico);
         definirEmpresaParaServico(servico);
         servicoRepository.save(servico);
-        return SERVICO_ALTERADO_SUCESSO;
+        return buscarServicoPorId(id);
     }
 
     private void definirEmpresaParaServico(Servico servico) {
