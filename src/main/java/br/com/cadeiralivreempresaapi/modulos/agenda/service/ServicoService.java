@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.messages.AgendaHorarioMessages.*;
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.ESPACO;
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.SEPARAR_POR_VIRGULAS;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -38,17 +39,16 @@ public class ServicoService {
     private AgendaRepository agendaRepository;
 
     @Transactional
-    public SuccessResponseDetails salvarNovoServico(ServicoRequest request) {
+    public ServicoResponse salvarNovoServico(ServicoRequest request) {
         validarDadosServico(request);
         var servico = Servico.of(request);
         validarServicoExistente(servico);
         definirEmpresaParaServico(servico);
-        servicoRepository.save(servico);
-        return SERVICO_CRIADO_SUCESSO;
+        return buscarServicoPorId(servicoRepository.save(servico).getId());
     }
 
     @Transactional
-    public SuccessResponseDetails atualizarServico(ServicoRequest request,
+    public ServicoResponse atualizarServico(ServicoRequest request,
                                                    Integer id) {
         validarDadosServico(request);
         var servico = Servico.of(request);
@@ -56,7 +56,7 @@ public class ServicoService {
         validarServicoExistente(servico);
         definirEmpresaParaServico(servico);
         servicoRepository.save(servico);
-        return SERVICO_ALTERADO_SUCESSO;
+        return buscarServicoPorId(id);
     }
 
     private void definirEmpresaParaServico(Servico servico) {
@@ -159,9 +159,13 @@ public class ServicoService {
     }
 
     public String tratarNomesServicos(List<Servico> servicos) {
-        return servicos
+        var servicosString = servicos
             .stream()
-            .map(Servico::getDescricao)
+            .map(servico -> ESPACO.toString().concat(servico.getDescricao()))
             .collect(Collectors.joining(SEPARAR_POR_VIRGULAS));
+        if (!isEmpty(servicosString) && servicosString.charAt(0) == ESPACO) {
+            return servicosString.substring(1);
+        }
+        return servicosString;
     }
 }
