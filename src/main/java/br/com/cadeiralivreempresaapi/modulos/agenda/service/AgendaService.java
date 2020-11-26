@@ -9,7 +9,7 @@ import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.dto.NotificacaoCorpoRequest;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.service.NotificacaoService;
-import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
+import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +37,8 @@ public class AgendaService {
     private ServicoService servicoService;
     @Autowired
     private EmpresaService empresaService;
+    @Autowired
+    private HorarioService horarioService;
 
     @Transactional
     public SuccessResponseDetails reservarAgenda(AgendaRequest request) {
@@ -48,9 +50,12 @@ public class AgendaService {
     public SuccessResponseDetails disponibilizarCadeiraLivre(CadeiraLivreRequest request) {
         validarDadosCadeiraLivre(request);
         var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
-        var agenda = Agenda.of(request);
-        agenda.setUsuario(Usuario.of(usuarioAutenticado));
-        validarEmpresasServicosEUsuario(request, agenda);
+        var agenda = Agenda.of(request,
+            usuarioAutenticado,
+            horarioService.buscarPorId(request.getHorarioId()),
+            servicoService.buscarServicosPorIds(request.getServicosIds()));
+        validarEmpresasServicosEUsuario(request, agenda, usuarioAutenticado);
+        agenda.calcularTotal(request.getDesconto());
         agendaRepository.save(agenda);
         enviarDadosNotificacaoCadeiraLivre(agenda);
         return CADEIRA_LIVRE_CRIADA_E_ENVIADA_SUCESSO;
@@ -72,10 +77,13 @@ public class AgendaService {
     }
 
     private void validarEmpresasServicosEUsuario(CadeiraLivreRequest request,
-                                                 Agenda agenda) {
+                                                 Agenda agenda,
+                                                 UsuarioAutenticado usuario) {
         agenda.setEmpresa(empresaService.buscarPorId(request.getEmpresaId()));
         servicoService.validarServicosExistentes(new ArrayList<>(agenda.getServicos()));
-        funcionarioService.validarUsuario(agenda.getUsuario().getId());
+        if (usuario.isFuncionario()) {
+            funcionarioService.validarUsuario(usuario.getId());
+        }
     }
 
     private void enviarDadosNotificacaoCadeiraLivre(Agenda agenda) {

@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.AgendaMocks.*;
+import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.HorarioMocks.umHorario;
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.ServicoMocks.umServico;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.umUsuarioAutenticadoAdmin;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AgendaTest {
@@ -33,7 +35,7 @@ public class AgendaTest {
     @Test
     @DisplayName("Deve converter para Model de Agenda quando informar DTO de CadeiraLivreRequest")
     public void of_deveConverterParaModelDeAgenda_quandoInformarDtoDeCadeiraLivreRequest() {
-        var agenda = Agenda.of(umaCadeiraLivreRequest());
+        var agenda = Agenda.of(umaCadeiraLivreRequest(), umUsuarioAutenticadoAdmin(), umHorario(), Set.of(umServico()));
         assertThat(agenda).isNotNull();
         assertThat(agenda.getEmpresa().getId()).isEqualTo(1);
         assertThat(agenda.getHorario().getId()).isEqualTo(1);
@@ -44,7 +46,7 @@ public class AgendaTest {
         assertThat(agenda.getClienteNome()).isNull();
         assertThat(agenda.getClienteEmail()).isNull();
         assertThat(agenda.getClienteCpf()).isNull();
-        assertThat(agenda.getTotal()).isNull();
+        assertThat(agenda.getTotal()).isEqualTo(25.0);
     }
 
     @Test
