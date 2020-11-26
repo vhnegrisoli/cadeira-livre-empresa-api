@@ -5,6 +5,7 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreReque
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
+import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -87,6 +88,11 @@ public class Agenda {
     @Column(name = "TIPO_AGENDA", nullable = false)
     private ETipoAgenda tipoAgenda;
 
+    @PrePersist
+    public void prePersist() {
+        dataCadastro = LocalDateTime.now();
+    }
+
     public static Agenda of(AgendaRequest request) {
         var cliente = request.getCliente();
         return Agenda
@@ -107,20 +113,23 @@ public class Agenda {
             .build();
     }
 
-    public static Agenda of(CadeiraLivreRequest request) {
-        return Agenda
+    public static Agenda of(CadeiraLivreRequest request,
+                            UsuarioAutenticado usuario,
+                            Horario horario,
+                            Set<Servico> servicos) {
+        var agenda = Agenda
             .builder()
-            .servicos(request
-                .getServicosIds()
-                .stream()
-                .map(Servico::new)
-                .collect(Collectors.toSet()))
-            .horario(new Horario(request.getHorarioId()))
+            .servicos(servicos)
+            .horario(horario)
+            .horarioAgendamento(horario.getHorario())
+            .usuario(new Usuario(usuario.getId()))
             .situacao(ESituacaoAgenda.DISPNIVEL)
             .desconto(request.getDesconto())
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
             .empresa(new Empresa(request.getEmpresaId()))
             .build();
+        agenda.calcularTotal(request.getDesconto());
+        return agenda;
     }
 
     public void calcularTotal(Float desconto) {

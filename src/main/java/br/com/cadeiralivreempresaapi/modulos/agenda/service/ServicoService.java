@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.messages.AgendaHorarioMessages.*;
@@ -122,6 +123,10 @@ public class ServicoService {
         var servico = buscarPorId(id);
         validarPermissoesUsuario(servico.getEmpresa().getId());
         return ServicoResponse.of(servico);
+    }
+
+    public Set<Servico> buscarServicosPorIds(List<Integer> ids) {
+        return servicoRepository.findByIdIn(ids);
     }
 
     @Transactional

@@ -40,6 +40,8 @@ public class AgendaServiceTest {
     private ServicoService servicoService;
     @MockBean
     private EmpresaService empresaService;
+    @MockBean
+    private HorarioService horarioService;
 
     @Test
     public void teste() {

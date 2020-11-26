@@ -102,7 +102,7 @@ public class HorarioService {
             .collect(Collectors.toList());
     }
 
-    private Horario buscarPorId(Integer id) {
+    public Horario buscarPorId(Integer id) {
         var horario = horarioRepository.findById(id)
             .orElseThrow(() -> HORARIO_NAO_ENCONTRADO);
         validarPermissoesUsuario(horario.getEmpresa().getId());
