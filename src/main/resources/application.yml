@@ -72,3 +72,6 @@ management:
   health:
     rabbit:
       enabled: true
+
+jwt:
+  secret: Y2FkZWlyYS1saXZyZS11c3VhcmlvLWFwaS1kZXNlbnZvbHZpbWVudG8=

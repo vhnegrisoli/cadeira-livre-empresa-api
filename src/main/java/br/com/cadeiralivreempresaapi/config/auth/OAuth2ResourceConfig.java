@@ -38,7 +38,8 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
             "/swagger-resources/**",
             "/v2/api-docs**",
             "/webjars/**",
-            "/api/docs"
+            "/api/docs",
+            "/jwt/**"
         };
 
         http

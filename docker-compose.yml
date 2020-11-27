@@ -38,6 +38,7 @@ services:
       - RABBIT_MQ_PORT=5672
       - REDIS_HOST=cadeira-livre-redis
       - REDIS_PORT=6379
+      - JWT_SECRET=Y2FkZWlyYS1saXZyZS11c3VhcmlvLWFwaS1kb2NrZXI=
 
   cadeira-livre-rabbit:
     image: rabbitmq:3-management
