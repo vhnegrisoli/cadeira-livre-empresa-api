@@ -19,18 +19,18 @@ import java.util.stream.StreamSupport;
 @AllArgsConstructor
 public class JwtUsuarioResponse {
 
+    private Integer id;
     private String nome;
     private String email;
-    private Integer id;
-    private List<String> permissoes;
+    private String cpf;
 
     public static JwtUsuarioResponse of(Claims jwtUsuario) {
         return JwtUsuarioResponse
             .builder()
             .id((int) jwtUsuario.get("id"))
-            .nome((String) jwtUsuario.get("usuario"))
+            .nome((String) jwtUsuario.get("nome"))
             .email((String) jwtUsuario.get("email"))
-            .permissoes((ArrayList<String>) jwtUsuario.get("permissoes"))
+            .nome((String) jwtUsuario.get("cpf"))
             .build();
     }
 }
