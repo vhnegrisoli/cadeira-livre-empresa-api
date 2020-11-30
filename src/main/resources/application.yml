@@ -70,6 +70,9 @@ app-config:
     token: AAAAVbf7NBs:APA91bFrjTq4YN1YTLnXt79qkceKd01__afou2U7nkg5yZftEWpYToU8KWvKMfPtIgknDUvAtvF0hnIV6x59xAnwmZUFIQfZR3aQ5bDrP6IqV51bPSbGIrTocHcWdCuyxqolpOBkp99h
     bundleId: br.com.biot.maisdietaclube
 
+  scheduler:
+    every-20-minutes: 0 0/20 * * * *
+
 management:
   health:
     rabbit:

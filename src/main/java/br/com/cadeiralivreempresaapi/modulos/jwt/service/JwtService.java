@@ -1,9 +1,12 @@
 package br.com.cadeiralivreempresaapi.modulos.jwt.service;
 
+import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
+import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtUsuarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.jwt.dto.UsuarioTokenResponse;
 import br.com.cadeiralivreempresaapi.modulos.jwt.model.UsuarioLoginJwt;
 import br.com.cadeiralivreempresaapi.modulos.jwt.repository.UsuarioLoginJwtRepository;
+import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -15,10 +18,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.DataUtil.converterParaLocalDateTime;
 import static br.com.cadeiralivreempresaapi.modulos.jwt.messages.JwtMessages.ERRO_DESCRIPTOGRAFAR_TOKEN;
@@ -33,6 +34,8 @@ public class JwtService {
 
     @Autowired
     private UsuarioLoginJwtRepository usuarioLoginJwtRepository;
+    @Autowired
+    private AutenticacaoService autenticacaoService;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -98,5 +101,36 @@ public class JwtService {
         var usuario = usuarioLoginJwtRepository.findById(getCampoId(dados))
             .orElseGet(() -> salvarUsuarioDoToken(UsuarioTokenResponse.of(dados, jwt), true));
         return usuario.isTokenValida();
+    }
+
+    @Transactional
+    public void removerTokensInvalidas(Boolean precisaDeAutenticacao) {
+        if (precisaDeAutenticacao && !autenticacaoService.getUsuarioAutenticado().isAdmin()) {
+            throw new PermissaoException("Você não tem permissão para remover os JWTs do sistema.");
+        }
+        try {
+            removerTokensInvalidas();
+        } catch (Exception ex) {
+            log.error("Erro ao tentar remover tokens inválidas.", ex);
+            throw new ValidacaoException("Erro ao tentar remover tokens inválidas: ".concat(ex.getMessage()));
+        }
+    }
+
+    private void removerTokensInvalidas() {
+        var usuarios = buscarApenasPorTokensInvalidas();
+        if (!usuarios.isEmpty()) {
+            usuarioLoginJwtRepository.deleteAll(usuarios);
+            log.info(String.format("Foram removidas %d tokens inválidas.", usuarios.size()));
+        } else {
+            log.info("Não foram encontradas tokens inválidas para remoção.");
+        }
+    }
+
+    private List<UsuarioLoginJwt> buscarApenasPorTokensInvalidas() {
+        return usuarioLoginJwtRepository
+            .findAll()
+            .stream()
+            .filter(usuario -> verificarTokenValida(usuario.getJwt()))
+            .collect(Collectors.toList());
     }
 }

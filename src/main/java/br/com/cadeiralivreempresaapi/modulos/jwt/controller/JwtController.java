@@ -3,10 +3,7 @@ package br.com.cadeiralivreempresaapi.modulos.jwt.controller;
 import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtUsuarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/jwt")
@@ -28,5 +25,10 @@ public class JwtController {
     @GetMapping("dados/{jwt}")
     public JwtUsuarioResponse recuperarDadosDoUsuarioDoToken(@PathVariable String jwt) {
         return jwtService.recuperarDadosDoUsuarioDoToken(jwt);
+    }
+
+    @DeleteMapping("invalidas/remover-todas")
+    public void removerTokensInvalidas() {
+        jwtService.removerTokensInvalidas(true);
     }
 }
