@@ -62,7 +62,7 @@ public class JwtService {
     }
 
     public JwtUsuarioResponse recuperarDadosDoUsuarioDoToken(String jwt) {
-        if (verificarTokenValida(jwt)) {
+        if (verificarUsuarioValidoComTokenValida(jwt)) {
             return JwtUsuarioResponse.of(descriptografarJwt(jwt).getBody());
         }
         throw TOKEN_INVALIDA;
