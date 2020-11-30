@@ -1,6 +1,7 @@
-package br.com.cadeiralivreempresaapi.modulos.jwt.service;
+package br.com.cadeiralivreempresaapi.modulos.jwt.controller;
 
-import io.jsonwebtoken.Claims;
+import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtUsuarioResponse;
+import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,14 +9,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/jwt")
+@RequestMapping("/api/jwt")
 public class JwtController {
 
     @Autowired
     private JwtService jwtService;
 
-    @GetMapping("{jwt}")
-    public JwtUsuarioResponse parseJwt(@PathVariable String jwt) {
-        return jwtService.parseJwt(jwt);
+    @GetMapping
+    public String gerarTokenTeste() {
+        return jwtService.gerarTokenTeste();
+    }
+
+    @GetMapping("validar/{jwt}")
+    public Boolean validarToken(@PathVariable String jwt) {
+        return jwtService.verificarTokenValida(jwt);
+    }
+
+    @GetMapping("dados/{jwt}")
+    public JwtUsuarioResponse recuperarDadosDoUsuarioDoToken(@PathVariable String jwt) {
+        return jwtService.recuperarDadosDoUsuarioDoToken(jwt);
     }
 }

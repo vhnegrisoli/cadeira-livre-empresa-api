@@ -1,38 +1,38 @@
-package br.com.cadeiralivreempresaapi.modulos.jwt;
+package br.com.cadeiralivreempresaapi.modulos.jwt.model;
 
-import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtUsuarioResponse;
-import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtValidadeResponse;
+import br.com.cadeiralivreempresaapi.modulos.jwt.dto.UsuarioTokenResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Data
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "USUARIO_LOGIN_JWT")
 public class UsuarioLoginJwt {
 
     @Id
-    @Column(name = "USUARIO_ID", nullable = false)
-    private Integer usuarioId;
+    @Column(name = "USUARIO_ID")
+    private String usuarioId;
 
-    @Column(name = "TOKEN", nullable = false, unique = true)
+    @Column(name = "TOKEN", nullable = false, unique = true, length = 500)
     private String token;
 
     @Column(name = "TOKEN_VALIDA", nullable = false)
     private boolean tokenValida;
 
-    public UsuarioLoginJwt atualizarLoginUsuario(JwtValidadeResponse response) {
+    public UsuarioLoginJwt gerarUsuarioJwt(UsuarioTokenResponse response) {
         return UsuarioLoginJwt
             .builder()
             .token(response.getToken())
-            .tokenValida(response.isValida())
-
+            .build();
     }
 }

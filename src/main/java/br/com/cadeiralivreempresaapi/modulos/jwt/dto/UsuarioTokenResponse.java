@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeslogarUsuarioResponse {
+public class UsuarioTokenResponse {
 
     private String usuarioId;
     private String token;

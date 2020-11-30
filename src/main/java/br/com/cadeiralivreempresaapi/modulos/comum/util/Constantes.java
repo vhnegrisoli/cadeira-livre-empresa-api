@@ -8,4 +8,8 @@ public interface Constantes {
     String TOKEN_CADEIRA_LIVRE = "todos";
     String SEPARAR_POR_VIRGULAS = ",";
     Character ESPACO = ' ';
+    String ID = "id";
+    String NOME = "nome";
+    String EMAIL = "email";
+    String CPF = "cpf";
 }
