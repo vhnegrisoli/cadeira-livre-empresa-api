@@ -16,13 +16,13 @@ public class JwtController {
     private JwtService jwtService;
 
     @GetMapping
-    public String gerarTokenTeste() {
-        return jwtService.gerarTokenTeste();
+    public String recuperarTokenTeste() {
+        return jwtService.recuperarTokenTeste();
     }
 
     @GetMapping("validar/{jwt}")
     public Boolean validarToken(@PathVariable String jwt) {
-        return jwtService.verificarTokenValida(jwt);
+        return jwtService.verificarUsuarioValidoComTokenValida(jwt);
     }
 
     @GetMapping("dados/{jwt}")

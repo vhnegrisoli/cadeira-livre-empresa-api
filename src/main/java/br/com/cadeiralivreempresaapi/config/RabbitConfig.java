@@ -16,14 +16,21 @@ public class RabbitConfig {
 
     @Value("${app-config.topic.biot-admin}")
     private String biotAdminTopic;
-    @Value("${app-config.queue.usuario-cadeira-livre-empresa-cadastro}")
-    private String usuarioCadeiraLivreEmpresaCadastroMq;
-    @Value("${app-config.key.usuario-cadeira-livre-empresa-cadastro}")
-    private String usuarioCadeiraLivreEmpresaCadastroKey;
+
     @Value("${app-config.queue.enviar-notificacao}")
     private String enviarNotificacaoMq;
     @Value("${app-config.key.enviar-notificacao}")
     private String enviarNotificacaoKey;
+
+    @Value("${app-config.queue.autenticar-usuario}")
+    private String autenticarUsuarioMq;
+    @Value("${app-config.key.autenticar-usuario}")
+    private String autenticarUsuarioKey;
+
+    @Value("${app-config.queue.deslogar-usuario}")
+    private String deslogarUsuarioMq;
+    @Value("${app-config.key.deslogar-usuario}")
+    private String deslogarUsuarioKey;
 
     @Bean
     public MessageConverter jsonMessageConverter(ObjectMapper objectMapper) {
@@ -36,17 +43,6 @@ public class RabbitConfig {
     }
 
     @Bean
-    Queue usuarioCadeiraLivreEmpresaCadastroMq() {
-        return new Queue(usuarioCadeiraLivreEmpresaCadastroMq, true);
-    }
-
-    @Bean
-    public Binding usuarioCadeiraLivreEmpresaCadastroBinding(TopicExchange exchange) {
-        return BindingBuilder.bind(usuarioCadeiraLivreEmpresaCadastroMq())
-            .to(exchange).with(usuarioCadeiraLivreEmpresaCadastroKey);
-    }
-
-    @Bean
     Queue enviarNotificacaoMq() {
         return new Queue(enviarNotificacaoMq, false);
     }
@@ -54,5 +50,25 @@ public class RabbitConfig {
     @Bean
     public Binding enviarNotificacaoBinding(TopicExchange exchange) {
         return BindingBuilder.bind(enviarNotificacaoMq()).to(exchange).with(enviarNotificacaoKey);
+    }
+
+    @Bean
+    Queue autenticarUsuarioMq() {
+        return new Queue(autenticarUsuarioMq, false);
+    }
+
+    @Bean
+    public Binding autenticarUsuarioBinding(TopicExchange exchange) {
+        return BindingBuilder.bind(autenticarUsuarioMq()).to(exchange).with(autenticarUsuarioKey);
+    }
+
+    @Bean
+    Queue deslogarUsuarioMq() {
+        return new Queue(deslogarUsuarioMq, false);
+    }
+
+    @Bean
+    public Binding deslogarUsuarioBinding(TopicExchange exchange) {
+        return BindingBuilder.bind(deslogarUsuarioMq()).to(exchange).with(deslogarUsuarioKey);
     }
 }

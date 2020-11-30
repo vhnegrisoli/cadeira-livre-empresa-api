@@ -56,15 +56,12 @@ server:
 
 app-config:
   queue:
-    usuario-cadeira-livre-empresa-cadastro: usuario-cadeira-livre-empresa-cadastro.queue
     enviar-notificacao: enviar-notificacao.queue
     autenticar-usuario: autenticar-usuario.queue
     deslogar-usuario: deslogar-usuario.queue
-
   topic:
     biot-admin: biot-admin.topic
   key:
-    usuario-cadeira-livre-empresa-cadastro: usuario-cadeira-livre-empresa-cadastro.queue
     enviar-notificacao: enviar-notificacao.queue
     autenticar-usuario: autenticar-usuario.queue
     deslogar-usuario: deslogar-usuario.queue

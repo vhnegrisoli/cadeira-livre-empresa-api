@@ -1,7 +1,8 @@
 package br.com.cadeiralivreempresaapi.modulos.jwt.service;
 
-import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtUsuarioResponse;
+import br.com.cadeiralivreempresaapi.modulos.jwt.dto.UsuarioTokenResponse;
+import br.com.cadeiralivreempresaapi.modulos.jwt.model.UsuarioLoginJwt;
 import br.com.cadeiralivreempresaapi.modulos.jwt.repository.UsuarioLoginJwtRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.DataUtil.converterParaLocalDateTime;
 import static br.com.cadeiralivreempresaapi.modulos.jwt.messages.JwtMessages.ERRO_DESCRIPTOGRAFAR_TOKEN;
 import static br.com.cadeiralivreempresaapi.modulos.jwt.messages.JwtMessages.TOKEN_INVALIDA;
+import static br.com.cadeiralivreempresaapi.modulos.jwt.utils.JwtCampoUtil.getCampoId;
 
 @Slf4j
 @Service
@@ -35,7 +37,7 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String gerarTokenTeste() {
+    public String recuperarTokenTeste() {
         var uuid = UUID.randomUUID();
         var dados = gerarMock(uuid);
         return Jwts
@@ -63,6 +65,10 @@ public class JwtService {
         throw TOKEN_INVALIDA;
     }
 
+    public Boolean verificarUsuarioValidoComTokenValida(String jwt) {
+        return verificarTokenValida(jwt) && validarUsuarioLogado(jwt);
+    }
+
     public Boolean verificarTokenValida(String token) {
         var dadosUsuario = descriptografarJwt(token).getBody();
         var dataExpiracao = converterParaLocalDateTime(dadosUsuario.getExpiration());
@@ -83,7 +89,14 @@ public class JwtService {
     }
 
     @Transactional
-    private void salvarSessaoUsuario(JwtUsuarioResponse response) {
+    public UsuarioLoginJwt salvarUsuarioDoToken(UsuarioTokenResponse response, boolean tokenValida) {
+        return usuarioLoginJwtRepository.save(UsuarioLoginJwt.gerarUsuario(response, tokenValida));
+    }
 
+    public Boolean validarUsuarioLogado(String jwt) {
+        var dados = descriptografarJwt(jwt).getBody();
+        var usuario = usuarioLoginJwtRepository.findById(getCampoId(dados))
+            .orElseGet(() -> salvarUsuarioDoToken(UsuarioTokenResponse.of(dados, jwt), true));
+        return usuario.isTokenValida();
     }
 }

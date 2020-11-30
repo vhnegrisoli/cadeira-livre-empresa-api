@@ -23,16 +23,18 @@ public class UsuarioLoginJwt {
     @Column(name = "USUARIO_ID")
     private String usuarioId;
 
-    @Column(name = "TOKEN", nullable = false, unique = true, length = 500)
-    private String token;
+    @Column(name = "JWT", nullable = false, unique = true, length = 500)
+    private String jwt;
 
     @Column(name = "TOKEN_VALIDA", nullable = false)
     private boolean tokenValida;
 
-    public UsuarioLoginJwt gerarUsuarioJwt(UsuarioTokenResponse response) {
+    public static UsuarioLoginJwt gerarUsuario(UsuarioTokenResponse response, boolean valida) {
         return UsuarioLoginJwt
             .builder()
-            .token(response.getToken())
+            .usuarioId(response.getUsuarioId())
+            .jwt(response.getToken())
+            .tokenValida(valida)
             .build();
     }
 }
