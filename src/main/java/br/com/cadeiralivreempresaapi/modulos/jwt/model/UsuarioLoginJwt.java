@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -29,12 +30,16 @@ public class UsuarioLoginJwt {
     @Column(name = "TOKEN_VALIDA", nullable = false)
     private boolean tokenValida;
 
+    @Column(name = "ULTIMA_ATUALIZACAO", nullable = false)
+    private LocalDateTime ultimaAtualizacao;
+
     public static UsuarioLoginJwt gerarUsuario(UsuarioTokenResponse response, boolean valida) {
         return UsuarioLoginJwt
             .builder()
             .usuarioId(response.getUsuarioId())
             .jwt(response.getToken())
             .tokenValida(valida)
+            .ultimaAtualizacao(LocalDateTime.now())
             .build();
     }
 }
