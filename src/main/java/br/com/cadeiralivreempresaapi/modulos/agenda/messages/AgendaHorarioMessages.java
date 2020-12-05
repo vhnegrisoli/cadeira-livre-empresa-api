@@ -44,6 +44,4 @@ public interface AgendaHorarioMessages {
     SuccessResponseDetails SERVICO_CRIADO_SUCESSO = new SuccessResponseDetails("Serviço inserido com sucesso!");
     SuccessResponseDetails SERVICO_ALTERADO_SUCESSO = new SuccessResponseDetails("Serviço alterado com sucesso!");
     SuccessResponseDetails SERVICO_REMOVIDO_SUCESSO = new SuccessResponseDetails("Serviço removido com sucesso!");
-    SuccessResponseDetails CADEIRA_LIVRE_CRIADA_E_ENVIADA_SUCESSO = new SuccessResponseDetails("A Cadeira Livre foi"
-        + " criada e enviada para os usuários com sucesso!.");
 }

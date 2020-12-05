@@ -2,6 +2,7 @@ package br.com.cadeiralivreempresaapi.modulos.agenda.service;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.AgendaRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.messages.AgendaHorarioMessages.*;
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.NOVA_CADEIRA_LIVRE_NOTIFICACAO;
@@ -47,7 +50,7 @@ public class AgendaService {
     }
 
     @Transactional
-    public SuccessResponseDetails disponibilizarCadeiraLivre(CadeiraLivreRequest request) {
+    public CadeiraLivreResponse disponibilizarCadeiraLivre(CadeiraLivreRequest request) {
         validarDadosCadeiraLivre(request);
         var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
         var agenda = Agenda.of(request,
@@ -58,7 +61,7 @@ public class AgendaService {
         agenda.calcularTotal(request.getDesconto());
         agendaRepository.save(agenda);
         enviarDadosNotificacaoCadeiraLivre(agenda);
-        return CADEIRA_LIVRE_CRIADA_E_ENVIADA_SUCESSO;
+        return buscarCadeiraLivrePorId(agenda.getId());
     }
 
     private void validarDadosCadeiraLivre(CadeiraLivreRequest request) {
@@ -104,6 +107,17 @@ public class AgendaService {
             .concat(" com ")
             .concat(String.valueOf(agenda.getDesconto()))
             .concat("% de desconto!");
+    }
+
+    public List<CadeiraLivreResponse> buscarCadeirasLivres() {
+        return agendaRepository.findAll()
+            .stream()
+            .map(CadeiraLivreResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    public CadeiraLivreResponse buscarCadeiraLivrePorId(Integer id) {
+        return CadeiraLivreResponse.of(buscarAgendaPorId(id));
     }
 
     public Agenda buscarAgendaPorId(Integer id) {
