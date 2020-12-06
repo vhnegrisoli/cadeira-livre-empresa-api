@@ -29,7 +29,7 @@ public class AgendaTest {
         assertThat(agenda.getClienteNome()).isEqualTo("Cliente");
         assertThat(agenda.getClienteEmail()).isEqualTo("cliente@gmail.com");
         assertThat(agenda.getClienteCpf()).isEqualTo("460.427.120-80");
-        assertThat(agenda.getTotal()).isNull();
+        assertThat(agenda.getTotalDesconto()).isNull();
     }
 
     @Test
@@ -46,32 +46,32 @@ public class AgendaTest {
         assertThat(agenda.getClienteNome()).isNull();
         assertThat(agenda.getClienteEmail()).isNull();
         assertThat(agenda.getClienteCpf()).isNull();
-        assertThat(agenda.getTotal()).isEqualTo(25.0);
+        assertThat(agenda.getTotalDesconto()).isEqualTo(25.0);
     }
 
     @Test
     @DisplayName("Deve calcular o total da agenda sem desconto quando não informar um desconto")
     public void calcularTotal_deveCalcularTotalSemDesconto_quandoNaoInfomrarDesconto() {
         var agenda = umaAgendaHorarioMarcado();
-        assertThat(agenda.getTotal()).isNull();
+        assertThat(agenda.getTotalDesconto()).isNull();
         var servicoOutroPreco = umServico();
         servicoOutroPreco.setPreco(23.45);
         agenda.setServicos(Set.of(umServico(), servicoOutroPreco));
         agenda.calcularTotal(null);
-        assertThat(agenda.getTotal()).isNotNull();
-        assertThat(agenda.getTotal()).isEqualTo(48.45);
+        assertThat(agenda.getTotalDesconto()).isNotNull();
+        assertThat(agenda.getTotalDesconto()).isEqualTo(48.45);
     }
 
     @Test
     @DisplayName("Deve calcular o total da agenda com desconto quando informar um desconto")
     public void calcularTotal_deveCalcularTotalComDesconto_quandoInfomrarDesconto() {
         var agenda = umaAgendaHorarioMarcado();
-        assertThat(agenda.getTotal()).isNull();
+        assertThat(agenda.getTotalDesconto()).isNull();
         var servicoOutroPreco = umServico();
         servicoOutroPreco.setPreco(23.45);
         agenda.setServicos(Set.of(umServico(), servicoOutroPreco));
         agenda.calcularTotal(57.45f);
-        assertThat(agenda.getTotal()).isNotNull();
-        assertThat(agenda.getTotal()).isEqualTo(27.83452617824078);
+        assertThat(agenda.getTotalDesconto()).isNotNull();
+        assertThat(agenda.getTotalDesconto()).isEqualTo(27.83452617824078);
     }
 }

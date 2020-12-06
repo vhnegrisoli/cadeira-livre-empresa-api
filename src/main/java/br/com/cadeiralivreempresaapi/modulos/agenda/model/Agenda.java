@@ -78,8 +78,11 @@ public class Agenda {
     @Column(name = "CLIENTE_CPF")
     private String clienteCpf;
 
-    @Column(name = "TOTAL", nullable = false)
-    private Double total;
+    @Column(name = "TOTAL_DESCONTO", nullable = false)
+    private Double totalDesconto;
+
+    @Column(name = "TOTAL_PAGAMENTO", nullable = false)
+    private Double totalPagamento;
 
     @Column(name = "DESCONTO")
     private Float desconto;
@@ -138,8 +141,9 @@ public class Agenda {
             .map(Servico::getPreco)
             .mapToDouble(Double::doubleValue)
             .sum();
-        total = isEmpty(desconto)
+        totalDesconto = isEmpty(desconto)
             ? totalServico
             : totalServico * (desconto / PERCENTUAL);
+        totalPagamento = totalServico - totalDesconto;
     }
 }

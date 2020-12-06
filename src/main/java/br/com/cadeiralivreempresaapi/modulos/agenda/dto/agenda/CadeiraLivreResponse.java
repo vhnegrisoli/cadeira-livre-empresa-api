@@ -13,7 +13,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.TRINTA_MINUTOS;
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.NumeroUtil.converterParaDuasCasasDecimais;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data
@@ -30,9 +32,24 @@ public class CadeiraLivreResponse {
     private Integer empresaId;
     private String empresaNome;
     private String empresaCnpj;
-    private BigDecimal total;
+    private BigDecimal desconto;
+    private BigDecimal totalDesconto;
+    private BigDecimal totalPagamento;
+    private LocalTime horarioExpiracao;
+    private Long minutosRestantes;
+    private Boolean cadeiraLivreValida;
 
     public static CadeiraLivreResponse of(Agenda agenda) {
+        var tempoAgenda = agenda.getDataCadastro().toLocalTime();
+        var tempoAgendaTrintaMinutos = tempoAgenda.plusMinutes(TRINTA_MINUTOS);
+        var tempoAtual = LocalTime.now();
+        return definirDadosCadeiraLivre(agenda, tempoAgendaTrintaMinutos, tempoAtual);
+    }
+
+    private static CadeiraLivreResponse definirDadosCadeiraLivre(Agenda agenda,
+                                                                 LocalTime tempoAgendaTrintaMinutos,
+                                                                 LocalTime tempoAtual) {
+        var cadeiraLivreValida = tempoAgendaTrintaMinutos.isAfter(tempoAtual);
         return CadeiraLivreResponse
             .builder()
             .id(agenda.getId())
@@ -41,7 +58,12 @@ public class CadeiraLivreResponse {
             .empresaCnpj(agenda.getEmpresa().getCnpj())
             .horarioId(agenda.getHorario().getId())
             .horario(agenda.getHorarioAgendamento())
-            .total(converterParaDuasCasasDecimais(agenda.getTotal()))
+            .desconto(converterParaDuasCasasDecimais(agenda.getDesconto().doubleValue()))
+            .totalDesconto(converterParaDuasCasasDecimais(agenda.getTotalDesconto()))
+            .totalPagamento(converterParaDuasCasasDecimais(agenda.getTotalPagamento()))
+            .horarioExpiracao(tempoAgendaTrintaMinutos)
+            .minutosRestantes(cadeiraLivreValida ? tempoAtual.until(tempoAgendaTrintaMinutos, MINUTES) : null)
+            .cadeiraLivreValida(cadeiraLivreValida)
             .servicos(tratarServicosDaAgenda(agenda))
             .build();
     }
