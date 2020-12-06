@@ -120,8 +120,8 @@ public class EmpresaService {
         return empresaRepository.existsByIdAndSociosId(empresaId, usuarioId);
     }
 
-    private void validarPermissaoDoUsuario(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
-        if (!usuarioAutenticado.isAdmin()
+    public void validarPermissaoDoUsuario(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
+        if (usuarioAutenticado.isSocioOuProprietario()
             && !empresaRepository.existsByIdAndSociosId(empresaId, usuarioAutenticado.getId())) {
             throw EMPRESA_USUARIO_SEM_PERMISSAO;
         }

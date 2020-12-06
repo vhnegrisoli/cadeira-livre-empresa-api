@@ -67,8 +67,7 @@ public class FuncionarioService {
 
     private void validarPermissoesDoUsuario(Funcionario funcionario) {
         var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
-        if (!usuarioAutenticado.isAdmin()
-            && isFuncionarioSemPermissao(usuarioAutenticado, funcionario)
+        if (isFuncionarioSemPermissao(usuarioAutenticado, funcionario)
             || isSocioProprietarioSemPermissao(usuarioAutenticado, funcionario)) {
             throw FUNCIONARIO_USUARIO_SEM_PERMISSAO;
         }

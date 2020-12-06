@@ -8,6 +8,7 @@ public interface AgendaHorarioMessages {
 
     ValidacaoException AGENDA_NAO_ENCONTRADA = new ValidacaoException("A agenda não foi encontrada.");
     ValidacaoException AGENDA_SEM_DADOS = new ValidacaoException("É obrigatório informar os dados para a agenda.");
+    ValidacaoException CADEIRA_LIVRE_NAO_ENCONTRADA = new ValidacaoException("A cadeira livre não foi encontrada.");
     ValidacaoException CADEIRA_LIVRE_SEM_DESCONTO = new ValidacaoException("É obrigatório informar um desconto para "
         + "a Cadeira Livre.");
     ValidacaoException AGENDA_SEM_SERVICOS = new ValidacaoException("É obrigatório informar ao menos um serviço para a"

@@ -1,13 +1,12 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.controller;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.service.AgendaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/agendas")
@@ -19,20 +18,5 @@ public class AgendaController {
     @GetMapping("{id}")
     public Agenda buscarAgendaPorId(@PathVariable Integer id) {
         return service.buscarAgendaPorId(id);
-    }
-
-    @GetMapping("cadeira-livre")
-    public List<CadeiraLivreResponse> buscarCadeirasLivres() {
-        return service.buscarCadeirasLivres();
-    }
-
-    @GetMapping("cadeira-livre/{id}")
-    public CadeiraLivreResponse buscarCadeirasLivres(@PathVariable Integer id) {
-        return service.buscarCadeiraLivrePorId(id);
-    }
-
-    @PostMapping("cadeira-livre/disponibilizar")
-    public CadeiraLivreResponse disponibilizarCadeiraLivre(@RequestBody CadeiraLivreRequest request) {
-        return service.disponibilizarCadeiraLivre(request);
     }
 }
