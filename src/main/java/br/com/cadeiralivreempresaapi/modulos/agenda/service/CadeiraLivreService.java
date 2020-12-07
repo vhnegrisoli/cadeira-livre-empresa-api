@@ -6,10 +6,10 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
-import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.dto.NotificacaoCorpoRequest;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.service.NotificacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
+import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioAcessoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,13 +35,13 @@ public class CadeiraLivreService {
     @Autowired
     private NotificacaoService notificacaoService;
     @Autowired
-    private FuncionarioService funcionarioService;
-    @Autowired
     private ServicoService servicoService;
     @Autowired
     private EmpresaService empresaService;
     @Autowired
     private HorarioService horarioService;
+    @Autowired
+    private UsuarioAcessoService acessoService;
 
     @Transactional
     public CadeiraLivreResponse disponibilizarCadeiraLivre(CadeiraLivreRequest request) {
@@ -74,7 +74,7 @@ public class CadeiraLivreService {
 
     private void validarEmpresasServicosEUsuario(CadeiraLivreRequest request,
                                                  Agenda agenda) {
-        validarPermissoesUsuarioParaCadeiraLivre(request.getEmpresaId());
+        acessoService.validarPermissoesDoUsuario(request.getEmpresaId());
         agenda.setEmpresa(empresaService.buscarPorId(request.getEmpresaId()));
         servicoService.validarServicosExistentes(new ArrayList<>(agenda.getServicos()));
     }
@@ -107,7 +107,7 @@ public class CadeiraLivreService {
     }
 
     public List<CadeiraLivreResponse> buscarCadeirasLivresPorEmpresa(Integer empresaId) {
-        validarPermissoesUsuarioParaCadeiraLivre(empresaId);
+        acessoService.validarPermissoesDoUsuario(empresaId);
         return agendaRepository.findByEmpresaIdAndTipoAgenda(empresaId, ETipoAgenda.CADEIRA_LIVRE)
             .stream()
             .map(CadeiraLivreResponse::of)
@@ -115,21 +115,11 @@ public class CadeiraLivreService {
     }
 
     public CadeiraLivreResponse buscarCadeiraLivrePorIdEPorEmpresaId(Integer id, Integer empresaId) {
-        validarPermissoesUsuarioParaCadeiraLivre(empresaId);
+        acessoService.validarPermissoesDoUsuario(empresaId);
         return CadeiraLivreResponse.of(
             agendaRepository
                 .findByIdAndEmpresaIdAndTipoAgenda(id, empresaId, ETipoAgenda.CADEIRA_LIVRE)
                 .orElseThrow(() -> CADEIRA_LIVRE_NAO_ENCONTRADA)
         );
-    }
-
-    private void validarPermissoesUsuarioParaCadeiraLivre(Integer empresaId) {
-        var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
-        if (usuarioAutenticado.isFuncionario()) {
-            funcionarioService.validarUsuario(usuarioAutenticado.getId());
-        }
-        if (usuarioAutenticado.isSocioOuProprietario()) {
-            empresaService.validarPermissaoDoUsuario(usuarioAutenticado, empresaId);
-        }
     }
 }

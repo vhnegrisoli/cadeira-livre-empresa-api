@@ -1,13 +1,11 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.service;
 
-import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
 import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Servico;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.ServicoRepository;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
-import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
-import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
+import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioAcessoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +18,6 @@ import java.util.Optional;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.ServicoMocks.umServico;
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.ServicoMocks.umServicoRequest;
-import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.*;
@@ -36,16 +33,13 @@ public class ServicoServiceTest {
     @Mock
     private EmpresaService empresaService;
     @Mock
-    private AutenticacaoService autenticacaoService;
-    @Mock
-    private FuncionarioRepository funcionarioRepository;
-    @Mock
     private AgendaRepository agendaRepository;
+    @Mock
+    private UsuarioAcessoService acessoService;
 
     @Test
     @DisplayName("Deve salvar novo serviço quando dados estiverem corretos")
     public void salvarNovoServico_deveSalvarNovoServico_quandoDadosEstiveremCorretos() {
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
         when(repository.save(any())).thenReturn(umServico());
         when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
 
@@ -162,7 +156,6 @@ public class ServicoServiceTest {
     @Test
     @DisplayName("Deve editar serviço quando dados estiverem corretos")
     public void atualizarServico_deveAtualizarServico_quandoDadosEstiveremCorretos() {
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
         when(repository.save(any())).thenReturn(umServico());
         when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
 
@@ -178,6 +171,7 @@ public class ServicoServiceTest {
 
         verify(repository, times(1)).existsByDescricaoAndEmpresaIdAndIdNot(anyString(), anyInt(), anyInt());
         verify(empresaService, times(1)).buscarPorId(anyInt());
+        verify(acessoService, times(1)).validarPermissoesDoUsuario(anyInt());
         verify(repository, times(1)).save(any(Servico.class));
     }
 
@@ -324,7 +318,6 @@ public class ServicoServiceTest {
     @Test
     @DisplayName("Deve remover serviço por ID quando usuário for admin")
     public void removerServicoPorId_deveRemoverServicoPorId_quandoUsuarioForAdmin() {
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
         when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
 
         var response = service.removerServicoPorId(1);
@@ -334,7 +327,7 @@ public class ServicoServiceTest {
         assertThat(response.getMessage()).isEqualTo("Serviço removido com sucesso!");
 
         verify(empresaService, times(0)).existeEmpresaParaUsuario(anyInt(), anyInt());
-        verify(funcionarioRepository, times(0)).existsByUsuarioIdAndEmpresaId(anyInt(), anyInt());
+        verify(acessoService, times(1)).validarPermissoesDoUsuario(anyInt());
         verify(agendaRepository, times(1)).existsByServicosId(anyInt());
         verify(repository, times(1)).delete(any(Servico.class));
     }
@@ -342,9 +335,7 @@ public class ServicoServiceTest {
     @Test
     @DisplayName("Deve remover serviço por ID quando usuário for proprietário")
     public void removerServicoPorId_deveRemoverServicoPorId_quandoUsuarioForProprietario() {
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoProprietario());
         when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
-        when(empresaService.existeEmpresaParaUsuario(anyInt(), anyInt())).thenReturn(true);
 
         var response = service.removerServicoPorId(1);
 
@@ -352,8 +343,7 @@ public class ServicoServiceTest {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getMessage()).isEqualTo("Serviço removido com sucesso!");
 
-        verify(empresaService, times(1)).existeEmpresaParaUsuario(anyInt(), anyInt());
-        verify(funcionarioRepository, times(0)).existsByUsuarioIdAndEmpresaId(anyInt(), anyInt());
+        verify(acessoService, times(1)).validarPermissoesDoUsuario(anyInt());
         verify(agendaRepository, times(1)).existsByServicosId(anyInt());
         verify(repository, times(1)).delete(any(Servico.class));
     }
@@ -361,9 +351,7 @@ public class ServicoServiceTest {
     @Test
     @DisplayName("Deve remover serviço por ID quando usuário for sócio")
     public void removerServicoPorId_deveRemoverServicoPorId_quandoUsuarioForSocio() {
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoSocio());
         when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
-        when(empresaService.existeEmpresaParaUsuario(anyInt(), anyInt())).thenReturn(true);
 
         var response = service.removerServicoPorId(1);
 
@@ -371,8 +359,7 @@ public class ServicoServiceTest {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getMessage()).isEqualTo("Serviço removido com sucesso!");
 
-        verify(empresaService, times(1)).existeEmpresaParaUsuario(anyInt(), anyInt());
-        verify(funcionarioRepository, times(0)).existsByUsuarioIdAndEmpresaId(anyInt(), anyInt());
+        verify(acessoService, times(1)).validarPermissoesDoUsuario(anyInt());
         verify(agendaRepository, times(1)).existsByServicosId(anyInt());
         verify(repository, times(1)).delete(any(Servico.class));
     }
@@ -380,9 +367,7 @@ public class ServicoServiceTest {
     @Test
     @DisplayName("Deve remover serviço por ID quando usuário for funcionário")
     public void removerServicoPorId_deveRemoverServicoPorId_quandoUsuarioForFuncionario() {
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoFuncionario());
         when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
-        when(funcionarioRepository.existsByUsuarioIdAndEmpresaId(anyInt(), anyInt())).thenReturn(true);
 
         var response = service.removerServicoPorId(1);
 
@@ -391,77 +376,23 @@ public class ServicoServiceTest {
         assertThat(response.getMessage()).isEqualTo("Serviço removido com sucesso!");
 
         verify(empresaService, times(0)).existeEmpresaParaUsuario(anyInt(), anyInt());
-        verify(funcionarioRepository, times(1)).existsByUsuarioIdAndEmpresaId(anyInt(), anyInt());
         verify(agendaRepository, times(1)).existsByServicosId(anyInt());
+        verify(acessoService, times(1)).validarPermissoesDoUsuario(anyInt());
         verify(repository, times(1)).delete(any(Servico.class));
-    }
-
-    @Test
-    @DisplayName("Deve lançar exception ao tentar remover serviço por ID quando usuário proprietário não tiver permissão")
-    public void removerServicoPorId_deveLancarException_quandoUsuarioForProprietarioSemPermissao() {
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoProprietario());
-        when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
-        when(empresaService.existeEmpresaParaUsuario(anyInt(), anyInt())).thenReturn(false);
-
-        assertThatExceptionOfType(PermissaoException.class)
-            .isThrownBy(() -> service.removerServicoPorId(1))
-            .withMessage("Usuário sem permissão para visualizar este serviço.");
-
-        verify(empresaService, times(1)).existeEmpresaParaUsuario(anyInt(), anyInt());
-        verify(funcionarioRepository, times(0)).existsByUsuarioIdAndEmpresaId(anyInt(), anyInt());
-        verify(agendaRepository, times(0)).existsByServicosId(anyInt());
-        verify(repository, times(0)).delete(any(Servico.class));
-    }
-
-    @Test
-    @DisplayName("Deve lançar exception ao tentar remover serviço por ID quando usuário sócio não tiver permissão")
-    public void removerServicoPorId_deveLancarException_quandoUsuarioForSocioSemPermissao() {
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoSocio());
-        when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
-        when(empresaService.existeEmpresaParaUsuario(anyInt(), anyInt())).thenReturn(false);
-
-        assertThatExceptionOfType(PermissaoException.class)
-            .isThrownBy(() -> service.removerServicoPorId(1))
-            .withMessage("Usuário sem permissão para visualizar este serviço.");
-
-        verify(empresaService, times(1)).existeEmpresaParaUsuario(anyInt(), anyInt());
-        verify(funcionarioRepository, times(0)).existsByUsuarioIdAndEmpresaId(anyInt(), anyInt());
-        verify(agendaRepository, times(0)).existsByServicosId(anyInt());
-        verify(repository, times(0)).delete(any(Servico.class));
-    }
-
-    @Test
-    @DisplayName("Deve lançar exception ao tentar remover serviço por ID quando usuário funcionário não tiver permissão")
-    public void removerServicoPorId_deveLancarException_quandoUsuarioForFuncionarioSemPermissao() {
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoFuncionario());
-        when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
-        when(funcionarioRepository.existsByUsuarioIdAndEmpresaId(anyInt(), anyInt())).thenReturn(false);
-
-        assertThatExceptionOfType(PermissaoException.class)
-            .isThrownBy(() -> service.removerServicoPorId(1))
-            .withMessage("Usuário sem permissão para visualizar este serviço.");
-
-        verify(empresaService, times(0)).existeEmpresaParaUsuario(anyInt(), anyInt());
-        verify(funcionarioRepository, times(1)).existsByUsuarioIdAndEmpresaId(anyInt(), anyInt());
-        verify(agendaRepository, times(0)).existsByServicosId(anyInt());
-        verify(repository, times(0)).delete(any(Servico.class));
     }
 
     @Test
     @DisplayName("Deve lançar exception ao tentar remover serviço por ID quando já estiver presente em agenda")
     public void removerServicoPorId_deveLancarException_quandoServicoEstiverPresenteEmAgenda() {
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoFuncionario());
         when(repository.findById(anyInt())).thenReturn(Optional.of(umServico()));
-        when(funcionarioRepository.existsByUsuarioIdAndEmpresaId(anyInt(), anyInt())).thenReturn(true);
         when(agendaRepository.existsByServicosId(anyInt())).thenReturn(true);
 
         assertThatExceptionOfType(ValidacaoException.class)
             .isThrownBy(() -> service.removerServicoPorId(1))
             .withMessage("O serviço não pode ser removido pois já está cadastrado para uma agenda.");
 
-        verify(empresaService, times(0)).existeEmpresaParaUsuario(anyInt(), anyInt());
-        verify(funcionarioRepository, times(1)).existsByUsuarioIdAndEmpresaId(anyInt(), anyInt());
         verify(agendaRepository, times(1)).existsByServicosId(anyInt());
+        verify(acessoService, times(1)).validarPermissoesDoUsuario(anyInt());
         verify(repository, times(0)).delete(any(Servico.class));
     }
 }

@@ -10,9 +10,7 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.repository.DiaDaSemanaReposi
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.HorarioRepository;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
-import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
-import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
-import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
+import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioAcessoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +33,7 @@ public class HorarioService {
     @Autowired
     private AgendaRepository agendaRepository;
     @Autowired
-    private AutenticacaoService autenticacaoService;
-    @Autowired
-    private FuncionarioRepository funcionarioRepository;
+    private UsuarioAcessoService acessoService;
 
     @Transactional
     public HorarioResponse salvarHorario(HorarioRequest request) {
@@ -95,7 +91,7 @@ public class HorarioService {
     }
 
     public List<HorarioResponse> buscarHorariosPorEmpresa(Integer empresaId) {
-        validarPermissoesUsuario(empresaId);
+        acessoService.validarPermissoesDoUsuario(empresaId);
         return horarioRepository.findByEmpresaIdOrderByHorario(empresaId)
             .stream()
             .map(HorarioResponse::of)
@@ -105,7 +101,7 @@ public class HorarioService {
     public Horario buscarPorId(Integer id) {
         var horario = horarioRepository.findById(id)
             .orElseThrow(() -> HORARIO_NAO_ENCONTRADO);
-        validarPermissoesUsuario(horario.getEmpresa().getId());
+        acessoService.validarPermissoesDoUsuario(horario.getEmpresa().getId());
         return horario;
     }
 
@@ -119,24 +115,5 @@ public class HorarioService {
     public DiaDaSemana buscarDiaDaSemanaPorId(Integer id) {
         return diaDaSemanaRepository.findById(id)
             .orElseThrow(() -> DIA_DA_SEMANA_NAO_EXISTENTE);
-    }
-
-    private void validarPermissoesUsuario(Integer empresaId) {
-        var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
-        if (!usuarioAutenticado.isAdmin()
-            && !isSocioProprietarioValido(usuarioAutenticado, empresaId)
-            && !isFuncionarioValido(usuarioAutenticado, empresaId)) {
-            throw HORARIO_SEM_PERMISSAO;
-        }
-    }
-
-    private boolean isSocioProprietarioValido(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
-        return usuarioAutenticado.isSocioOuProprietario()
-            && empresaService.existeEmpresaParaUsuario(empresaId, usuarioAutenticado.getId());
-    }
-
-    private boolean isFuncionarioValido(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
-        return usuarioAutenticado.isFuncionario()
-            && funcionarioRepository.existsByUsuarioIdAndEmpresaId(usuarioAutenticado.getId(), empresaId);
     }
 }

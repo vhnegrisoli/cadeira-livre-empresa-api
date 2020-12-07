@@ -11,5 +11,5 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Intege
 
     Optional<Funcionario> findByUsuarioId(Integer usuarioId);
 
-    Boolean existsByUsuarioIdAndEmpresaId(Integer id, Integer empresaId);
+    Boolean existsByUsuarioIdAndEmpresaId(Integer usuarioId, Integer empresaId);
 }

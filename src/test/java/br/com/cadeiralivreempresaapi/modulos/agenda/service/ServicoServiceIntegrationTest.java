@@ -9,6 +9,7 @@ import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioR
 import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.PermissaoService;
+import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioAcessoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,9 @@ import static org.mockito.Mockito.when;
 @Import({
     ServicoService.class,
     EmpresaService.class,
-    UsuarioService.class
+    UsuarioService.class,
+    UsuarioAcessoService.class,
+    FuncionarioService.class
 })
 @ExtendWith(MockitoExtension.class)
 @Sql(scripts = {
@@ -52,15 +55,17 @@ public class ServicoServiceIntegrationTest {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
     @Autowired
+    private FuncionarioService funcionarioService;
+    @Autowired
     private AgendaRepository agendaRepository;
+    @Autowired
+    private UsuarioAcessoService acessoService;
     @MockBean
     private AutenticacaoService autenticacaoService;
     @MockBean
     private PasswordEncoder passwordEncoder;
     @MockBean
     private PermissaoService permissaoService;
-    @MockBean
-    private FuncionarioService funcionarioService;
 
     @Test
     @DisplayName("Deve buscar serviços por ID quando usuário for admin")
@@ -129,18 +134,6 @@ public class ServicoServiceIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exception quando tentar buscar por ID e não tiver permissão sendo proprietário")
-    public void buscarServicoPorId_deveLancarException_quandoProprietarioNaoPossuirPermissao() {
-        var proprietario = umUsuarioAutenticadoProprietario();
-        proprietario.setId(2);
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
-
-        assertThatExceptionOfType(PermissaoException.class)
-            .isThrownBy(() -> service.buscarServicoPorId(2))
-            .withMessage("Usuário sem permissão para visualizar este serviço.");
-    }
-
-    @Test
     @DisplayName("Deve lançar exception quando tentar buscar por ID e não tiver permissão sendo sócio")
     public void buscarServicoPorId_deveLancarException_quandoSocioNaoPossuirPermissao() {
         var socio = umUsuarioAutenticadoSocio();
@@ -149,7 +142,7 @@ public class ServicoServiceIntegrationTest {
 
         assertThatExceptionOfType(PermissaoException.class)
             .isThrownBy(() -> service.buscarServicoPorId(2))
-            .withMessage("Usuário sem permissão para visualizar este serviço.");
+            .withMessage("Usuário sem permissão para visualizar essa empresa.");
     }
 
     @Test
@@ -161,7 +154,7 @@ public class ServicoServiceIntegrationTest {
 
         assertThatExceptionOfType(PermissaoException.class)
             .isThrownBy(() -> service.buscarServicoPorId(2))
-            .withMessage("Usuário sem permissão para visualizar este serviço.");
+            .withMessage("Usuário sem permissão para visualizar essa empresa.");
     }
 
     @Test
@@ -261,41 +254,5 @@ public class ServicoServiceIntegrationTest {
                 tuple(7, "Corte, barba e lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
                 tuple(4, "Lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38")
             );
-    }
-
-    @Test
-    @DisplayName("Deve lançar exception quando tentar buscar serviços de empresa que o proprietário não pode visualizar")
-    public void buscarServicosPorEmpresa_deveLancarException_quandoProprietarioNaoPuderVisualizarEmpresa() {
-        var proprietario = umUsuarioAutenticadoProprietario();
-        proprietario.setId(2);
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
-
-        assertThatExceptionOfType(PermissaoException.class)
-            .isThrownBy(() -> service.buscarServicosPorEmpresa(7))
-            .withMessage("Usuário sem permissão para visualizar este serviço.");
-    }
-
-    @Test
-    @DisplayName("Deve lançar exception quando tentar buscar serviços de empresa que o sócio não pode visualizar")
-    public void buscarServicosPorEmpresa_deveLancarException_quandoSocioNaoPuderVisualizarEmpresa() {
-        var socio = umUsuarioAutenticadoSocio();
-        socio.setId(6);
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(socio);
-
-        assertThatExceptionOfType(PermissaoException.class)
-            .isThrownBy(() -> service.buscarServicosPorEmpresa(7))
-            .withMessage("Usuário sem permissão para visualizar este serviço.");
-    }
-
-    @Test
-    @DisplayName("Deve lançar exception quando tentar buscar serviços de empresa que o funcionário não pode visualizar")
-    public void buscarServicosPorEmpresa_deveLancarException_quandoFuncionarioNaoPuderVisualizarEmpresa() {
-        var funcionario = umUsuarioAutenticadoFuncionario();
-        funcionario.setId(10);
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(funcionario);
-
-        assertThatExceptionOfType(PermissaoException.class)
-            .isThrownBy(() -> service.buscarServicosPorEmpresa(7))
-            .withMessage("Usuário sem permissão para visualizar este serviço.");
     }
 }

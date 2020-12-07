@@ -82,4 +82,8 @@ public class FuncionarioService {
         return usuarioAutenticado.isSocioOuProprietario()
             && !empresaService.existeEmpresaParaUsuario(funcionario.getEmpresa().getId(), usuarioAutenticado.getId());
     }
+
+    public boolean existeUsuarioParaEmpresa(Integer empresaId, Integer usuarioId) {
+        return funcionarioRepository.existsByUsuarioIdAndEmpresaId(usuarioId, empresaId);
+    }
 }

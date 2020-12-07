@@ -7,9 +7,7 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.ServicoRepository;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
-import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
-import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
-import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
+import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioAcessoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +22,7 @@ import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.SEPARA
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
-public class ServicoService {
+public class    ServicoService {
 
     private static final Double ZERO = 0.00;
 
@@ -33,11 +31,9 @@ public class ServicoService {
     @Autowired
     private EmpresaService empresaService;
     @Autowired
-    private AutenticacaoService autenticacaoService;
-    @Autowired
-    private FuncionarioRepository funcionarioRepository;
-    @Autowired
     private AgendaRepository agendaRepository;
+    @Autowired
+    private UsuarioAcessoService acessoService;
 
     @Transactional
     public ServicoResponse salvarNovoServico(ServicoRequest request) {
@@ -107,7 +103,7 @@ public class ServicoService {
     }
 
     public List<ServicoResponse> buscarServicosPorEmpresa(Integer empresaId) {
-        validarPermissoesUsuario(empresaId);
+        acessoService.validarPermissoesDoUsuario(empresaId);
         return servicoRepository.findByEmpresaIdOrderByDescricao(empresaId)
             .stream()
             .map(ServicoResponse::of)
@@ -121,7 +117,7 @@ public class ServicoService {
 
     public ServicoResponse buscarServicoPorId(Integer id) {
         var servico = buscarPorId(id);
-        validarPermissoesUsuario(servico.getEmpresa().getId());
+        acessoService.validarPermissoesDoUsuario(servico.getEmpresa().getId());
         return ServicoResponse.of(servico);
     }
 
@@ -132,7 +128,7 @@ public class ServicoService {
     @Transactional
     public SuccessResponseDetails removerServicoPorId(Integer id) {
         var servico = buscarPorId(id);
-        validarPermissoesUsuario(servico.getEmpresa().getId());
+        acessoService.validarPermissoesDoUsuario(servico.getEmpresa().getId());
         validarServicoExistenteParaAgenda(servico);
         servicoRepository.delete(servico);
         return SERVICO_REMOVIDO_SUCESSO;
@@ -142,25 +138,6 @@ public class ServicoService {
         if (agendaRepository.existsByServicosId(servico.getId())) {
             throw SERVICO_EXISTENTE_AGENDA;
         }
-    }
-
-    private void validarPermissoesUsuario(Integer empresaId) {
-        var usuarioAutenticado = autenticacaoService.getUsuarioAutenticado();
-        if (!usuarioAutenticado.isAdmin()
-            && !isSocioProprietarioValido(usuarioAutenticado, empresaId)
-            && !isFuncionarioValido(usuarioAutenticado, empresaId)) {
-            throw SERVICO_SEM_PERMISSAO;
-        }
-    }
-
-    private boolean isSocioProprietarioValido(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
-        return usuarioAutenticado.isSocioOuProprietario()
-            && empresaService.existeEmpresaParaUsuario(empresaId, usuarioAutenticado.getId());
-    }
-
-    private boolean isFuncionarioValido(UsuarioAutenticado usuarioAutenticado, Integer empresaId) {
-        return usuarioAutenticado.isFuncionario()
-            && funcionarioRepository.existsByUsuarioIdAndEmpresaId(usuarioAutenticado.getId(), empresaId);
     }
 
     public String tratarNomesServicos(List<Servico> servicos) {
