@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.repository;
 
+import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +14,7 @@ public interface AgendaRepository extends JpaRepository<Agenda, Integer> {
 
     Boolean existsByServicosId(Integer servicoId);
 
-    List<Agenda> findByEmpresaIdAndTipoAgenda(Integer empresaId, ETipoAgenda tipoAgenda);
+    List<Agenda> findByEmpresaIdAndTipoAgendaAndSituacao(Integer empresaId, ETipoAgenda tipoAgenda, ESituacaoAgenda situacao);
 
     Optional<Agenda> findByIdAndEmpresaIdAndTipoAgenda(Integer id, Integer empresaId, ETipoAgenda tipoAgenda);
 }

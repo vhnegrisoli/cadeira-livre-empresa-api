@@ -38,6 +38,7 @@ public class CadeiraLivreResponse {
     private LocalTime horarioExpiracao;
     private Long minutosRestantes;
     private Boolean cadeiraLivreValida;
+    private String situacao;
 
     public static CadeiraLivreResponse of(Agenda agenda) {
         var tempoAgenda = agenda.getDataCadastro().toLocalTime();
@@ -49,7 +50,7 @@ public class CadeiraLivreResponse {
     private static CadeiraLivreResponse definirDadosCadeiraLivre(Agenda agenda,
                                                                  LocalTime tempoAgendaTrintaMinutos,
                                                                  LocalTime tempoAtual) {
-        var cadeiraLivreValida = tempoAgendaTrintaMinutos.isAfter(tempoAtual);
+        var cadeiraLivreValida = tempoAgendaTrintaMinutos.isAfter(tempoAtual) && agenda.isDisponivel();
         return CadeiraLivreResponse
             .builder()
             .id(agenda.getId())
@@ -61,10 +62,11 @@ public class CadeiraLivreResponse {
             .desconto(converterParaDuasCasasDecimais(agenda.getDesconto().doubleValue()))
             .totalDesconto(converterParaDuasCasasDecimais(agenda.getTotalDesconto()))
             .totalPagamento(converterParaDuasCasasDecimais(agenda.getTotalPagamento()))
-            .horarioExpiracao(tempoAgendaTrintaMinutos)
+            .horarioExpiracao(cadeiraLivreValida ? tempoAgendaTrintaMinutos : null)
             .minutosRestantes(cadeiraLivreValida ? tempoAtual.until(tempoAgendaTrintaMinutos, MINUTES) : null)
             .cadeiraLivreValida(cadeiraLivreValida)
             .servicos(tratarServicosDaAgenda(agenda))
+            .situacao(agenda.getSituacao().getDescricaoSituacao())
             .build();
     }
 

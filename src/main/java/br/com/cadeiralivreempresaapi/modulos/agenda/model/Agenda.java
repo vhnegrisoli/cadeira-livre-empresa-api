@@ -146,4 +146,16 @@ public class Agenda {
             : totalServico * (desconto / PERCENTUAL);
         totalPagamento = totalServico - totalDesconto;
     }
+
+    public boolean isCancelada() {
+        return ESituacaoAgenda.CANCELADA.equals(situacao);
+    }
+
+    public boolean isDisponivel() {
+        return ESituacaoAgenda.DISPNIVEL.equals(situacao);
+    }
+
+    public boolean isReservada() {
+        return ESituacaoAgenda.RESERVA.equals(situacao);
+    }
 }

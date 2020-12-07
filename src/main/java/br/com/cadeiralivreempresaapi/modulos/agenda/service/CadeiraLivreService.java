@@ -2,9 +2,11 @@ package br.com.cadeiralivreempresaapi.modulos.agenda.service;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
+import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.dto.NotificacaoCorpoRequest;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.service.NotificacaoService;
@@ -108,18 +110,36 @@ public class CadeiraLivreService {
 
     public List<CadeiraLivreResponse> buscarCadeirasLivresPorEmpresa(Integer empresaId) {
         acessoService.validarPermissoesDoUsuario(empresaId);
-        return agendaRepository.findByEmpresaIdAndTipoAgenda(empresaId, ETipoAgenda.CADEIRA_LIVRE)
+        return agendaRepository.findByEmpresaIdAndTipoAgendaAndSituacao(empresaId, ETipoAgenda.CADEIRA_LIVRE,
+            ESituacaoAgenda.DISPNIVEL)
             .stream()
             .map(CadeiraLivreResponse::of)
             .collect(Collectors.toList());
     }
 
-    public CadeiraLivreResponse buscarCadeiraLivrePorIdEPorEmpresaId(Integer id, Integer empresaId) {
+    public CadeiraLivreResponse buscarCadeiraLivreResponsePorIdEPorEmpresaId(Integer id, Integer empresaId) {
+        return CadeiraLivreResponse.of(buscarCadeiraLivrePorIdEPorEmpresaId(id, empresaId));
+    }
+
+    public Agenda buscarCadeiraLivrePorIdEPorEmpresaId(Integer id, Integer empresaId) {
         acessoService.validarPermissoesDoUsuario(empresaId);
-        return CadeiraLivreResponse.of(
-            agendaRepository
-                .findByIdAndEmpresaIdAndTipoAgenda(id, empresaId, ETipoAgenda.CADEIRA_LIVRE)
-                .orElseThrow(() -> CADEIRA_LIVRE_NAO_ENCONTRADA)
-        );
+        return agendaRepository
+            .findByIdAndEmpresaIdAndTipoAgenda(id, empresaId, ETipoAgenda.CADEIRA_LIVRE)
+            .orElseThrow(() -> CADEIRA_LIVRE_NAO_ENCONTRADA);
+    }
+
+    @Transactional
+    public SuccessResponseDetails indisponibilizarCadeiraLivre(Integer id, Integer empresaId) {
+        var cadeiraLivre = buscarCadeiraLivrePorIdEPorEmpresaId(id, empresaId);
+        validarCadeiraLivreComClienteAtribuido(cadeiraLivre);
+        cadeiraLivre.setSituacao(ESituacaoAgenda.CANCELADA);
+        agendaRepository.save(cadeiraLivre);
+        return new SuccessResponseDetails("A cadeira livre foi indisponibilizada com sucesso.");
+    }
+
+    private void validarCadeiraLivreComClienteAtribuido(Agenda agenda) {
+        if (!isEmpty(agenda.getClienteId())) {
+            throw CADEIRA_LIVRE_COM_CLIENTE;
+        }
     }
 }

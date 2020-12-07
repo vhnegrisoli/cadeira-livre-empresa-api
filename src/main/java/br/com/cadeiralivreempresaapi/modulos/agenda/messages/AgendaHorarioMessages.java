@@ -11,6 +11,8 @@ public interface AgendaHorarioMessages {
     ValidacaoException CADEIRA_LIVRE_NAO_ENCONTRADA = new ValidacaoException("A cadeira livre não foi encontrada.");
     ValidacaoException CADEIRA_LIVRE_SEM_DESCONTO = new ValidacaoException("É obrigatório informar um desconto para "
         + "a Cadeira Livre.");
+    ValidacaoException CADEIRA_LIVRE_COM_CLIENTE = new ValidacaoException("Não é possível cancelar a cadeira livre pois "
+        + "já existe um cliente atribuído.");
     ValidacaoException AGENDA_SEM_SERVICOS = new ValidacaoException("É obrigatório informar ao menos um serviço para a"
         + " agenda.");
     ValidacaoException AGENDA_SEM_EMPRESA = new ValidacaoException("É obrigatório informar uma empresa para a agenda");
