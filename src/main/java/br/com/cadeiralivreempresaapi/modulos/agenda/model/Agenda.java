@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.PERCENTUAL;
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.TRINTA_MINUTOS;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 
@@ -126,7 +128,7 @@ public class Agenda {
             .horario(horario)
             .horarioAgendamento(horario.getHorario())
             .usuario(new Usuario(usuario.getId()))
-            .situacao(ESituacaoAgenda.DISPNIVEL)
+            .situacao(ESituacaoAgenda.DISPONIVEL)
             .desconto(request.getDesconto())
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
             .empresa(new Empresa(request.getEmpresaId()))
@@ -152,10 +154,32 @@ public class Agenda {
     }
 
     public boolean isDisponivel() {
-        return ESituacaoAgenda.DISPNIVEL.equals(situacao);
+        return ESituacaoAgenda.DISPONIVEL.equals(situacao);
     }
 
     public boolean isReservada() {
         return ESituacaoAgenda.RESERVA.equals(situacao);
+    }
+
+    public boolean isValida() {
+        return informarHorarioExpiracao().isAfter(LocalTime.now())
+            && isDisponivel();
+    }
+
+    public boolean isInvalida() {
+        return !isValida();
+    }
+
+    public Agenda definirSituacaoComoCancelada() {
+        situacao = ESituacaoAgenda.CANCELADA;
+        return this;
+    }
+
+    public LocalTime informarHorarioExpiracao() {
+        return dataCadastro.toLocalTime().plusMinutes(TRINTA_MINUTOS);
+    }
+
+    public Long informarTempoRestante() {
+        return LocalTime.now().until(informarHorarioExpiracao(), MINUTES);
     }
 }

@@ -46,7 +46,7 @@ public class AgendaMocks {
             .id(1)
             .horario(umHorario())
             .servicos(Set.of(umServico()))
-            .situacao(ESituacaoAgenda.DISPNIVEL)
+            .situacao(ESituacaoAgenda.DISPONIVEL)
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
             .desconto(23.1f)
             .dataCadastro(LocalDateTime.now())

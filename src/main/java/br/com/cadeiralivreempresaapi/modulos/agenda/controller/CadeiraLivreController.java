@@ -42,4 +42,9 @@ public class CadeiraLivreController {
                                                                @PathVariable Integer empresaId) {
         return service.indisponibilizarCadeiraLivre(id, empresaId);
     }
+
+    @PostMapping("tempo-expirado/indisponibilizar")
+    public void indisponibilizarCadeirasLivresExpiradas() {
+        service.indisponibilizarCadeirasLivresExpiradas(true);
+    }
 }

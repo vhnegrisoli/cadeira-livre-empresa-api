@@ -12,6 +12,7 @@ import br.com.cadeiralivreempresaapi.modulos.notificacao.dto.NotificacaoCorpoReq
 import br.com.cadeiralivreempresaapi.modulos.notificacao.service.NotificacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioAcessoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.NOVA_C
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.TOKEN_CADEIRA_LIVRE;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
+@Slf4j
 @Service
 public class CadeiraLivreService {
 
@@ -111,7 +113,7 @@ public class CadeiraLivreService {
     public List<CadeiraLivreResponse> buscarCadeirasLivresPorEmpresa(Integer empresaId) {
         acessoService.validarPermissoesDoUsuario(empresaId);
         return agendaRepository.findByEmpresaIdAndTipoAgendaAndSituacao(empresaId, ETipoAgenda.CADEIRA_LIVRE,
-            ESituacaoAgenda.DISPNIVEL)
+            ESituacaoAgenda.DISPONIVEL)
             .stream()
             .map(CadeiraLivreResponse::of)
             .collect(Collectors.toList());
@@ -132,7 +134,7 @@ public class CadeiraLivreService {
     public SuccessResponseDetails indisponibilizarCadeiraLivre(Integer id, Integer empresaId) {
         var cadeiraLivre = buscarCadeiraLivrePorIdEPorEmpresaId(id, empresaId);
         validarCadeiraLivreComClienteAtribuido(cadeiraLivre);
-        cadeiraLivre.setSituacao(ESituacaoAgenda.CANCELADA);
+        cadeiraLivre.definirSituacaoComoCancelada();
         agendaRepository.save(cadeiraLivre);
         return new SuccessResponseDetails("A cadeira livre foi indisponibilizada com sucesso.");
     }
@@ -140,6 +142,25 @@ public class CadeiraLivreService {
     private void validarCadeiraLivreComClienteAtribuido(Agenda agenda) {
         if (!isEmpty(agenda.getClienteId())) {
             throw CADEIRA_LIVRE_COM_CLIENTE;
+        }
+    }
+
+    @Transactional
+    public void indisponibilizarCadeirasLivresExpiradas(Boolean precisaDeAutenticacao) {
+        if (precisaDeAutenticacao && !autenticacaoService.getUsuarioAutenticado().isAdmin()) {
+            throw CADEIRA_LIVRE_SEM_PERMISSAO_INDISPONIBILIZAR;
+        }
+        var cadeirasLivresIndisponibilizar = agendaRepository
+            .findBySituacao(ESituacaoAgenda.DISPONIVEL)
+            .stream()
+            .filter(Agenda::isInvalida)
+            .map(Agenda::definirSituacaoComoCancelada)
+            .collect(Collectors.toList());
+        if (!isEmpty(cadeirasLivresIndisponibilizar)) {
+            agendaRepository.saveAll(cadeirasLivresIndisponibilizar);
+            log.info("Foram indisponibilizadas {} cadeiras livres com tempo expirado.", cadeirasLivresIndisponibilizar.size());
+        } else {
+            log.info("Não foram encontradas cadeiras livres disponíveis com tempo expirado.");
         }
     }
 }

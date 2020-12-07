@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ESituacaoAgenda {
 
-    DISPNIVEL("Disponível"),
+    DISPONIVEL("Disponível"),
     RESERVA("Reservada"),
     CANCELADA("Cancelada");
 

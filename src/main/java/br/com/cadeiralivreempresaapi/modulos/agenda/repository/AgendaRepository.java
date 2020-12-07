@@ -17,4 +17,6 @@ public interface AgendaRepository extends JpaRepository<Agenda, Integer> {
     List<Agenda> findByEmpresaIdAndTipoAgendaAndSituacao(Integer empresaId, ETipoAgenda tipoAgenda, ESituacaoAgenda situacao);
 
     Optional<Agenda> findByIdAndEmpresaIdAndTipoAgenda(Integer id, Integer empresaId, ETipoAgenda tipoAgenda);
+
+    List<Agenda> findBySituacao(ESituacaoAgenda situacao);
 }

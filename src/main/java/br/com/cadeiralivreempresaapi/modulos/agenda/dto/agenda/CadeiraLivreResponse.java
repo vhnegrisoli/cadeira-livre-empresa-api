@@ -13,9 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.TRINTA_MINUTOS;
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.NumeroUtil.converterParaDuasCasasDecimais;
-import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data
@@ -41,16 +39,6 @@ public class CadeiraLivreResponse {
     private String situacao;
 
     public static CadeiraLivreResponse of(Agenda agenda) {
-        var tempoAgenda = agenda.getDataCadastro().toLocalTime();
-        var tempoAgendaTrintaMinutos = tempoAgenda.plusMinutes(TRINTA_MINUTOS);
-        var tempoAtual = LocalTime.now();
-        return definirDadosCadeiraLivre(agenda, tempoAgendaTrintaMinutos, tempoAtual);
-    }
-
-    private static CadeiraLivreResponse definirDadosCadeiraLivre(Agenda agenda,
-                                                                 LocalTime tempoAgendaTrintaMinutos,
-                                                                 LocalTime tempoAtual) {
-        var cadeiraLivreValida = tempoAgendaTrintaMinutos.isAfter(tempoAtual) && agenda.isDisponivel();
         return CadeiraLivreResponse
             .builder()
             .id(agenda.getId())
@@ -62,9 +50,9 @@ public class CadeiraLivreResponse {
             .desconto(converterParaDuasCasasDecimais(agenda.getDesconto().doubleValue()))
             .totalDesconto(converterParaDuasCasasDecimais(agenda.getTotalDesconto()))
             .totalPagamento(converterParaDuasCasasDecimais(agenda.getTotalPagamento()))
-            .horarioExpiracao(cadeiraLivreValida ? tempoAgendaTrintaMinutos : null)
-            .minutosRestantes(cadeiraLivreValida ? tempoAtual.until(tempoAgendaTrintaMinutos, MINUTES) : null)
-            .cadeiraLivreValida(cadeiraLivreValida)
+            .horarioExpiracao(agenda.isValida() ? agenda.informarHorarioExpiracao() : null)
+            .minutosRestantes(agenda.isValida() ? agenda.informarTempoRestante() : null)
+            .cadeiraLivreValida(agenda.isValida())
             .servicos(tratarServicosDaAgenda(agenda))
             .situacao(agenda.getSituacao().getDescricaoSituacao())
             .build();

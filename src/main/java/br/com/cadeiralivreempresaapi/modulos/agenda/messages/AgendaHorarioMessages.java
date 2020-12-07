@@ -41,6 +41,8 @@ public interface AgendaHorarioMessages {
         + " este horário.");
     PermissaoException SERVICO_SEM_PERMISSAO = new PermissaoException("Usuário sem permissão para visualizar"
         + " este serviço.");
+    PermissaoException CADEIRA_LIVRE_SEM_PERMISSAO_INDISPONIBILIZAR =
+        new PermissaoException("Você não possui permissão para indisponibilizar as cadeiras livres com tempo expirado");
 
     SuccessResponseDetails HORARIO_REMOVIDO_SUCESSO = new SuccessResponseDetails("Horário removido com sucesso!");
 
