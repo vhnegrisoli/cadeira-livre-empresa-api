@@ -1,7 +1,8 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.service;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreReservaRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
@@ -9,6 +10,7 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
+import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtUsuarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.dto.NotificacaoCorpoRequest;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.service.NotificacaoService;
@@ -106,34 +108,49 @@ public class CadeiraLivreService {
             .concat("% de desconto!");
     }
 
-    public List<CadeiraLivreResponse> buscarCadeirasLivresDisponiveis(String jwtToken) {
-        if (jwtService.verificarUsuarioValidoComTokenValida(jwtToken)) {
-            return agendaRepository.findBySituacao(ESituacaoAgenda.DISPONIVEL)
-                .stream()
-                .map(CadeiraLivreResponse::of)
-                .collect(Collectors.toList());
+    public List<CadeiraLivreResponse> buscarCadeirasLivresDisponiveis(String jwtToken, Integer empresaId) {
+        validarClienteComJwtValido(jwtToken);
+        var cadeirasLivres = isEmpty(empresaId)
+            ? agendaRepository.findBySituacao(ESituacaoAgenda.DISPONIVEL)
+            : agendaRepository.findByEmpresaIdAndSituacao(empresaId, ESituacaoAgenda.DISPONIVEL);
+        return cadeirasLivres
+            .stream()
+            .filter(Agenda::isValida)
+            .map(CadeiraLivreResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    public List<CadeiraLivreResponse> buscarCadeirasLivresDoCliente(String jwtToken) {
+        validarClienteComJwtValido(jwtToken);
+        var cliente = jwtService.recuperarDadosDoUsuarioDoToken(jwtToken);
+        return agendaRepository.findByClienteIdAndTipoAgenda(cliente.getId(), ETipoAgenda.CADEIRA_LIVRE)
+            .stream()
+            .map(CadeiraLivreResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    public CadeiraLivreResponse buscarCadeiraLivrePorId(Integer id, String jwtToken) {
+        validarClienteComJwtValido(jwtToken);
+        var cliente = jwtService.recuperarDadosDoUsuarioDoToken(jwtToken);
+        var cadeiraLivre = agendaService.buscarAgendaPorId(id);
+        if (!isEmpty(cadeiraLivre.getClienteId())
+            && !cadeiraLivre.getClienteId().equals(cliente.getId())) {
+            throw CADEIRA_LIVRE_SEM_PERMISSAO_VISUALIZAR;
         }
-        throw USUARIO_NAO_AUTENTICADO;
+        return CadeiraLivreResponse.of(cadeiraLivre);
     }
 
     public List<CadeiraLivreResponse> buscarCadeirasLivresPorEmpresa(Integer empresaId) {
         acessoService.validarPermissoesDoUsuario(empresaId);
-        return agendaRepository.findByEmpresaIdAndTipoAgendaAndSituacao(empresaId, ETipoAgenda.CADEIRA_LIVRE,
-            ESituacaoAgenda.DISPONIVEL)
+        return agendaRepository.findByEmpresaIdAndTipoAgenda(empresaId, ETipoAgenda.CADEIRA_LIVRE)
             .stream()
+            .filter(Agenda::isValida)
             .map(CadeiraLivreResponse::of)
             .collect(Collectors.toList());
     }
 
     public CadeiraLivreResponse buscarCadeiraLivreResponsePorIdEPorEmpresaId(Integer id, Integer empresaId) {
         return CadeiraLivreResponse.of(buscarCadeiraLivrePorIdEPorEmpresaId(id, empresaId));
-    }
-
-    public CadeiraLivreResponse buscarCadeiraLivrePorId(Integer id, String jwtToken) {
-        if (jwtService.verificarUsuarioValidoComTokenValida(jwtToken)) {
-            return CadeiraLivreResponse.of(agendaService.buscarAgendaPorId(id));
-        }
-        throw USUARIO_NAO_AUTENTICADO;
     }
 
     public Agenda buscarCadeiraLivrePorIdEPorEmpresaId(Integer id, Integer empresaId) {
@@ -174,6 +191,46 @@ public class CadeiraLivreService {
             log.info("Foram indisponibilizadas {} cadeiras livres com tempo expirado.", cadeirasLivresIndisponibilizar.size());
         } else {
             log.info("Não foram encontradas cadeiras livres disponíveis com tempo expirado.");
+        }
+    }
+
+    public CadeiraLivreResponse reservarCadeiraLivreParaCliente(Integer id, String token) {
+        return reservarCadeiraLivre(CadeiraLivreReservaRequest
+            .builder()
+            .cadeiraLivreId(id)
+            .token(token)
+            .build());
+    }
+
+    @Transactional
+    public CadeiraLivreResponse reservarCadeiraLivre(CadeiraLivreReservaRequest request) {
+        validarClienteComJwtValido(request.getToken());
+        var cliente = jwtService.recuperarDadosDoUsuarioDoToken(request.getToken());
+        var cadeiraLivre = agendaService.buscarAgendaPorId(request.getCadeiraLivreId());
+        validarCadeiraLivreInvalidaParaReserva(cadeiraLivre);
+        validarClienteComDadosIncompletos(cliente);
+        cadeiraLivre.reservarParaCliente(cliente);
+        return CadeiraLivreResponse.of(agendaRepository.save(cadeiraLivre));
+    }
+
+    private void validarCadeiraLivreInvalidaParaReserva(Agenda cadeiraLivre) {
+        if (!cadeiraLivre.isValida()) {
+            throw CADEIRA_LIVRE_INDISPONIVEL;
+        }
+    }
+
+    private void validarClienteComDadosIncompletos(JwtUsuarioResponse cliente) {
+        if (isEmpty(cliente.getId())
+            || isEmpty(cliente.getNome())
+            || isEmpty(cliente.getEmail())
+            || isEmpty(cliente.getCpf())) {
+            throw CADEIRA_LIVRE_DADOS_INCOMPLETOS;
+        }
+    }
+
+    private void validarClienteComJwtValido(String jwtToken) {
+        if (!jwtService.verificarUsuarioValidoComTokenValida(jwtToken)) {
+            throw USUARIO_NAO_AUTENTICADO;
         }
     }
 }

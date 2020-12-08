@@ -14,9 +14,13 @@ public interface AgendaRepository extends JpaRepository<Agenda, Integer> {
 
     Boolean existsByServicosId(Integer servicoId);
 
-    List<Agenda> findByEmpresaIdAndTipoAgendaAndSituacao(Integer empresaId, ETipoAgenda tipoAgenda, ESituacaoAgenda situacao);
+    List<Agenda> findByEmpresaIdAndTipoAgenda(Integer empresaId, ETipoAgenda tipoAgenda);
 
     Optional<Agenda> findByIdAndEmpresaIdAndTipoAgenda(Integer id, Integer empresaId, ETipoAgenda tipoAgenda);
 
     List<Agenda> findBySituacao(ESituacaoAgenda situacao);
+
+    List<Agenda> findByEmpresaIdAndSituacao(Integer empresaId, ESituacaoAgenda situacao);
+
+    List<Agenda> findByClienteIdAndTipoAgenda(String clienteId, ETipoAgenda tipoAgenda);
 }

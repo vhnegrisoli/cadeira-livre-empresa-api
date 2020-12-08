@@ -13,6 +13,10 @@ public interface AgendaHorarioMessages {
         + "a Cadeira Livre.");
     ValidacaoException CADEIRA_LIVRE_COM_CLIENTE = new ValidacaoException("Não é possível cancelar a cadeira livre pois "
         + "já existe um cliente atribuído.");
+    ValidacaoException CADEIRA_LIVRE_INDISPONIVEL = new ValidacaoException("Desculpe, mas esta cadeira livre não está "
+        + "mais disponível.");
+    ValidacaoException CADEIRA_LIVRE_DADOS_INCOMPLETOS = new ValidacaoException("Para registrar uma cadeira livre são "
+        + "necessários todos as seguintes informações: id, nome, CPF e e-mail.");
     ValidacaoException AGENDA_SEM_SERVICOS = new ValidacaoException("É obrigatório informar ao menos um serviço para a"
         + " agenda.");
     ValidacaoException AGENDA_SEM_EMPRESA = new ValidacaoException("É obrigatório informar uma empresa para a agenda");
@@ -43,6 +47,8 @@ public interface AgendaHorarioMessages {
         + " este serviço.");
     PermissaoException CADEIRA_LIVRE_SEM_PERMISSAO_INDISPONIBILIZAR =
         new PermissaoException("Você não possui permissão para indisponibilizar as cadeiras livres com tempo expirado");
+    PermissaoException CADEIRA_LIVRE_SEM_PERMISSAO_VISUALIZAR =
+        new PermissaoException("Você não possui permissão para visualizar essa cadeira livre.");
 
     SuccessResponseDetails HORARIO_REMOVIDO_SUCESSO = new SuccessResponseDetails("Horário removido com sucesso!");
 

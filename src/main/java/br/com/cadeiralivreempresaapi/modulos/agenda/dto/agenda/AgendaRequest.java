@@ -15,6 +15,5 @@ public class AgendaRequest {
 
     private Integer horarioId;
     private List<Integer> servicosIds;
-    private ClienteRequest cliente;
     private Integer empresaId;
 }

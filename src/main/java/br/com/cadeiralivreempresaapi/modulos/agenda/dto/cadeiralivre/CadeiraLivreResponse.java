@@ -1,5 +1,7 @@
-package br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda;
+package br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre;
 
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.ClienteResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.ServicoAgendaResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -37,6 +39,7 @@ public class CadeiraLivreResponse {
     private Long minutosRestantes;
     private Boolean cadeiraLivreValida;
     private String situacao;
+    private ClienteResponse cliente;
 
     public static CadeiraLivreResponse of(Agenda agenda) {
         return CadeiraLivreResponse
@@ -55,6 +58,7 @@ public class CadeiraLivreResponse {
             .cadeiraLivreValida(agenda.isValida())
             .servicos(tratarServicosDaAgenda(agenda))
             .situacao(agenda.getSituacao().getDescricaoSituacao())
+            .cliente(agenda.isCadeiraLivreSemClienteVinculado() ? null : ClienteResponse.of(agenda))
             .build();
     }
 

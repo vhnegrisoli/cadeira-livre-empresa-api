@@ -32,6 +32,11 @@ public class RabbitConfig {
     @Value("${app-config.key.deslogar-usuario}")
     private String deslogarUsuarioKey;
 
+    @Value("${app-config.queue.reservar-cadeira-livre}")
+    private String reservarCadeiraLivreMq;
+    @Value("${app-config.key.reservar-cadeira-livre}")
+    private String reservarCadeiraLivreKey;
+
     @Bean
     public MessageConverter jsonMessageConverter(ObjectMapper objectMapper) {
         return new Jackson2JsonMessageConverter(objectMapper);
@@ -70,5 +75,15 @@ public class RabbitConfig {
     @Bean
     public Binding deslogarUsuarioBinding(TopicExchange exchange) {
         return BindingBuilder.bind(deslogarUsuarioMq()).to(exchange).with(deslogarUsuarioKey);
+    }
+
+    @Bean
+    Queue reservarCadeiraLivreMq() {
+        return new Queue(reservarCadeiraLivreMq, false);
+    }
+
+    @Bean
+    public Binding reservarCadeiraLivreBinding(TopicExchange exchange) {
+        return BindingBuilder.bind(reservarCadeiraLivreMq()).to(exchange).with(reservarCadeiraLivreKey);
     }
 }

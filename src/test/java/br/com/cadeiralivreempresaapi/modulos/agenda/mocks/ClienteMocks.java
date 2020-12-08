@@ -7,7 +7,7 @@ public class ClienteMocks {
     public static ClienteRequest umClienteRequest() {
         return ClienteRequest
             .builder()
-            .id(1)
+            .id("asdasdas15151515")
             .cpf("460.427.120-80")
             .email("cliente@gmail.com")
             .nome("Cliente")

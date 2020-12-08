@@ -27,10 +27,6 @@ public class AgendaTest {
         assertThat(agenda.getServicos().iterator().next().getId()).isEqualTo(1);
         assertThat(agenda.getSituacao()).isEqualTo(ESituacaoAgenda.RESERVA);
         assertThat(agenda.getTipoAgenda()).isEqualTo(ETipoAgenda.HORARIO_MARCADO);
-        assertThat(agenda.getClienteId()).isEqualTo(1);
-        assertThat(agenda.getClienteNome()).isEqualTo("Cliente");
-        assertThat(agenda.getClienteEmail()).isEqualTo("cliente@gmail.com");
-        assertThat(agenda.getClienteCpf()).isEqualTo("460.427.120-80");
         assertThat(agenda.getTotalDesconto()).isNull();
     }
 
@@ -125,7 +121,7 @@ public class AgendaTest {
         var agenda = umaAgendaCadeiraLivre();
         agenda.setSituacao(ESituacaoAgenda.DISPONIVEL);
         agenda.setDataCadastro(LocalDateTime.now().minusMinutes(5));
-        assertThat(agenda.informarTempoRestante()).isEqualTo(25L);
+        assertThat(agenda.informarTempoRestante()).isGreaterThan(20L);
     }
     
     @Test
@@ -149,5 +145,38 @@ public class AgendaTest {
         var agenda = umaAgendaCadeiraLivre();
         agenda.definirSituacaoComoCancelada();
         assertThat(agenda.isValida()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve retornar False quando possuir cliente vinculado")
+    public void isValida_deveRetornarFalse_quandoPossuirClienteVinculado() {
+        var agenda = umaAgendaCadeiraLivre();
+        agenda.setClienteId("asdasd515s1a51d1a5");
+        agenda.setClienteNome("testedadosfaltando@gmail.com");
+        agenda.setClienteEmail("testedadoscliente@gmail.com");
+        agenda.setClienteCpf("10332458954");
+        assertThat(agenda.isValida()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve retornar True quando não possuir qualquer dado de cliente vinculado")
+    public void isCadeiraLivreSemClienteVinculado_deveRetornarTrue_quandoNaoPossuirCliente() {
+        var agenda = umaAgendaCadeiraLivre();
+        agenda.definirSituacaoComoCancelada();
+        agenda.setClienteId("ASDasdasdsa");
+        agenda.setClienteEmail("testedadosfaltando@gmail.com");
+        assertThat(agenda.isCadeiraLivreSemClienteVinculado()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve retornar True quando possuir todos os dados do cliente vinculado")
+    public void isCadeiraLivreSemClienteVinculado_deveRetornarFalse_quandoPossuirTodosOsDadosDoCliente() {
+        var agenda = umaAgendaCadeiraLivre();
+        agenda.definirSituacaoComoCancelada();
+        agenda.setClienteId("asdasd515s1a51d1a5");
+        agenda.setClienteNome("testedadosfaltando@gmail.com");
+        agenda.setClienteEmail("testedadoscliente@gmail.com");
+        agenda.setClienteCpf("10332458954");
+        assertThat(agenda.isCadeiraLivreSemClienteVinculado()).isFalse();
     }
 }

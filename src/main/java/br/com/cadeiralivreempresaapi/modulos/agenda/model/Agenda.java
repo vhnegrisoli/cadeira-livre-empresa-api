@@ -1,10 +1,11 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.model;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.AgendaRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
+import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtUsuarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import com.sun.istack.NotNull;
@@ -69,7 +70,7 @@ public class Agenda {
     private LocalDateTime dataCadastro;
 
     @Column(name = "CLIENTE_ID")
-    private Integer clienteId;
+    private String clienteId;
 
     @Column(name = "CLIENTE_NOME")
     private String clienteNome;
@@ -99,13 +100,8 @@ public class Agenda {
     }
 
     public static Agenda of(AgendaRequest request) {
-        var cliente = request.getCliente();
         return Agenda
             .builder()
-            .clienteId(cliente.getId())
-            .clienteNome(cliente.getNome())
-            .clienteEmail(cliente.getEmail())
-            .clienteCpf(cliente.getCpf())
             .servicos(request
                 .getServicosIds()
                 .stream()
@@ -163,7 +159,15 @@ public class Agenda {
 
     public boolean isValida() {
         return informarHorarioExpiracao().isAfter(LocalTime.now())
-            && isDisponivel();
+            && isDisponivel()
+            && isCadeiraLivreSemClienteVinculado();
+    }
+
+    public boolean isCadeiraLivreSemClienteVinculado() {
+        return isEmpty(clienteId)
+            || isEmpty(clienteNome)
+            || isEmpty(clienteEmail)
+            || isEmpty(clienteCpf);
     }
 
     public boolean isInvalida() {
@@ -181,5 +185,13 @@ public class Agenda {
 
     public Long informarTempoRestante() {
         return LocalTime.now().until(informarHorarioExpiracao(), MINUTES);
+    }
+
+    public void reservarParaCliente(JwtUsuarioResponse cliente) {
+        setClienteId(cliente.getId());
+        setClienteNome(cliente.getNome());
+        setClienteEmail(cliente.getEmail());
+        setClienteCpf(cliente.getCpf());
+        setSituacao(ESituacaoAgenda.RESERVA);
     }
 }

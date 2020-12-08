@@ -1,7 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.mocks;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.AgendaRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
@@ -59,7 +59,6 @@ public class AgendaMocks {
     public static AgendaRequest umaAgendaRequest() {
         return AgendaRequest
             .builder()
-            .cliente(umClienteRequest())
             .horarioId(1)
             .empresaId(1)
             .servicosIds(List.of(1))

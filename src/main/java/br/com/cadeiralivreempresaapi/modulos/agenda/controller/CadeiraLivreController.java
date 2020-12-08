@@ -1,7 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.controller;
 
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreRequest;
-import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.CadeiraLivreResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.service.CadeiraLivreService;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +15,6 @@ public class CadeiraLivreController {
 
     @Autowired
     private CadeiraLivreService service;
-
-    @GetMapping("disponiveis/cliente-api")
-
-    public List<CadeiraLivreResponse> buscarCadeirasLivresDisponiveis(@RequestParam("token") String token) {
-        return service.buscarCadeirasLivresDisponiveis(token);
-    }
-
-    @GetMapping("{id}/cliente-api")
-    public CadeiraLivreResponse buscarCadeiraLivrePorId(@PathVariable Integer id,
-                                                        @RequestParam("token") String token) {
-        return service.buscarCadeiraLivrePorId(id, token);
-    }
 
     @GetMapping("{id}/empresa/{empresaId}")
     public CadeiraLivreResponse buscarCadeiraLivrePorIdEPorEmpresaId(@PathVariable Integer id,
@@ -53,5 +41,29 @@ public class CadeiraLivreController {
     @PostMapping("tempo-expirado/indisponibilizar")
     public void indisponibilizarCadeirasLivresExpiradas() {
         service.indisponibilizarCadeirasLivresExpiradas(true);
+    }
+
+    @GetMapping("cliente-api")
+    public List<CadeiraLivreResponse> buscarCadeirasLivresDoCliente(@RequestParam("token") String token) {
+        return service.buscarCadeirasLivresDoCliente(token);
+    }
+
+    @GetMapping("disponiveis/cliente-api")
+    public List<CadeiraLivreResponse> buscarCadeirasLivresDisponiveis(@RequestParam("token") String token,
+                                                                      @RequestParam(value = "empresaId", required = false)
+                                                                          Integer empresaId) {
+        return service.buscarCadeirasLivresDisponiveis(token, empresaId);
+    }
+
+    @GetMapping("{id}/cliente-api")
+    public CadeiraLivreResponse buscarCadeiraLivrePorId(@PathVariable Integer id,
+                                                        @RequestParam("token") String token) {
+        return service.buscarCadeiraLivrePorId(id, token);
+    }
+
+    @PostMapping("{id}/cliente-api/reservar")
+    public CadeiraLivreResponse reservarCadeiraLivreParaCliente(@PathVariable Integer id,
+                                                                @RequestParam("token") String token) {
+        return service.reservarCadeiraLivreParaCliente(id, token);
     }
 }
