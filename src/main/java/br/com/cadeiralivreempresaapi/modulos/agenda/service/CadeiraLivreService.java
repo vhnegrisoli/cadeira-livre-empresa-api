@@ -7,7 +7,9 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
+import br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
+import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.dto.NotificacaoCorpoRequest;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.service.NotificacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
@@ -22,8 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.messages.AgendaHorarioMessages.*;
-import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.NOVA_CADEIRA_LIVRE_NOTIFICACAO;
-import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.TOKEN_CADEIRA_LIVRE;
+import static br.com.cadeiralivreempresaapi.modulos.jwt.messages.JwtMessages.USUARIO_NAO_AUTENTICADO;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -46,6 +47,8 @@ public class CadeiraLivreService {
     private HorarioService horarioService;
     @Autowired
     private UsuarioAcessoService acessoService;
+    @Autowired
+    private JwtService jwtService;
 
     @Transactional
     public CadeiraLivreResponse disponibilizarCadeiraLivre(CadeiraLivreRequest request) {
@@ -87,8 +90,8 @@ public class CadeiraLivreService {
         var agendaSalva = agendaService.buscarAgendaPorId(agenda.getId());
         notificacaoService.gerarDadosNotificacao(NotificacaoCorpoRequest.of(
             gerarMensagemNotificacaoCadeiraLivre(agendaSalva),
-            NOVA_CADEIRA_LIVRE_NOTIFICACAO,
-            TOKEN_CADEIRA_LIVRE
+            Constantes.NOVA_CADEIRA_LIVRE_NOTIFICACAO,
+            Constantes.TOKEN_CADEIRA_LIVRE
             )
         );
     }
@@ -103,11 +106,14 @@ public class CadeiraLivreService {
             .concat("% de desconto!");
     }
 
-    public List<CadeiraLivreResponse> buscarCadeirasLivres() {
-        return agendaRepository.findAll()
-            .stream()
-            .map(CadeiraLivreResponse::of)
-            .collect(Collectors.toList());
+    public List<CadeiraLivreResponse> buscarCadeirasLivresDisponiveis(String jwtToken) {
+        if (jwtService.verificarUsuarioValidoComTokenValida(jwtToken)) {
+            return agendaRepository.findBySituacao(ESituacaoAgenda.DISPONIVEL)
+                .stream()
+                .map(CadeiraLivreResponse::of)
+                .collect(Collectors.toList());
+        }
+        throw USUARIO_NAO_AUTENTICADO;
     }
 
     public List<CadeiraLivreResponse> buscarCadeirasLivresPorEmpresa(Integer empresaId) {
@@ -121,6 +127,13 @@ public class CadeiraLivreService {
 
     public CadeiraLivreResponse buscarCadeiraLivreResponsePorIdEPorEmpresaId(Integer id, Integer empresaId) {
         return CadeiraLivreResponse.of(buscarCadeiraLivrePorIdEPorEmpresaId(id, empresaId));
+    }
+
+    public CadeiraLivreResponse buscarCadeiraLivrePorId(Integer id, String jwtToken) {
+        if (jwtService.verificarUsuarioValidoComTokenValida(jwtToken)) {
+            return CadeiraLivreResponse.of(agendaService.buscarAgendaPorId(id));
+        }
+        throw USUARIO_NAO_AUTENTICADO;
     }
 
     public Agenda buscarCadeiraLivrePorIdEPorEmpresaId(Integer id, Integer empresaId) {

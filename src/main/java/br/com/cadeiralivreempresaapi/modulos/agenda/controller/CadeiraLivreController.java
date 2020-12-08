@@ -16,9 +16,16 @@ public class CadeiraLivreController {
     @Autowired
     private CadeiraLivreService service;
 
-    @GetMapping("clientes")
-    public List<CadeiraLivreResponse> buscarCadeirasLivres() {
-        return service.buscarCadeirasLivres();
+    @GetMapping("disponiveis/cliente-api")
+
+    public List<CadeiraLivreResponse> buscarCadeirasLivresDisponiveis(@RequestParam("token") String token) {
+        return service.buscarCadeirasLivresDisponiveis(token);
+    }
+
+    @GetMapping("{id}/cliente-api")
+    public CadeiraLivreResponse buscarCadeiraLivrePorId(@PathVariable Integer id,
+                                                        @RequestParam("token") String token) {
+        return service.buscarCadeiraLivrePorId(id, token);
     }
 
     @GetMapping("{id}/empresa/{empresaId}")

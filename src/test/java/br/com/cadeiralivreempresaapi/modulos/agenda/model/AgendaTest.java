@@ -127,7 +127,7 @@ public class AgendaTest {
         agenda.setDataCadastro(LocalDateTime.now().minusMinutes(5));
         assertThat(agenda.informarTempoRestante()).isEqualTo(25L);
     }
-
+    
     @Test
     @DisplayName("Deve retornar True quando estiver dentro do horário de expiração e com situação disponível")
     public void isValida_deveRetornarTrue_quandoEstiverDentroDoHorarioDeExpiracaoEDisponivel() {

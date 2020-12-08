@@ -38,7 +38,7 @@ public class AutenticacaoService {
             throw SEM_SESSAO;
         }
         if (isEmpty(usuarioAutenticado)) {
-            throw USUARIO_NAO_ENCONTRADO;
+            throw SEM_SESSAO;
         } else {
             return of(usuarioAutenticado);
         }
