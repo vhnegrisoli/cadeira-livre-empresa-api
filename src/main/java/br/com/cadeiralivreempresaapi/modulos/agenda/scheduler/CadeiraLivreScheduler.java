@@ -13,7 +13,7 @@ public class CadeiraLivreScheduler {
     @Autowired
     private CadeiraLivreService cadeiraLivreService;
 
-    @Scheduled(cron = "${app-config.scheduler.every-5-minutes}")
+    @Scheduled(cron = "${app-config.scheduler.every-minute}")
     public void indisponibilizarCadeirasLivresExpiradas() {
         log.info("Iniciando scheduler de indisponibilização de cadeiras livres disponíveis com tempo expirado.");
         cadeiraLivreService.indisponibilizarCadeirasLivresExpiradas(false);
