@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.DataUtil.converterParaLocalDateTime;
@@ -43,7 +43,7 @@ public class JwtService {
             if (verificarUsuarioValidoComTokenValida(jwt)) {
                 return JwtUsuarioResponse.of(descriptografarJwt(jwt).getBody());
             }
-            return new JwtUsuarioResponse();
+            throw TOKEN_INVALIDA;
         } catch (Exception ex) {
             throw TOKEN_INVALIDA;
         }
@@ -54,9 +54,14 @@ public class JwtService {
     }
 
     public Boolean verificarTokenValida(String token) {
-        var dadosUsuario = descriptografarJwt(token).getBody();
-        var dataExpiracao = converterParaLocalDateTime(dadosUsuario.getExpiration());
-        return dataExpiracao.isAfter(LocalDateTime.now());
+        try {
+            var dadosUsuario = descriptografarJwt(token).getBody();
+            var dataExpiracao = converterParaLocalDateTime(dadosUsuario.getExpiration());
+            return dataExpiracao.isAfter(LocalDateTime.now());
+        } catch (Exception ex) {
+            log.error("Token inválido: ", ex);
+            return false;
+        }
     }
 
     public Jws<Claims> descriptografarJwt(String jwt) {
@@ -111,7 +116,7 @@ public class JwtService {
         return usuarioLoginJwtRepository
             .findAll()
             .stream()
-            .filter(usuario -> verificarTokenValida(usuario.getJwt()))
+            .filter(usuario -> !verificarTokenValida(usuario.getJwt()))
             .collect(Collectors.toList());
     }
 }

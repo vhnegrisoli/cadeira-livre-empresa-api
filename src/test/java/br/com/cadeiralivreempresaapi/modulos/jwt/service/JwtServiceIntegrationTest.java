@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.jwt.service;
 
+import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
 import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.jwt.repository.UsuarioLoginJwtRepository;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
@@ -15,9 +16,13 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static br.com.cadeiralivreempresaapi.modulos.jwt.mocks.JwtMocks.umUsuarioLoginJwt;
 import static br.com.cadeiralivreempresaapi.modulos.jwt.mocks.JwtMocks.umUsuarioTokenResponse;
+import static br.com.cadeiralivreempresaapi.modulos.jwt.util.JwtTestUtil.gerarTokenExpirado;
 import static br.com.cadeiralivreempresaapi.modulos.jwt.util.JwtTestUtil.gerarTokenTeste;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.umUsuarioAutenticadoAdmin;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.umUsuarioAutenticadoFuncionario;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
+import static org.mockito.Mockito.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -43,9 +48,7 @@ public class JwtServiceIntegrationTest {
     @Test
     @DisplayName("Deve lançar exception ao tentar validar token quando token jwt for inválido")
     public void verificarTokenValida_deveLancarException_quandoTokenForInvalido() {
-        assertThatExceptionOfType(ValidacaoException.class)
-            .isThrownBy(() -> jwtService.verificarTokenValida(JWT + "12"))
-            .withMessage("Erro ao tentar descriptografar o token.");
+        assertThat(jwtService.verificarTokenValida(JWT + "12")).isFalse();
     }
 
     @Test
@@ -127,9 +130,7 @@ public class JwtServiceIntegrationTest {
     @Test
     @DisplayName("Deve retornar False quando usuário estiver com token inválida")
     public void verificarUsuarioValidoComTokenValida_deveRetornarFalse_quandoUsuarioEstiverComTokenInvalida() {
-        assertThatExceptionOfType(ValidacaoException.class)
-            .isThrownBy(() -> jwtService.verificarUsuarioValidoComTokenValida(JWT + "12"))
-            .withMessage("Erro ao tentar descriptografar o token.");
+        assertThat(jwtService.verificarUsuarioValidoComTokenValida(JWT + "12")).isFalse();
     }
 
     @Test
@@ -137,5 +138,44 @@ public class JwtServiceIntegrationTest {
     public void verificarUsuarioValidoComTokenValida_deveRetornarFalse_quandoUsuarioEstiverComTokenValidaMasDeslogado() {
         usuarioLoginJwtRepository.save(umUsuarioLoginJwt(false));
         assertThat(jwtService.verificarUsuarioValidoComTokenValida(JWT)).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve remover tokens inválidas via timer sem autenticação")
+    public void removerTokensInvalidas_deveRemoverTokensInvalidas_quandoInformarSemAutenticacao() {
+        var usuario = umUsuarioLoginJwt(true);
+        usuario.setJwt(gerarTokenExpirado());
+        usuarioLoginJwtRepository.save(usuario);
+        assertThat(usuarioLoginJwtRepository.findAll().isEmpty()).isFalse();
+        jwtService.removerTokensInvalidas(false);
+        assertThat(usuarioLoginJwtRepository.findAll().isEmpty()).isTrue();
+
+        verify(autenticacaoService, times(0)).getUsuarioAutenticado();
+    }
+
+    @Test
+    @DisplayName("Deve remover tokens inválidas via request com autenticação")
+    public void removerTokensInvalidas_deveRemoverTokensInvalidas_quandoInformarComAutenticacao() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
+        var usuario = umUsuarioLoginJwt(true);
+        usuario.setJwt(gerarTokenExpirado());
+        usuarioLoginJwtRepository.save(usuario);
+        assertThat(usuarioLoginJwtRepository.findAll().isEmpty()).isFalse();
+        jwtService.removerTokensInvalidas(true);
+        assertThat(usuarioLoginJwtRepository.findAll().isEmpty()).isTrue();
+
+        verify(autenticacaoService, times(1)).getUsuarioAutenticado();
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao tentar remover tokens inválidas via request sem possuir permissão")
+    public void removerTokensInvalidas_deveLancarException_quandoPrecisarDeAutenticacaoEUsuarioNaoPossuir() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoFuncionario());
+
+        assertThatExceptionOfType(PermissaoException.class)
+            .isThrownBy(() -> jwtService.removerTokensInvalidas(true))
+            .withMessage("Você não tem permissão para remover os JWTs do sistema.");
+
+        verify(autenticacaoService, times(1)).getUsuarioAutenticado();
     }
 }
