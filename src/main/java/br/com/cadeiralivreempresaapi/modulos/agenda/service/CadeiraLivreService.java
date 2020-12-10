@@ -46,8 +46,6 @@ public class CadeiraLivreService {
     @Autowired
     private EmpresaService empresaService;
     @Autowired
-    private HorarioService horarioService;
-    @Autowired
     private UsuarioAcessoService acessoService;
     @Autowired
     private JwtService jwtService;
@@ -57,7 +55,6 @@ public class CadeiraLivreService {
         validarDadosCadeiraLivre(request);
         var agenda = Agenda.of(request,
             autenticacaoService.getUsuarioAutenticado(),
-            horarioService.buscarPorId(request.getHorarioId()),
             servicoService.buscarServicosPorIds(request.getServicosIds()));
         validarEmpresasServicosEUsuario(request, agenda);
         agenda.calcularTotal(request.getDesconto());
@@ -85,7 +82,7 @@ public class CadeiraLivreService {
                                                  Agenda agenda) {
         acessoService.validarPermissoesDoUsuario(request.getEmpresaId());
         agenda.setEmpresa(empresaService.buscarPorId(request.getEmpresaId()));
-        servicoService.validarServicosExistentes(new ArrayList<>(agenda.getServicos()));
+        servicoService.validarServicosExistentesPorEmpresa(new ArrayList<>(agenda.getServicos()), agenda.getEmpresa().getId());
     }
 
     private void enviarDadosNotificacaoCadeiraLivre(Agenda agenda) {

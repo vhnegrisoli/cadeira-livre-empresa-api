@@ -89,15 +89,15 @@ public class    ServicoService {
         }
     }
 
-    public void validarServicosExistentes(List<Servico> servicos) {
+    public void validarServicosExistentesPorEmpresa(List<Servico> servicos, Integer empresaId) {
         servicos
             .stream()
             .map(Servico::getId)
-            .forEach(this::validarServicoExistentePorId);
+            .forEach(id -> validarServicosExistentesPorEmpresa(id, empresaId));
     }
 
-    private void validarServicoExistentePorId(Integer id) {
-        if (!servicoRepository.existsById(id)) {
+    private void validarServicosExistentesPorEmpresa(Integer id, Integer empresaId) {
+        if (!servicoRepository.existsByIdAndEmpresaId(id, empresaId)) {
             throw SERVICO_NAO_ENCONTRADO;
         }
     }

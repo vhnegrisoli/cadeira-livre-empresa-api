@@ -25,7 +25,6 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 public class CadeiraLivreResponse {
 
     private Integer id;
-    private Integer horarioId;
     @JsonFormat(pattern = "HH:mm")
     private LocalTime horario;
     private List<ServicoAgendaResponse> servicos;
@@ -48,7 +47,6 @@ public class CadeiraLivreResponse {
             .empresaId(agenda.getEmpresa().getId())
             .empresaNome(agenda.getEmpresa().getNome())
             .empresaCnpj(agenda.getEmpresa().getCnpj())
-            .horarioId(agenda.getHorario().getId())
             .horario(agenda.getHorarioAgendamento())
             .desconto(converterParaDuasCasasDecimais(agenda.getDesconto().doubleValue()))
             .totalDesconto(converterParaDuasCasasDecimais(agenda.getTotalDesconto()))

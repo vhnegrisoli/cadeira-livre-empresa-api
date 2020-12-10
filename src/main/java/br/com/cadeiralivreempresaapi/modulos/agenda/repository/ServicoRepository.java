@@ -8,6 +8,8 @@ import java.util.Set;
 
 public interface ServicoRepository extends JpaRepository<Servico, Integer> {
 
+    Boolean existsByIdAndEmpresaId(Integer id, Integer empresaId);
+
     Boolean existsByDescricaoAndEmpresaId(String descricao, Integer empresaId);
 
     Boolean existsByDescricaoAndEmpresaIdAndIdNot(String descricao, Integer empresaId, Integer id);

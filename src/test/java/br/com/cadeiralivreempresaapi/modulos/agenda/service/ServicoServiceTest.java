@@ -274,33 +274,33 @@ public class ServicoServiceTest {
     @Test
     @DisplayName("Deve não fazer nada caso existam todos os serviços")
     public void validarServicosExistentes_deveNaoFazerNada_quandoExistiremTodosOsServicos() {
-        when(repository.existsById(anyInt())).thenReturn(true);
+        when(repository.existsByIdAndEmpresaId(anyInt(), anyInt())).thenReturn(true);
 
-        service.validarServicosExistentes(List.of(
+        service.validarServicosExistentesPorEmpresa(List.of(
             umServico(),
             umServico(),
             umServico(),
             umServico()
-        ));
+        ), 1);
 
-        verify(repository, times(4)).existsById(anyInt());
+        verify(repository, times(4)).existsByIdAndEmpresaId(anyInt(), anyInt());
     }
 
     @Test
     @DisplayName("Deve lançar exception quando algum serviço não existir por ID")
     public void validarServicosExistentes_deveLancarException_quandoAlgumServicoNaoExistirPorId() {
-        when(repository.existsById(anyInt())).thenReturn(false);
+        when(repository.existsByIdAndEmpresaId(anyInt(), anyInt())).thenReturn(false);
 
         assertThatExceptionOfType(ValidacaoException.class)
-            .isThrownBy(() -> service.validarServicosExistentes(List.of(
+            .isThrownBy(() -> service.validarServicosExistentesPorEmpresa(List.of(
                 umServico(),
                 umServico(),
                 umServico(),
                 umServico()
-            )))
+            ), 2))
             .withMessage("O serviço não foi encontrado.");
 
-        verify(repository, times(1)).existsById(anyInt());
+        verify(repository, times(1)).existsByIdAndEmpresaId(anyInt(), anyInt());
     }
 
     @Test

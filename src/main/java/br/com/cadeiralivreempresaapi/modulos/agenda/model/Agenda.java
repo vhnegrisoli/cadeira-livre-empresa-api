@@ -97,6 +97,9 @@ public class Agenda {
     @PrePersist
     public void prePersist() {
         dataCadastro = LocalDateTime.now();
+        if (ETipoAgenda.CADEIRA_LIVRE.equals(tipoAgenda)) {
+            horarioAgendamento = dataCadastro.toLocalTime();
+        }
     }
 
     public static Agenda of(AgendaRequest request) {
@@ -107,7 +110,6 @@ public class Agenda {
                 .stream()
                 .map(Servico::new)
                 .collect(Collectors.toSet()))
-            .horario(new Horario(request.getHorarioId()))
             .situacao(ESituacaoAgenda.RESERVA)
             .tipoAgenda(ETipoAgenda.HORARIO_MARCADO)
             .empresa(new Empresa(request.getEmpresaId()))
@@ -116,13 +118,11 @@ public class Agenda {
 
     public static Agenda of(CadeiraLivreRequest request,
                             UsuarioAutenticado usuario,
-                            Horario horario,
                             Set<Servico> servicos) {
         var agenda = Agenda
             .builder()
             .servicos(servicos)
-            .horario(horario)
-            .horarioAgendamento(horario.getHorario())
+            .horarioAgendamento(LocalTime.now())
             .usuario(new Usuario(usuario.getId()))
             .situacao(ESituacaoAgenda.DISPONIVEL)
             .desconto(request.getDesconto())

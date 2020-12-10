@@ -68,7 +68,6 @@ public class AgendaMocks {
     public static CadeiraLivreRequest umaCadeiraLivreRequest() {
         return CadeiraLivreRequest
             .builder()
-            .horarioId(1)
             .servicosIds(List.of(1))
             .empresaId(1)
             .build();
