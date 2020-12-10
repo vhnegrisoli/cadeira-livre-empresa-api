@@ -50,6 +50,8 @@ public class AgendaMocks {
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
             .desconto(23.1f)
             .dataCadastro(LocalDateTime.now())
+            .horarioAgendamento(LocalTime.now())
+            .minutosDisponiveis(30)
             .empresa(umaEmpresa())
             .horarioAgendamento(LocalTime.of(12, 0))
             .usuario(umUsuario())
