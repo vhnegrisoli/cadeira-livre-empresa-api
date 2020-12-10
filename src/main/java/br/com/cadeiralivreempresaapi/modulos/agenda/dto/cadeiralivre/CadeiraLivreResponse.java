@@ -32,6 +32,7 @@ public class CadeiraLivreResponse {
     private String empresaNome;
     private String empresaCnpj;
     private BigDecimal desconto;
+    private BigDecimal totalServico;
     private BigDecimal totalDesconto;
     private BigDecimal totalPagamento;
     private LocalTime horarioExpiracao;
@@ -49,6 +50,7 @@ public class CadeiraLivreResponse {
             .empresaCnpj(agenda.getEmpresa().getCnpj())
             .horario(agenda.getHorarioAgendamento())
             .desconto(converterParaDuasCasasDecimais(agenda.getDesconto().doubleValue()))
+            .totalServico(converterParaDuasCasasDecimais(agenda.getTotalServico()))
             .totalDesconto(converterParaDuasCasasDecimais(agenda.getTotalDesconto()))
             .totalPagamento(converterParaDuasCasasDecimais(agenda.getTotalPagamento()))
             .horarioExpiracao(agenda.isValida() ? agenda.informarHorarioExpiracao() : null)

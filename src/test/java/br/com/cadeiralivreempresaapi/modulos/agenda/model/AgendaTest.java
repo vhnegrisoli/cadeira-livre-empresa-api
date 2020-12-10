@@ -43,7 +43,8 @@ public class AgendaTest {
         assertThat(agenda.getClienteNome()).isNull();
         assertThat(agenda.getClienteEmail()).isNull();
         assertThat(agenda.getClienteCpf()).isNull();
-        assertThat(agenda.getTotalDesconto()).isEqualTo(25.0);
+        assertThat(agenda.getTotalDesconto()).isEqualTo(0.0);
+        assertThat(agenda.getTotalServico()).isEqualTo(25.0);
     }
 
     @Test
@@ -56,7 +57,8 @@ public class AgendaTest {
         agenda.setServicos(Set.of(umServico(), servicoOutroPreco));
         agenda.calcularTotal(null);
         assertThat(agenda.getTotalDesconto()).isNotNull();
-        assertThat(agenda.getTotalDesconto()).isEqualTo(48.45);
+        assertThat(agenda.getTotalDesconto()).isEqualTo(0.0);
+        assertThat(agenda.getTotalServico()).isEqualTo(48.45);
     }
 
     @Test

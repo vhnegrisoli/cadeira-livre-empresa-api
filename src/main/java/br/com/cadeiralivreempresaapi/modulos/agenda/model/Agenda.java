@@ -13,16 +13,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.type.DoubleType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.PERCENTUAL;
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.TRINTA_MINUTOS;
-import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 
@@ -87,6 +88,9 @@ public class Agenda {
     @Column(name = "TOTAL_PAGAMENTO", nullable = false)
     private Double totalPagamento;
 
+    @Column(name = "TOTAL_SERVICO", nullable = false)
+    private Double totalServico;
+
     @Column(name = "DESCONTO")
     private Float desconto;
 
@@ -134,13 +138,13 @@ public class Agenda {
     }
 
     public void calcularTotal(Float desconto) {
-        var totalServico = servicos
+        totalServico = servicos
             .stream()
             .map(Servico::getPreco)
             .mapToDouble(Double::doubleValue)
             .sum();
         totalDesconto = isEmpty(desconto)
-            ? totalServico
+            ? DoubleType.ZERO
             : totalServico * (desconto / PERCENTUAL);
         totalPagamento = totalServico - totalDesconto;
     }
@@ -184,7 +188,7 @@ public class Agenda {
     }
 
     public Long informarTempoRestante() {
-        return LocalTime.now().until(informarHorarioExpiracao(), MINUTES);
+        return LocalTime.now().until(informarHorarioExpiracao(), ChronoUnit.MINUTES);
     }
 
     public void reservarParaCliente(JwtUsuarioResponse cliente) {
