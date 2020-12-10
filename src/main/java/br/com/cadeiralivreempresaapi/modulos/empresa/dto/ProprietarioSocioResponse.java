@@ -27,7 +27,7 @@ public class ProprietarioSocioResponse {
     public static ProprietarioSocioResponse of(Usuario usuario) {
         var response = new ProprietarioSocioResponse();
         BeanUtils.copyProperties(usuario, response);
-        response.setDescricao(usuario.isSocioOuProprietario()
+        response.setDescricao(usuario.isProprietario()
             ? PROPRIETARIO.getDescricao()
             : SOCIO.getDescricao());
         return response;

@@ -10,6 +10,13 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @SuppressWarnings("PMD.TooManyStaticImports")
 public class EmpresaPredicate extends PredicateBase {
 
+    public EmpresaPredicate comId(Integer id) {
+        if (!isEmpty(id)) {
+            builder.and(empresa.id.eq(id));
+        }
+        return this;
+    }
+
     public EmpresaPredicate comCnpj(String cnpj) {
         if (!isEmpty(cnpj)) {
             builder.and(empresa.cnpj.containsIgnoreCase(cnpj));

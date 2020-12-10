@@ -96,11 +96,22 @@ public class Usuario {
         return ATIVO.equals(situacao);
     }
 
-    public boolean isSocioOuProprietario() {
+    public boolean isProprietario() {
         return permissoes
             .stream()
             .map(Permissao::getPermissao)
-            .anyMatch(permissao -> permissao.equals(PROPRIETARIO) || permissao.equals(SOCIO));
+            .anyMatch(permissao -> permissao.equals(PROPRIETARIO));
+    }
+
+    public boolean isSocio() {
+        return permissoes
+            .stream()
+            .map(Permissao::getPermissao)
+            .anyMatch(permissao -> permissao.equals(SOCIO));
+    }
+
+    public boolean isSocioOuProprietario() {
+        return isSocio() || isProprietario();
     }
 
     public boolean isFuncionario() {

@@ -37,7 +37,7 @@ public class ProprietarioSocioResponseTest {
         assertThat(response.getCpf()).isEqualTo("332.368.250-57");
         assertThat(response.getEmail()).isEqualTo("usuario@gmail.com");
         assertThat(response.getNome()).isEqualTo("Usuario");
-        assertThat(response.getDescricao()).isEqualTo("Proprietário");
+        assertThat(response.getDescricao()).isEqualTo("Sócio");
         assertThat(response.getSituacao()).isEqualTo(ESituacaoUsuario.ATIVO);
     }
 }

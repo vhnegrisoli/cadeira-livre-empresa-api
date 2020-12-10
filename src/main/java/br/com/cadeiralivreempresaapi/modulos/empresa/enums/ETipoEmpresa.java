@@ -1,6 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.enums;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
 public enum ETipoEmpresa {
@@ -9,5 +10,6 @@ public enum ETipoEmpresa {
     CABELO("Cabeleireiro/a"),
     BARBEARIA("Barbearia");
 
+    @Getter
     private String tipoEmpresa;
 }

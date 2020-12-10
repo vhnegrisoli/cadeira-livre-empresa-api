@@ -6,6 +6,7 @@ import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaFiltros;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ETipoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.repository.EmpresaRepository;
+import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioService;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(EmpresaService.class)
+@Import({EmpresaService.class, JwtService.class})
 @ExtendWith(MockitoExtension.class)
 @Sql(scripts = {
     "classpath:/usuarios_tests.sql",

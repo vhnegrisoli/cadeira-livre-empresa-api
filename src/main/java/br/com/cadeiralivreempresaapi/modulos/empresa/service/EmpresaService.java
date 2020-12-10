@@ -2,13 +2,11 @@ package br.com.cadeiralivreempresaapi.modulos.empresa.service;
 
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
-import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaFiltros;
-import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaPageResponse;
-import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaRequest;
-import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaResponse;
+import br.com.cadeiralivreempresaapi.modulos.empresa.dto.*;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.repository.EmpresaRepository;
+import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
@@ -18,7 +16,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static br.com.cadeiralivreempresaapi.modulos.empresa.messages.EmpresaMessages.*;
+import static br.com.cadeiralivreempresaapi.modulos.jwt.messages.JwtMessages.USUARIO_NAO_AUTENTICADO;
 
 @Service
 public class EmpresaService {
@@ -29,6 +31,8 @@ public class EmpresaService {
     private UsuarioService usuarioService;
     @Autowired
     private AutenticacaoService autenticacaoService;
+    @Autowired
+    private JwtService jwtService;
 
     @Transactional
     public SuccessResponseDetails salvar(EmpresaRequest request) {
@@ -142,5 +146,29 @@ public class EmpresaService {
             ? ESituacaoEmpresa.INATIVA
             : ESituacaoEmpresa.ATIVA);
         return EMPRESA_SITUACAO_ALTERADA_SUCESSO;
+    }
+
+    public List<EmpresaListagemClienteResponse> buscarEmpresasParaCliente(String token, EmpresaFiltros filtros) {
+        validarClienteComJwtValido(token);
+        filtros.setSituacao(ESituacaoEmpresa.ATIVA);
+        return empresaRepository
+            .findAll(filtros.toPredicate().build())
+            .stream()
+            .map(EmpresaListagemClienteResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    public EmpresaClienteResponse buscarEmpresaPorId(Integer id, String token) {
+        validarClienteComJwtValido(token);
+        return EmpresaClienteResponse.of(empresaRepository
+            .findByIdAndSituacao(id, ESituacaoEmpresa.ATIVA)
+            .orElseThrow(() -> EMPRESA_NAO_ENCONTRADA)
+        );
+    }
+
+    private void validarClienteComJwtValido(String jwtToken) {
+        if (!jwtService.verificarUsuarioValidoComTokenValida(jwtToken)) {
+            throw USUARIO_NAO_AUTENTICADO;
+        }
     }
 }

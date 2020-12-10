@@ -40,7 +40,9 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
             "/webjars/**",
             "/api/docs",
             "/api/jwt/**",
-            "**cliente-api**"
+            "**cliente-api**",
+            "/api/empresas/cliente-api",
+            "/api/empresas/{id}/cliente-api"
         };
 
         http

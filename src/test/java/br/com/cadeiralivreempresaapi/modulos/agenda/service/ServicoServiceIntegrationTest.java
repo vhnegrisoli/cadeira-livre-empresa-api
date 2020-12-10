@@ -7,6 +7,7 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.repository.ServicoRepository
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
+import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.PermissaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioAcessoService;
@@ -34,7 +35,8 @@ import static org.mockito.Mockito.when;
     EmpresaService.class,
     UsuarioService.class,
     UsuarioAcessoService.class,
-    FuncionarioService.class
+    FuncionarioService.class,
+    JwtService.class
 })
 @ExtendWith(MockitoExtension.class)
 @Sql(scripts = {

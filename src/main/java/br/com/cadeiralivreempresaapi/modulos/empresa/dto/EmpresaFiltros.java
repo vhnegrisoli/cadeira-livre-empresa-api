@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class EmpresaFiltros {
 
+    private Integer id;
     private String cnpj;
     private String nome;
     private ETipoEmpresa tipoEmpresa;
@@ -16,6 +17,7 @@ public class EmpresaFiltros {
 
     public EmpresaPredicate toPredicate() {
         return new EmpresaPredicate()
+            .comId(id)
             .comCnpj(cnpj)
             .comNome(nome)
             .comTipoEmpresa(tipoEmpresa)

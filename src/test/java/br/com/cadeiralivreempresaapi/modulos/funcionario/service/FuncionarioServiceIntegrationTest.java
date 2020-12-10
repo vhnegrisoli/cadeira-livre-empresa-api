@@ -5,6 +5,7 @@ import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.dto.FuncionarioFiltros;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
+import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.PermissaoService;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.when;
 @Import({
     FuncionarioService.class,
     EmpresaService.class,
+    JwtService.class,
     UsuarioService.class
 })
 @ExtendWith(MockitoExtension.class)
