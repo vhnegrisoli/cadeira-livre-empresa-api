@@ -10,6 +10,8 @@ import org.springframework.beans.BeanUtils;
 
 import java.time.LocalTime;
 
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.PatternUtil.TIME_PATTERN;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,7 +19,7 @@ import java.time.LocalTime;
 public class HorarioResponse {
 
     private Integer id;
-    @JsonFormat(pattern = "HH:mm")
+    @JsonFormat(pattern = TIME_PATTERN)
     private LocalTime horario;
     private Integer diaDaSemanaId;
     private Integer diaNumerico;

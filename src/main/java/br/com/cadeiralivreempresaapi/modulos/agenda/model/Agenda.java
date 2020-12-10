@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.type.DoubleType;
+import org.hibernate.type.IntegerType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -98,6 +99,9 @@ public class Agenda {
     @Column(name = "TIPO_AGENDA", nullable = false)
     private ETipoAgenda tipoAgenda;
 
+    @Column(name = "MINUTOS_DISPONIVEIS", nullable = false)
+    private Integer minutosDisponiveis;
+
     @PrePersist
     public void prePersist() {
         dataCadastro = LocalDateTime.now();
@@ -132,9 +136,17 @@ public class Agenda {
             .desconto(request.getDesconto())
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
             .empresa(new Empresa(request.getEmpresaId()))
+            .minutosDisponiveis(definirMinutosDisponiveis(request))
             .build();
         agenda.calcularTotal(request.getDesconto());
         return agenda;
+    }
+
+    private static Integer definirMinutosDisponiveis(CadeiraLivreRequest request) {
+        if (isEmpty(request.getMinutosDisponiveis()) || IntegerType.ZERO.equals(request.getMinutosDisponiveis())) {
+            return TRINTA_MINUTOS.intValue();
+        }
+        return request.getMinutosDisponiveis();
     }
 
     public void calcularTotal(Float desconto) {
@@ -184,7 +196,7 @@ public class Agenda {
     }
 
     public LocalTime informarHorarioExpiracao() {
-        return dataCadastro.toLocalTime().plusMinutes(TRINTA_MINUTOS);
+        return dataCadastro.toLocalTime().plusMinutes(minutosDisponiveis);
     }
 
     public Long informarTempoRestante() {

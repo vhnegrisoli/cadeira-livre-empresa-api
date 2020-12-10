@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.NumeroUtil.converterParaDuasCasasDecimais;
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.PatternUtil.TIME_PATTERN;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data
@@ -25,7 +26,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 public class CadeiraLivreResponse {
 
     private Integer id;
-    @JsonFormat(pattern = "HH:mm")
+    @JsonFormat(pattern = TIME_PATTERN)
     private LocalTime horario;
     private List<ServicoAgendaResponse> servicos;
     private Integer empresaId;
@@ -35,12 +36,15 @@ public class CadeiraLivreResponse {
     private BigDecimal totalServico;
     private BigDecimal totalDesconto;
     private BigDecimal totalPagamento;
+    private Integer minutosDisponiveis;
+    @JsonFormat(pattern = TIME_PATTERN)
     private LocalTime horarioExpiracao;
     private Long minutosRestantes;
     private Boolean cadeiraLivreValida;
     private String situacao;
     private ClienteResponse cliente;
 
+    @SuppressWarnings("MethodLength")
     public static CadeiraLivreResponse of(Agenda agenda) {
         return CadeiraLivreResponse
             .builder()
@@ -53,6 +57,7 @@ public class CadeiraLivreResponse {
             .totalServico(converterParaDuasCasasDecimais(agenda.getTotalServico()))
             .totalDesconto(converterParaDuasCasasDecimais(agenda.getTotalDesconto()))
             .totalPagamento(converterParaDuasCasasDecimais(agenda.getTotalPagamento()))
+            .minutosDisponiveis(agenda.getMinutosDisponiveis())
             .horarioExpiracao(agenda.isValida() ? agenda.informarHorarioExpiracao() : null)
             .minutosRestantes(agenda.isValida() ? agenda.informarTempoRestante() : null)
             .cadeiraLivreValida(agenda.isValida())

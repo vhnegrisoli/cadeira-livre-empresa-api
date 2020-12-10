@@ -16,4 +16,5 @@ public class CadeiraLivreRequest {
     private Integer empresaId;
     private List<Integer> servicosIds;
     private Float desconto;
+    private Integer minutosDisponiveis;
 }
