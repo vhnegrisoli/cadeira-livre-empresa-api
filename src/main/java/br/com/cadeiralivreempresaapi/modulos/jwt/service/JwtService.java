@@ -2,6 +2,7 @@ package br.com.cadeiralivreempresaapi.modulos.jwt.service;
 
 import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
 import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
+import br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes;
 import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtUsuarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.jwt.dto.UsuarioTokenResponse;
 import br.com.cadeiralivreempresaapi.modulos.jwt.model.UsuarioLoginJwt;
@@ -14,10 +15,12 @@ import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +37,8 @@ public class JwtService {
     private UsuarioLoginJwtRepository usuarioLoginJwtRepository;
     @Autowired
     private AutenticacaoService autenticacaoService;
-
+    @Autowired
+    private Environment env;
     @Value("${jwt.secret}")
     private String secret;
 
@@ -68,7 +72,7 @@ public class JwtService {
         try {
             return Jwts
                 .parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(getSecret().getBytes()))
                 .build()
                 .parseClaimsJws(jwt);
         } catch (Exception ex) {
@@ -118,5 +122,12 @@ public class JwtService {
             .stream()
             .filter(usuario -> !verificarTokenValida(usuario.getJwt()))
             .collect(Collectors.toList());
+    }
+
+    private String getSecret() {
+        if (Arrays.asList(env.getActiveProfiles()).contains(Constantes.TEST_PROFILE)) {
+            return Constantes.TEST_TOKEN_SECRET;
+        }
+        return secret;
     }
 }
