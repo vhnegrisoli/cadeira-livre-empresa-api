@@ -33,8 +33,6 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @Service
 public class CadeiraLivreService {
 
-    private static final Integer SESSENTA_MINUTOS = 60;
-
     @Autowired
     private AgendaRepository agendaRepository;
     @Autowired
@@ -77,10 +75,6 @@ public class CadeiraLivreService {
         }
         if (isEmpty(request.getEmpresaId())) {
             throw AGENDA_SEM_EMPRESA;
-        }
-        if (!isEmpty(request.getMinutosDisponiveis())
-            && request.getMinutosDisponiveis() > SESSENTA_MINUTOS) {
-            throw CADEIRA_LIVRE_MAIOR_60_MINUTOS;
         }
     }
 

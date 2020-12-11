@@ -23,8 +23,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.PERCENTUAL;
-import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.TRINTA_MINUTOS;
+import static br.com.cadeiralivreempresaapi.modulos.agenda.messages.AgendaHorarioMessages.CADEIRA_LIVRE_MAIOR_60_MINUTOS;
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.*;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 
@@ -145,6 +145,9 @@ public class Agenda {
     private static Integer definirMinutosDisponiveis(CadeiraLivreRequest request) {
         if (isEmpty(request.getMinutosDisponiveis()) || IntegerType.ZERO.equals(request.getMinutosDisponiveis())) {
             return TRINTA_MINUTOS.intValue();
+        }
+        if (request.getMinutosDisponiveis() > SESSENTA_MINUTOS) {
+            throw CADEIRA_LIVRE_MAIOR_60_MINUTOS;
         }
         return request.getMinutosDisponiveis();
     }

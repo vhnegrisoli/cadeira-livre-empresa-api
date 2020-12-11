@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.model;
 
+import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.AgendaMocks.*;
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.ServicoMocks.umServico;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.umUsuarioAutenticadoAdmin;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class AgendaTest {
 
@@ -179,5 +181,45 @@ public class AgendaTest {
         agenda.setClienteEmail("testedadoscliente@gmail.com");
         agenda.setClienteCpf("10332458954");
         assertThat(agenda.isCadeiraLivreSemClienteVinculado()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve definir minutos disponíveis quando existir campo no request")
+    public void definirMinutosDisponiveis_deveDefinirMinutosDisponiveis_quandoExistirNoRequest() {
+        var request = umaCadeiraLivreRequest();
+        request.setMinutosDisponiveis(10);
+        var agenda = Agenda.of(request, umUsuarioAutenticadoAdmin(), Set.of(umServico()));
+        assertThat(agenda).isNotNull();
+        assertThat(agenda.getMinutosDisponiveis()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("Deve definir 30 minutos quando não existir campo no request")
+    public void definirMinutosDisponiveis_deveDefinir30Minutos_quandoNaoExistirCampoNoRequest() {
+        var request = umaCadeiraLivreRequest();
+        request.setMinutosDisponiveis(null);
+        var agenda = Agenda.of(request, umUsuarioAutenticadoAdmin(), Set.of(umServico()));
+        assertThat(agenda).isNotNull();
+        assertThat(agenda.getMinutosDisponiveis()).isEqualTo(30);
+    }
+
+    @Test
+    @DisplayName("Deve definir 30 minutos quando campo existir no request com valor 0")
+    public void definirMinutosDisponiveis_deveDefinir30Minutos_quandoCampoInformadoNoRequestForZero() {
+        var request = umaCadeiraLivreRequest();
+        request.setMinutosDisponiveis(0);
+        var agenda = Agenda.of(request, umUsuarioAutenticadoAdmin(), Set.of(umServico()));
+        assertThat(agenda).isNotNull();
+        assertThat(agenda.getMinutosDisponiveis()).isEqualTo(30);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception quando campo no request com valor maior que 60")
+    public void definirMinutosDisponiveis_deveLancarException_quandoCampoNoRequestForMaiorQue60() {
+        var request = umaCadeiraLivreRequest();
+        request.setMinutosDisponiveis(61);
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> Agenda.of(request, umUsuarioAutenticadoAdmin(), Set.of(umServico())))
+            .withMessage("A cadeira livre não pode ficar disponível por mais que 60 minutos.");
     }
 }
