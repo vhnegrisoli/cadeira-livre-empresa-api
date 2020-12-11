@@ -178,4 +178,11 @@ public class JwtServiceIntegrationTest {
 
         verify(autenticacaoService, times(1)).getUsuarioAutenticado();
     }
+
+    @Test
+    @DisplayName("Deve fazer nada quando não existirem tokens para remover")
+    public void removerTokensInvalidas_deveFazerNada_quandoNaoExistiremTokensParaRemover() {
+        usuarioLoginJwtRepository.deleteAll();
+        jwtService.removerTokensInvalidas(false);
+    }
 }

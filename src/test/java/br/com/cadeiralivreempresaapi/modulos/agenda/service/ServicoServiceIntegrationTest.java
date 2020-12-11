@@ -260,7 +260,6 @@ public class ServicoServiceIntegrationTest {
             );
     }
 
-
     @Test
     @DisplayName("Deve buscar set de serviços quando solicitar por IDs")
     public void buscarServicosPorIds_deveRetornarSetComServicos_quandoSolicitadoPorIds() {
