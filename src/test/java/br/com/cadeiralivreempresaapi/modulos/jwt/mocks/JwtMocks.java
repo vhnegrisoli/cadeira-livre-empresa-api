@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.jwt.mocks;
 
+import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtUsuarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.jwt.dto.UsuarioTokenResponse;
 import br.com.cadeiralivreempresaapi.modulos.jwt.model.UsuarioLoginJwt;
 
@@ -14,6 +15,16 @@ public class JwtMocks {
 
     public static UsuarioLoginJwt umUsuarioLoginJwt(Boolean valida) {
         return UsuarioLoginJwt.gerarUsuario(umUsuarioTokenResponse(), valida);
+    }
+
+    public static JwtUsuarioResponse umJwtUsuarioResponse() {
+        return JwtUsuarioResponse
+            .builder()
+            .id("5cd48099-1009-43c4-b979-f68148a2a81d")
+            .nome("Victor Hugo Negrisoli")
+            .email("vhnegrisoli@gmail.com")
+            .cpf("103.324.589-54")
+            .build();
     }
 
     public static UsuarioTokenResponse umUsuarioTokenResponse() {

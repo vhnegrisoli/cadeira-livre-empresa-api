@@ -102,14 +102,6 @@ public class Agenda {
     @Column(name = "MINUTOS_DISPONIVEIS", nullable = false)
     private Integer minutosDisponiveis;
 
-    @PrePersist
-    public void prePersist() {
-        dataCadastro = LocalDateTime.now();
-        if (ETipoAgenda.CADEIRA_LIVRE.equals(tipoAgenda)) {
-            horarioAgendamento = dataCadastro.toLocalTime();
-        }
-    }
-
     public static Agenda of(AgendaRequest request) {
         return Agenda
             .builder()
@@ -121,6 +113,7 @@ public class Agenda {
             .situacao(ESituacaoAgenda.RESERVA)
             .tipoAgenda(ETipoAgenda.HORARIO_MARCADO)
             .empresa(new Empresa(request.getEmpresaId()))
+            .dataCadastro(LocalDateTime.now())
             .build();
     }
 
@@ -137,8 +130,10 @@ public class Agenda {
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
             .empresa(new Empresa(request.getEmpresaId()))
             .minutosDisponiveis(definirMinutosDisponiveis(request))
+            .dataCadastro(LocalDateTime.now())
             .build();
         agenda.calcularTotal(request.getDesconto());
+        agenda.definirHorarioAgendamento();
         return agenda;
     }
 
@@ -212,5 +207,13 @@ public class Agenda {
         setClienteEmail(cliente.getEmail());
         setClienteCpf(cliente.getCpf());
         setSituacao(ESituacaoAgenda.RESERVA);
+    }
+
+    public void definirHorarioAgendamento() {
+        if (ETipoAgenda.CADEIRA_LIVRE.equals(tipoAgenda)) {
+            horarioAgendamento = dataCadastro.toLocalTime();
+        } else {
+            horarioAgendamento = horario.getHorario();
+        }
     }
 }
