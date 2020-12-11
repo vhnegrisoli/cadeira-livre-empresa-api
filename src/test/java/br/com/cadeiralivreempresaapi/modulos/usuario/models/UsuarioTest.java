@@ -61,6 +61,38 @@ public class UsuarioTest {
     }
 
     @Test
+    @DisplayName("Deve retornar true se usuário for sócio")
+    public void isSocio_deveRetornarTrue_seForUsuarioForSocio() {
+        var usuario = umUsuario();
+        usuario.setPermissoes(Set.of(umaPermissaoSocio()));
+        assertThat(usuario.isSocio()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve retornar false se usuário não for sócio")
+    public void isSocio_deveRetornaFalse_seForUsuarioNaoForSocio() {
+        var usuario = umUsuario();
+        usuario.setPermissoes(Set.of(umaPermissaoFuncionario()));
+        assertThat(usuario.isSocio()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve retornar true se usuário for proprietário")
+    public void isSocio_deveRetornarTrue_seForUsuarioForProprietario() {
+        var usuario = umUsuario();
+        usuario.setPermissoes(Set.of(umaPermissaoProprietario()));
+        assertThat(usuario.isProprietario()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve retornar false se usuário não for proprietário")
+    public void isSocio_deveRetornaFalse_seForUsuarioNaoForProprietario() {
+        var usuario = umUsuario();
+        usuario.setPermissoes(Set.of(umaPermissaoFuncionario()));
+        assertThat(usuario.isProprietario()).isFalse();
+    }
+
+    @Test
     @DisplayName("Deve retornar true se usuário for proprietário")
     public void isSocioOuProprietario_deveRetornarTrue_seForUsuarioProprietario() {
         var usuario = umUsuario();

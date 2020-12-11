@@ -3,6 +3,9 @@ package br.com.cadeiralivreempresaapi.modulos.jwt.mocks;
 import br.com.cadeiralivreempresaapi.modulos.jwt.dto.UsuarioTokenResponse;
 import br.com.cadeiralivreempresaapi.modulos.jwt.model.UsuarioLoginJwt;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static br.com.cadeiralivreempresaapi.modulos.jwt.util.JwtTestUtil.gerarTokenTeste;
 
 public class JwtMocks {
@@ -19,5 +22,14 @@ public class JwtMocks {
             .usuarioId("5cd48099-1009-43c4-b979-f68148a2a81d")
             .token(JWT)
             .build();
+    }
+
+    public static Map<String, Object> gerarMockMapUsuario(String uuid) {
+        var usuario = new HashMap<String, Object>();
+        usuario.put("id", uuid);
+        usuario.put("nome", "Victor Hugo Negrisoli");
+        usuario.put("email", "vhnegrisoli@gmail.com");
+        usuario.put("cpf", "103.324.589-54");
+        return usuario;
     }
 }

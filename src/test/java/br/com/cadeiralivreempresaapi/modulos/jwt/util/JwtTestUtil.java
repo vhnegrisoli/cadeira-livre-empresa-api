@@ -1,11 +1,12 @@
 package br.com.cadeiralivreempresaapi.modulos.jwt.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
+import static br.com.cadeiralivreempresaapi.modulos.jwt.mocks.JwtMocks.gerarMockMapUsuario;
 
 public class JwtTestUtil {
 
@@ -14,7 +15,7 @@ public class JwtTestUtil {
 
     public static String gerarTokenTeste() {
         var uuid = "5cd48099-1009-43c4-b979-f68148a2a81d";
-        var dados = gerarMock(uuid);
+        var dados = gerarMockMapUsuario(uuid);
         return Jwts
             .builder()
             .setClaims(dados)
@@ -26,7 +27,7 @@ public class JwtTestUtil {
 
     public static String gerarTokenExpirado() {
         var uuid = "5cd48099-1009-43c4-b979-f68148a2a81d";
-        var dados = gerarMock(uuid);
+        var dados = gerarMockMapUsuario(uuid);
         return Jwts
             .builder()
             .setClaims(dados)
@@ -36,12 +37,12 @@ public class JwtTestUtil {
             .compact();
     }
 
-    private static Map<String, Object> gerarMock(String uuid) {
-        var usuario = new HashMap<String, Object>();
-        usuario.put("id", uuid);
-        usuario.put("nome", "Victor Hugo Negrisoli");
-        usuario.put("email", "vhnegrisoli@gmail.com");
-        usuario.put("cpf", "103.324.589-54");
-        return usuario;
+    public static Claims recuperarBody(String jwt) {
+        return Jwts
+            .parserBuilder()
+            .setSigningKey(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()))
+            .build()
+            .parseClaimsJws(jwt)
+            .getBody();
     }
 }
