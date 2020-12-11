@@ -145,9 +145,6 @@ public class ServicoService {
             .stream()
             .map(servico -> ESPACO.toString().concat(servico.getDescricao()))
             .collect(Collectors.joining(SEPARAR_POR_VIRGULAS));
-        if (!isEmpty(servicosString) && servicosString.charAt(0) == ESPACO) {
-            return servicosString.substring(1);
-        }
-        return servicosString;
+        return servicosString.substring(1);
     }
 }

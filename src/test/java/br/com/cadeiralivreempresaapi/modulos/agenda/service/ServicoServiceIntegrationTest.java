@@ -24,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
 import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -251,6 +253,20 @@ public class ServicoServiceIntegrationTest {
         assertThat(service.buscarServicosPorEmpresa(4))
             .extracting("id", "descricao", "preco", "empresa", "cnpj")
             .containsExactly(
+                tuple(3, "Corte e lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
+                tuple(1, "Corte exclusivo", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
+                tuple(7, "Corte, barba e lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
+                tuple(4, "Lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38")
+            );
+    }
+
+
+    @Test
+    @DisplayName("Deve buscar set de serviços quando solicitar por IDs")
+    public void buscarServicosPorIds_deveRetornarSetComServicos_quandoSolicitadoPorIds() {
+        assertThat(service.buscarServicosPorIds(List.of(1, 3, 4, 7)))
+            .extracting("id", "descricao", "preco", "empresa.nome", "empresa.cnpj")
+            .containsExactlyInAnyOrder(
                 tuple(3, "Corte e lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
                 tuple(1, "Corte exclusivo", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
                 tuple(7, "Corte, barba e lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
