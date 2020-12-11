@@ -22,7 +22,7 @@ import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.SEPARA
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
-public class    ServicoService {
+public class ServicoService {
 
     private static final Double ZERO = 0.00;
 
