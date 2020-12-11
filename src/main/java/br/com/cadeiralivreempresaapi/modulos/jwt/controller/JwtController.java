@@ -12,11 +12,6 @@ public class JwtController {
     @Autowired
     private JwtService jwtService;
 
-    @GetMapping
-    public String recuperarTokenTeste() {
-        return jwtService.recuperarTokenTeste();
-    }
-
     @GetMapping("validar/{jwt}")
     public Boolean validarToken(@PathVariable String jwt) {
         return jwtService.verificarUsuarioValidoComTokenValida(jwt);

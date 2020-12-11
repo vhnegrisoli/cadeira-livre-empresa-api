@@ -22,7 +22,7 @@ import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.SEPARA
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
-public class    ServicoService {
+public class ServicoService {
 
     private static final Double ZERO = 0.00;
 
@@ -145,9 +145,6 @@ public class    ServicoService {
             .stream()
             .map(servico -> ESPACO.toString().concat(servico.getDescricao()))
             .collect(Collectors.joining(SEPARAR_POR_VIRGULAS));
-        if (!isEmpty(servicosString) && servicosString.charAt(0) == ESPACO) {
-            return servicosString.substring(1);
-        }
-        return servicosString;
+        return servicosString.substring(1);
     }
 }

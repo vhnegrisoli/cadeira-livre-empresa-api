@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.model;
 
+import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import org.junit.jupiter.api.DisplayName;
@@ -10,9 +11,12 @@ import java.time.LocalTime;
 import java.util.Set;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.AgendaMocks.*;
+import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.HorarioMocks.umHorario;
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.ServicoMocks.umServico;
+import static br.com.cadeiralivreempresaapi.modulos.jwt.mocks.JwtMocks.umJwtUsuarioResponse;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.umUsuarioAutenticadoAdmin;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class AgendaTest {
 
@@ -124,7 +128,7 @@ public class AgendaTest {
         agenda.setDataCadastro(LocalDateTime.now().minusMinutes(5));
         assertThat(agenda.informarTempoRestante()).isGreaterThan(20L);
     }
-    
+
     @Test
     @DisplayName("Deve retornar True quando estiver dentro do horário de expiração e com situação disponível")
     public void isValida_deveRetornarTrue_quandoEstiverDentroDoHorarioDeExpiracaoEDisponivel() {
@@ -160,6 +164,40 @@ public class AgendaTest {
     }
 
     @Test
+    @DisplayName("Deve retornar False quando estiver dentro do horário de expiração e com situação disponível")
+    public void isInvalida_deveRetornarFalse_quandoEstiverDentroDoHorarioDeExpiracaoEDisponivel() {
+        var agenda = umaAgendaCadeiraLivre();
+        assertThat(agenda.isInvalida()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve retornar True quando não estiver dentro do horário de expiração")
+    public void isInvalida_deveRetornarTrue_quandoNaoEstiverDentroDoHorarioDeExpiracao() {
+        var agenda = umaAgendaCadeiraLivre();
+        agenda.setDataCadastro(LocalDateTime.now().minusMinutes(31));
+        assertThat(agenda.isInvalida()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve retornar True quando não estiver com a situação disponível")
+    public void isInvalida_deveRetornarTrue_quandoNaoEstiverComSituacaoDisponivel() {
+        var agenda = umaAgendaCadeiraLivre();
+        agenda.definirSituacaoComoCancelada();
+        assertThat(agenda.isInvalida()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve retornar True quando possuir cliente vinculado")
+    public void isInvalida_deveRetornarTrue_quandoPossuirClienteVinculado() {
+        var agenda = umaAgendaCadeiraLivre();
+        agenda.setClienteId("asdasd515s1a51d1a5");
+        agenda.setClienteNome("testedadosfaltando@gmail.com");
+        agenda.setClienteEmail("testedadoscliente@gmail.com");
+        agenda.setClienteCpf("10332458954");
+        assertThat(agenda.isInvalida()).isTrue();
+    }
+
+    @Test
     @DisplayName("Deve retornar True quando não possuir qualquer dado de cliente vinculado")
     public void isCadeiraLivreSemClienteVinculado_deveRetornarTrue_quandoNaoPossuirCliente() {
         var agenda = umaAgendaCadeiraLivre();
@@ -179,5 +217,87 @@ public class AgendaTest {
         agenda.setClienteEmail("testedadoscliente@gmail.com");
         agenda.setClienteCpf("10332458954");
         assertThat(agenda.isCadeiraLivreSemClienteVinculado()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve definir minutos disponíveis quando existir campo no request")
+    public void definirMinutosDisponiveis_deveDefinirMinutosDisponiveis_quandoExistirNoRequest() {
+        var request = umaCadeiraLivreRequest();
+        request.setMinutosDisponiveis(10);
+        var agenda = Agenda.of(request, umUsuarioAutenticadoAdmin(), Set.of(umServico()));
+        assertThat(agenda).isNotNull();
+        assertThat(agenda.getMinutosDisponiveis()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("Deve definir 30 minutos quando não existir campo no request")
+    public void definirMinutosDisponiveis_deveDefinir30Minutos_quandoNaoExistirCampoNoRequest() {
+        var request = umaCadeiraLivreRequest();
+        request.setMinutosDisponiveis(null);
+        var agenda = Agenda.of(request, umUsuarioAutenticadoAdmin(), Set.of(umServico()));
+        assertThat(agenda).isNotNull();
+        assertThat(agenda.getMinutosDisponiveis()).isEqualTo(30);
+    }
+
+    @Test
+    @DisplayName("Deve definir 30 minutos quando campo existir no request com valor 0")
+    public void definirMinutosDisponiveis_deveDefinir30Minutos_quandoCampoInformadoNoRequestForZero() {
+        var request = umaCadeiraLivreRequest();
+        request.setMinutosDisponiveis(0);
+        var agenda = Agenda.of(request, umUsuarioAutenticadoAdmin(), Set.of(umServico()));
+        assertThat(agenda).isNotNull();
+        assertThat(agenda.getMinutosDisponiveis()).isEqualTo(30);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception quando campo no request com valor maior que 60")
+    public void definirMinutosDisponiveis_deveLancarException_quandoCampoNoRequestForMaiorQue60() {
+        var request = umaCadeiraLivreRequest();
+        request.setMinutosDisponiveis(61);
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> Agenda.of(request, umUsuarioAutenticadoAdmin(), Set.of(umServico())))
+            .withMessage("A cadeira livre não pode ficar disponível por mais que 60 minutos.");
+    }
+
+    @Test
+    @DisplayName("Deve reservar dados do cliente quando informar objeto de dados do JWT")
+    public void reservarParaClientes_deveGerarDadosDoCliente_quandoInformarDadosDoJwt() {
+        var agenda = umaAgendaCadeiraLivre();
+        agenda.reservarParaCliente(umJwtUsuarioResponse());
+        assertThat(agenda.getClienteId()).isEqualTo("5cd48099-1009-43c4-b979-f68148a2a81d");
+        assertThat(agenda.getClienteNome()).isEqualTo("Victor Hugo Negrisoli");
+        assertThat(agenda.getClienteEmail()).isEqualTo("vhnegrisoli@gmail.com");
+        assertThat(agenda.getClienteCpf()).isEqualTo("103.324.589-54");
+    }
+
+    @Test
+    @DisplayName("Deve definir horário atual se a agenda for do tipo Cadeira Livre")
+    public void definirHorarioAgendamento_deveDefinirHorarioAtual_seAgendaForTipoCadeiraLivre() {
+        var agenda = umaAgendaCadeiraLivre();
+        agenda.definirHorarioAgendamento();
+        var horarioAtual = LocalTime.now();
+        var horaAtual = horarioAtual.getHour();
+        var minutoAtual = horarioAtual.getMinute();
+        assertThat(agenda.getHorarioAgendamento().getHour()).isEqualTo(horaAtual);
+        assertThat(agenda.getHorarioAgendamento().getMinute()).isEqualTo(minutoAtual);
+    }
+
+    @Test
+    @DisplayName("Deve definir horário especificado se a agenda for do tipo Horário Marcado")
+    public void definirHorarioAgendamento_deveDefinirHorarioEspecificado_seAgendaForTipoHorarioMarcado() {
+        var agenda = umaAgendaCadeiraLivre();
+        agenda.setTipoAgenda(ETipoAgenda.HORARIO_MARCADO);
+
+        var horario = umHorario();
+        horario.setHorario(LocalTime.now().plusHours(3).plusMinutes(10));
+
+        agenda.setHorario(horario);
+        agenda.definirHorarioAgendamento();
+
+        var horarioAtual = LocalTime.now();
+        var horaAtual = horarioAtual.getHour();
+        var minutoAtual = horarioAtual.getMinute();
+        assertThat(agenda.getHorarioAgendamento().getHour()).isNotEqualTo(horaAtual);
+        assertThat(agenda.getHorarioAgendamento().getMinute()).isNotEqualTo(minutoAtual);
     }
 }

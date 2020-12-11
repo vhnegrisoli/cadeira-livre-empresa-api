@@ -13,4 +13,5 @@ public interface Constantes {
     String EMAIL = "email";
     String CPF = "cpf";
     Long TRINTA_MINUTOS = 30L;
+    Integer SESSENTA_MINUTOS = 60;
 }

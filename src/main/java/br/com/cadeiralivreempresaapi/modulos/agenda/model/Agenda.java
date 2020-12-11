@@ -23,8 +23,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.PERCENTUAL;
-import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.TRINTA_MINUTOS;
+import static br.com.cadeiralivreempresaapi.modulos.agenda.messages.AgendaHorarioMessages.CADEIRA_LIVRE_MAIOR_60_MINUTOS;
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.*;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 
@@ -102,14 +102,6 @@ public class Agenda {
     @Column(name = "MINUTOS_DISPONIVEIS", nullable = false)
     private Integer minutosDisponiveis;
 
-    @PrePersist
-    public void prePersist() {
-        dataCadastro = LocalDateTime.now();
-        if (ETipoAgenda.CADEIRA_LIVRE.equals(tipoAgenda)) {
-            horarioAgendamento = dataCadastro.toLocalTime();
-        }
-    }
-
     public static Agenda of(AgendaRequest request) {
         return Agenda
             .builder()
@@ -121,6 +113,7 @@ public class Agenda {
             .situacao(ESituacaoAgenda.RESERVA)
             .tipoAgenda(ETipoAgenda.HORARIO_MARCADO)
             .empresa(new Empresa(request.getEmpresaId()))
+            .dataCadastro(LocalDateTime.now())
             .build();
     }
 
@@ -137,14 +130,19 @@ public class Agenda {
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
             .empresa(new Empresa(request.getEmpresaId()))
             .minutosDisponiveis(definirMinutosDisponiveis(request))
+            .dataCadastro(LocalDateTime.now())
             .build();
         agenda.calcularTotal(request.getDesconto());
+        agenda.definirHorarioAgendamento();
         return agenda;
     }
 
     private static Integer definirMinutosDisponiveis(CadeiraLivreRequest request) {
         if (isEmpty(request.getMinutosDisponiveis()) || IntegerType.ZERO.equals(request.getMinutosDisponiveis())) {
             return TRINTA_MINUTOS.intValue();
+        }
+        if (request.getMinutosDisponiveis() > SESSENTA_MINUTOS) {
+            throw CADEIRA_LIVRE_MAIOR_60_MINUTOS;
         }
         return request.getMinutosDisponiveis();
     }
@@ -209,5 +207,13 @@ public class Agenda {
         setClienteEmail(cliente.getEmail());
         setClienteCpf(cliente.getCpf());
         setSituacao(ESituacaoAgenda.RESERVA);
+    }
+
+    public void definirHorarioAgendamento() {
+        if (ETipoAgenda.CADEIRA_LIVRE.equals(tipoAgenda)) {
+            horarioAgendamento = dataCadastro.toLocalTime();
+        } else {
+            horarioAgendamento = horario.getHorario();
+        }
     }
 }

@@ -3,6 +3,7 @@ package br.com.cadeiralivreempresaapi.modulos.empresa.service;
 import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaFiltros;
+import br.com.cadeiralivreempresaapi.modulos.empresa.dto.ProprietarioSocioClienteResponse;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ETipoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.repository.EmpresaRepository;
@@ -20,6 +21,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
+import static br.com.cadeiralivreempresaapi.modulos.jwt.util.JwtTestUtil.gerarTokenTeste;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -38,6 +42,8 @@ public class EmpresaServiceIntegrationTest {
     private EmpresaService service;
     @Autowired
     private EmpresaRepository empresaRepository;
+    @Autowired
+    private JwtService jwtService;
     @MockBean
     private UsuarioService usuarioService;
     @MockBean
@@ -239,6 +245,53 @@ public class EmpresaServiceIntegrationTest {
         assertThatExceptionOfType(PermissaoException.class)
             .isThrownBy(() -> service.alterarSituacao(4))
             .withMessage("Usuário sem permissão para visualizar essa empresa.");
+    }
+
+    @Test
+    @DisplayName("Deve buscar empresas quando informar token válida")
+    public void buscarEmpresasParaCliente_deveBuscarEmpresas_quandoInformarTokenValida() {
+        var token = gerarTokenTeste();
+        assertThat(service.buscarEmpresasParaCliente(token, new EmpresaFiltros()))
+            .extracting("id", "nome", "cnpj", "tipoEmpresa")
+            .containsExactly(
+                tuple(4, "Empresa 01 Edicao", "26.343.835/0001-38", "Salão de Beleza"),
+                tuple(7, "Empresa 02", "49.579.794/0001-89", "Salão de Beleza")
+            );
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao tentar buscar empresas com token inválida.")
+    public void buscarEmpresasParaCliente_deveLancarException_quandoTokenForInvalida() {
+        var token = gerarTokenTeste() + "123";
+        assertThatExceptionOfType(PermissaoException.class)
+            .isThrownBy(() -> service.buscarEmpresasParaCliente(token, new EmpresaFiltros()))
+            .withMessage("O usuário não está autenticado.");
+    }
+
+    @Test
+    @DisplayName("Deve buscar empresa por ID quando informar token válida")
+    public void buscarEmpresaPorId_deveBuscarEmpresaPorId_quandoInformarTokenValida() {
+        var token = gerarTokenTeste();
+        var empresa = service.buscarEmpresaPorId(4, token);
+        assertThat(empresa).isNotNull();
+        assertThat(empresa.getId()).isEqualTo(4);
+        assertThat(empresa.getNome()).isEqualTo("Empresa 01 Edicao");
+        assertThat(empresa.getRazaoSocial()).isEqualTo("Empresa 01");
+        assertThat(empresa.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(empresa.getTipoEmpresa()).isEqualTo("Salão de Beleza");
+        assertThat(empresa.getProprietarioSocios()).isEqualTo(List.of(
+            new ProprietarioSocioClienteResponse(2, "Proprietario 1", "Proprietário"),
+            new ProprietarioSocioClienteResponse(6, "Sócio 1 Update", "Sócio")
+        ));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao tentar buscar empresa por ID com token inválida.")
+    public void buscarEmpresaPorId_deveLancarException_quandoTokenForInvalida() {
+        var token = gerarTokenTeste() + "123";
+        assertThatExceptionOfType(PermissaoException.class)
+            .isThrownBy(() -> service.buscarEmpresaPorId(4, token))
+            .withMessage("O usuário não está autenticado.");
     }
 
     private void alterarSituacao(Integer empresaId, ESituacaoEmpresa situacao) {
