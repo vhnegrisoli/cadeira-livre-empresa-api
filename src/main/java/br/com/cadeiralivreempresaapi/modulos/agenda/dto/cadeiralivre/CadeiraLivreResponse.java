@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,6 +76,7 @@ public class CadeiraLivreResponse {
             .getServicos()
             .stream()
             .map(ServicoAgendaResponse::of)
+            .sorted(Comparator.comparing( ServicoAgendaResponse::getDescricao))
             .collect(Collectors.toList());
     }
 }
