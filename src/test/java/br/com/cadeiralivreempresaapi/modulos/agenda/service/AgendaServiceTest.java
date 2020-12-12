@@ -44,8 +44,7 @@ public class AgendaServiceTest {
     private HorarioService horarioService;
 
     @Test
-    public void teste() {
-        var agendas = agendaRepository.findAll();
-        System.out.println(agendas);
+    public void buscarAgendaPorId_deveBuscarAgenda_quandoInformarPorId() {
+        var agenda = service.buscarAgendaPorId(1);
     }
 }

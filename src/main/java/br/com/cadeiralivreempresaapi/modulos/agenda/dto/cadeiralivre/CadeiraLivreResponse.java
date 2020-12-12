@@ -57,7 +57,7 @@ public class CadeiraLivreResponse {
             .totalServico(converterParaDuasCasasDecimais(agenda.getTotalServico()))
             .totalDesconto(converterParaDuasCasasDecimais(agenda.getTotalDesconto()))
             .totalPagamento(converterParaDuasCasasDecimais(agenda.getTotalPagamento()))
-            .minutosDisponiveis(agenda.getMinutosDisponiveis())
+            .minutosDisponiveis(agenda.isValida() ? agenda.getMinutosDisponiveis() : null)
             .horarioExpiracao(agenda.isValida() ? agenda.informarHorarioExpiracao() : null)
             .minutosRestantes(agenda.isValida() ? agenda.informarTempoRestante() : null)
             .cadeiraLivreValida(agenda.isValida())

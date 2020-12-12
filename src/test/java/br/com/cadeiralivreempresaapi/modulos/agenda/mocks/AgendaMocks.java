@@ -2,6 +2,7 @@ package br.com.cadeiralivreempresaapi.modulos.agenda.mocks;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.AgendaRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
@@ -73,5 +74,9 @@ public class AgendaMocks {
             .servicosIds(List.of(1))
             .empresaId(1)
             .build();
+    }
+
+    public static CadeiraLivreResponse umaCadeiraLivreResponse() {
+        return CadeiraLivreResponse.of(umaAgendaCadeiraLivre());
     }
 }

@@ -10,9 +10,9 @@ INSERT INTO dia_da_semana (id,dia,dia_nome,dia_codigo) VALUES
 INSERT INTO horario (id,fk_empresa,horario,fk_dia_da_semana) VALUES
   (36,4,'17:30:00',26),
   (40,4,'14:30:00',25),
-  (41,7,'14:30:00',25),
-  (42,7,'14:30:00',26),
-  (43,7,'14:30:00',27);
+  (41,7,'13:30:00',25),
+  (42,7,'11:30:00',26),
+  (43,7,'05:30:00',27);
 
 INSERT INTO servico (id, descricao, fk_empresa, preco) VALUES
   (1, 'Corte exclusivo', 4, 15.90),
