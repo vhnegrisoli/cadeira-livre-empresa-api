@@ -31,14 +31,32 @@ public class EmpresaTest {
     }
 
     @Test
-    @DisplayName("Deve retornar Model de Empresa quando informar DTO de Empresa Request")
-    public void of_deveRetornarModelEmpresa_quandoInformarObjetoDtoEmpresaRequest() {
-        var empresa = Empresa.of(umaEmpresaRequest());
+    @DisplayName("Deve retornar Model de Empresa com tempo 30s quando informar DTO de Empresa Request sem tempo")
+    public void of_deveRetornarModelEmpresaComTempo30Segundos_quandoInformarObjetoDtoEmpresaRequestSemTempo() {
+        var request = umaEmpresaRequest();
+        request.setTempoRefreshCadeiraLivre(null);
+        var empresa = Empresa.of(request);
+
         assertThat(empresa).isNotNull();
         assertThat(empresa.getId()).isEqualTo(1);
         assertThat(empresa.getNome()).isEqualTo("Empresa 01");
         assertThat(empresa.getRazaoSocial()).isEqualTo("Empresa 01");
         assertThat(empresa.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(empresa.getTempoRefreshCadeiraLivre()).isEqualTo(30);
+    }
+
+    @Test
+    @DisplayName("Deve retornar Model de Empresa com tempo especificado quando informar DTO de Empresa Request com tempo")
+    public void of_deveRetornarModelEmpresaComTempoEspecificado_quandoInformarObjetoDtoEmpresaRequestComTempo() {
+        var request = umaEmpresaRequest();
+        var empresa = Empresa.of(request);
+
+        assertThat(empresa).isNotNull();
+        assertThat(empresa.getId()).isEqualTo(1);
+        assertThat(empresa.getNome()).isEqualTo("Empresa 01");
+        assertThat(empresa.getRazaoSocial()).isEqualTo("Empresa 01");
+        assertThat(empresa.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(empresa.getTempoRefreshCadeiraLivre()).isEqualTo(10);
     }
 
     @Test
@@ -72,4 +90,5 @@ public class EmpresaTest {
             .isThrownBy(() -> umaEmpresa().adicionarProprietario(umUsuario()))
             .withMessage("Para salvar uma empresa, o usuário deve ser um proprietário.");
     }
+
 }

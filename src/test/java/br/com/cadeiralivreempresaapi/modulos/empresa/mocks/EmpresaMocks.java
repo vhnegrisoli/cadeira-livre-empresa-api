@@ -28,6 +28,7 @@ public class EmpresaMocks {
             .situacao(ESituacaoEmpresa.ATIVA)
             .socios(Stream.of(umUsuario()).collect(Collectors.toList()))
             .tipoEmpresa(ETipoEmpresa.BARBEARIA)
+            .tempoRefreshCadeiraLivre(10)
             .build();
     }
 
@@ -39,6 +40,7 @@ public class EmpresaMocks {
             .nome("Empresa 01")
             .razaoSocial("Empresa 01")
             .tipoEmpresa(ETipoEmpresa.BARBEARIA)
+            .tempoRefreshCadeiraLivre(10)
             .build();
     }
 
