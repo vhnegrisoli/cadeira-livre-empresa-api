@@ -31,6 +31,7 @@ public class EmpresaResponse {
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     private LocalDateTime dataCadastro;
     private ETipoEmpresa tipoEmpresa;
+    private Integer tempoRefreshCadeiraLivre;
 
     public static EmpresaResponse of(Empresa empresa) {
         var response = new EmpresaResponse();

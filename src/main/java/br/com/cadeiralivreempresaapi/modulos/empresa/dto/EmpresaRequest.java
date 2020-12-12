@@ -17,4 +17,5 @@ public class EmpresaRequest {
     private String cnpj;
     private String razaoSocial;
     private ETipoEmpresa tipoEmpresa;
+    private Integer tempoRefreshCadeiraLivre;
 }

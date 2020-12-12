@@ -20,6 +20,7 @@ public class EmpresaPageResponse {
     private String cnpj;
     private ETipoEmpresa tipoEmpresa;
     private ESituacaoEmpresa situacao;
+    private Integer tempoRefreshCadeiraLivre;
 
     public static EmpresaPageResponse of(Empresa empresa) {
         var response = new EmpresaPageResponse();

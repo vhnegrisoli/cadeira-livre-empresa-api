@@ -17,4 +17,5 @@ public interface Constantes {
     String TEST_TOKEN_SECRET = "Y2FkZWlyYS1saXZyZS11c3VhcmlvLWFwaS10ZXN0ZQ==";
     String TEST_TOKEN_NOTIFICACAO = "123456";
     String TEST_PROFILE = "test";
+    Integer TRINTA_SEGUNDOS_REFRESH_PADRAO = 30;
 }

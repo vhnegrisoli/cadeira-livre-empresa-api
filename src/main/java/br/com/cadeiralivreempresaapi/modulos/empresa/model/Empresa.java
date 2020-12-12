@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.Constantes.TRINTA_SEGUNDOS_REFRESH_PADRAO;
 import static br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa.ATIVA;
 import static br.com.cadeiralivreempresaapi.modulos.empresa.messages.EmpresaMessages.USUARIO_NAO_PROPRIETARIO;
 import static org.springframework.util.ObjectUtils.isEmpty;
@@ -61,6 +62,9 @@ public class Empresa {
     @Enumerated(EnumType.STRING)
     private ESituacaoEmpresa situacao;
 
+    @Column(name = "TEMPO_REFRESH_CADEIRA_LIVRE")
+    private Integer tempoRefreshCadeiraLivre;
+
     @PrePersist
     public void prePersist() {
         dataCadastro = LocalDateTime.now();
@@ -78,6 +82,9 @@ public class Empresa {
     public static Empresa of(EmpresaRequest request) {
         var empresa = new Empresa();
         BeanUtils.copyProperties(request, empresa);
+        if (isEmpty(request.getTempoRefreshCadeiraLivre())) {
+            empresa.setTempoRefreshCadeiraLivre(TRINTA_SEGUNDOS_REFRESH_PADRAO);
+        }
         return empresa;
     }
 
