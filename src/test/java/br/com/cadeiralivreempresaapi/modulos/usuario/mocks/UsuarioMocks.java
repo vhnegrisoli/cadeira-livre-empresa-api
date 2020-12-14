@@ -12,8 +12,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UsuarioMocks {
@@ -82,7 +82,7 @@ public class UsuarioMocks {
             .dataCadastro(LocalDateTime.now())
             .dataNascimento(LocalDate.parse("1998-01-01"))
             .email("usuario@gmail.com")
-            .permissoes(Set.of(umaPermissaoAdmin()))
+            .permissoes(Collections.singleton(umaPermissaoAdmin()))
             .nome("Usuario")
             .senha("123456")
             .sexo(ESexo.MASCULINO)

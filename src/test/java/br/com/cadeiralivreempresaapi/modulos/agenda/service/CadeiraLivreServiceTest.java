@@ -1,7 +1,9 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.service;
 
+import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
 import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.ServicoAgendaResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
@@ -18,13 +20,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalTime;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.AgendaMocks.umaAgendaCadeiraLivre;
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.AgendaMocks.umaCadeiraLivreRequest;
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.ServicoMocks.umServico;
 import static br.com.cadeiralivreempresaapi.modulos.empresa.mocks.EmpresaMocks.umaEmpresa;
+import static br.com.cadeiralivreempresaapi.modulos.jwt.mocks.JwtMocks.umJwtUsuarioResponse;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.umUsuarioAutenticadoAdmin;
+import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.umUsuarioAutenticadoFuncionario;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
@@ -157,5 +163,86 @@ public class CadeiraLivreServiceTest {
         verify(agendaRepository, times(0)).save(any(Agenda.class));
         verify(agendaService, times(0)).buscarAgendaPorId(anyInt());
         verify(notificacaoService, times(0)).gerarDadosNotificacao(any(NotificacaoCorpoRequest.class));
+    }
+
+    @Test
+    @DisplayName("Deve indisponibilizar cadeira livre quando dados estiverem corretos")
+    public void indisponibilizarCadeiraLivre_deveIndisponibilizarCadeiraLivre_quandoDadosEstiveremCorretos() {
+        when(agendaRepository.findByIdAndEmpresaIdAndTipoAgenda(anyInt(), anyInt(), any()))
+            .thenReturn(Optional.of(umaAgendaCadeiraLivre()));
+        when(agendaRepository.save(any())).thenReturn(umaAgendaCadeiraLivre());
+
+        var response = service.indisponibilizarCadeiraLivre(1, 1);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A cadeira livre foi indisponibilizada com sucesso.");
+
+        verify(agendaRepository, times(1)).findByIdAndEmpresaIdAndTipoAgenda(anyInt(), anyInt(), any());
+        verify(agendaRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao tentar indisponibilizar cadeira livre que possui cliente atribuído")
+    public void indisponibilizarCadeiraLivre_deveLancarException_quandoJaExistirUmClienteAtribuido() {
+        var cadeiraLivreComCliente = umaAgendaCadeiraLivre();
+        cadeiraLivreComCliente.reservarParaCliente(umJwtUsuarioResponse());
+        when(agendaRepository.findByIdAndEmpresaIdAndTipoAgenda(anyInt(), anyInt(), any()))
+            .thenReturn(Optional.of(cadeiraLivreComCliente));
+
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> service.indisponibilizarCadeiraLivre(1, 1))
+            .withMessage("Não é possível cancelar a cadeira livre pois já existe um cliente atribuído.");
+
+        verify(agendaRepository, times(1)).findByIdAndEmpresaIdAndTipoAgenda(anyInt(), anyInt(), any());
+        verify(agendaRepository, times(0)).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve indisponibilizar cadeiras livres quando estiverem expiradas")
+    public void indisponibilizarCadeirasLivresExpiradas_deveIndisponibilizarCadeirasLivres_quandoEstiveremExpiradas() {
+        var cadeiraLivreIndisponibilizar = umaAgendaCadeiraLivre();
+        cadeiraLivreIndisponibilizar.setClienteId("123");
+        cadeiraLivreIndisponibilizar.setClienteNome("123");
+        cadeiraLivreIndisponibilizar.setClienteEmail("123");
+        cadeiraLivreIndisponibilizar.setClienteCpf("123");
+
+        when(agendaRepository.findBySituacao(eq(ESituacaoAgenda.DISPONIVEL)))
+            .thenReturn(Collections.singletonList(cadeiraLivreIndisponibilizar));
+
+        service.indisponibilizarCadeirasLivresExpiradas(false);
+
+        cadeiraLivreIndisponibilizar.setSituacao(ESituacaoAgenda.CANCELADA);
+
+        verify(autenticacaoService, times(0)).getUsuarioAutenticado();
+        verify(agendaRepository, times(1)).findBySituacao(ESituacaoAgenda.DISPONIVEL);
+        verify(agendaRepository, times(1)).saveAll(Collections.singletonList(cadeiraLivreIndisponibilizar));
+    }
+
+    @Test
+    @DisplayName("Deve não fazer nada quando não encontrar cadeiras livres expiradas para indisponibilizar")
+    public void indisponibilizarCadeirasLivresExpiradas_deveFazerNada_quandoNaoEncontrarCadeirasLivresParaIndisponibilizar() {
+        when(agendaRepository.findBySituacao(eq(ESituacaoAgenda.DISPONIVEL)))
+            .thenReturn(Collections.singletonList(umaAgendaCadeiraLivre()));
+
+        service.indisponibilizarCadeirasLivresExpiradas(false);
+
+        verify(autenticacaoService, times(0)).getUsuarioAutenticado();
+        verify(agendaRepository, times(1)).findBySituacao(ESituacaoAgenda.DISPONIVEL);
+        verify(agendaRepository, times(0)).saveAll(any());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao tentar indisponibilizar cadeiras livres expiradas sem possuir autenticação")
+    public void indisponibilizarCadeirasLivresExpiradas_deveLancarException_quandoNaoPossuirAutenticacao() {
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoFuncionario());
+
+        assertThatExceptionOfType(PermissaoException.class)
+            .isThrownBy(() -> service.indisponibilizarCadeirasLivresExpiradas(true))
+            .withMessage("Você não possui permissão para indisponibilizar as cadeiras livres com tempo expirado.");
+
+        verify(autenticacaoService, times(1)).getUsuarioAutenticado();
+        verify(agendaRepository, times(0)).findBySituacao(ESituacaoAgenda.DISPONIVEL);
+        verify(agendaRepository, times(0)).saveAll(any());
     }
 }
