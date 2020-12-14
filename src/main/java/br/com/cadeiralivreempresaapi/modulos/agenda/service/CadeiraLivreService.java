@@ -58,9 +58,10 @@ public class CadeiraLivreService {
             servicoService.buscarServicosPorIds(request.getServicosIds()));
         validarEmpresasServicosEUsuario(request, agenda);
         agenda.calcularTotal(request.getDesconto());
-        agendaRepository.save(agenda);
-        enviarDadosNotificacaoCadeiraLivre(agenda);
-        return CadeiraLivreResponse.of(agendaService.buscarAgendaPorId(agenda.getId()));
+        var agendaSalva = agendaRepository.save(agenda);
+        agendaSalva = agendaService.buscarAgendaPorId(agendaSalva.getId());
+        enviarDadosNotificacaoCadeiraLivre(agendaSalva);
+        return CadeiraLivreResponse.of(agendaSalva);
     }
 
     private void validarDadosCadeiraLivre(CadeiraLivreRequest request) {
@@ -85,8 +86,7 @@ public class CadeiraLivreService {
         servicoService.validarServicosExistentesPorEmpresa(new ArrayList<>(agenda.getServicos()), agenda.getEmpresa().getId());
     }
 
-    private void enviarDadosNotificacaoCadeiraLivre(Agenda agenda) {
-        var agendaSalva = agendaService.buscarAgendaPorId(agenda.getId());
+    private void enviarDadosNotificacaoCadeiraLivre(Agenda agendaSalva) {
         notificacaoService.gerarDadosNotificacao(NotificacaoCorpoRequest.of(
             gerarMensagemNotificacaoCadeiraLivre(agendaSalva),
             Constantes.NOVA_CADEIRA_LIVRE_NOTIFICACAO,
