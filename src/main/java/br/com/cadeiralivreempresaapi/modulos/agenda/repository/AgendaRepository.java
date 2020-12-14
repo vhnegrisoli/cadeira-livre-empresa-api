@@ -4,6 +4,8 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +25,21 @@ public interface AgendaRepository extends JpaRepository<Agenda, Integer> {
     List<Agenda> findByEmpresaIdAndSituacao(Integer empresaId, ESituacaoAgenda situacao);
 
     List<Agenda> findByClienteIdAndTipoAgenda(String clienteId, ETipoAgenda tipoAgenda);
+
+    @Modifying
+    @Query(value = "UPDATE Agenda a SET"
+        + " a.clienteId = :clienteId,"
+        + " a.clienteNome = :clienteNome,"
+        + " a.clienteEmail = :clienteEmail,"
+        + " a.clienteCpf = :clienteCpf,"
+        + " a.situacao = :situacao"
+        + " WHERE a.id = :id"
+    )
+    @SuppressWarnings("ParameterNumber")
+    void reservarAgendaParaCliente(Integer id,
+                                   String clienteId,
+                                   String clienteNome,
+                                   String clienteEmail,
+                                   String clienteCpf,
+                                   ESituacaoAgenda situacao);
 }

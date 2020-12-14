@@ -16,7 +16,7 @@ public interface AgendaHorarioMessages {
     ValidacaoException CADEIRA_LIVRE_INDISPONIVEL = new ValidacaoException("Desculpe, mas esta cadeira livre não está "
         + "mais disponível.");
     ValidacaoException CADEIRA_LIVRE_DADOS_INCOMPLETOS = new ValidacaoException("Para registrar uma cadeira livre são "
-        + "necessários todos as seguintes informações: id, nome, CPF e e-mail.");
+        + "necessárias todas as seguintes informações: id, nome, CPF e e-mail.");
     ValidacaoException CADEIRA_LIVRE_MAIOR_60_MINUTOS = new ValidacaoException("A cadeira livre não pode ficar disponível"
         + " por mais que 60 minutos.");
     ValidacaoException AGENDA_SEM_SERVICOS = new ValidacaoException("É obrigatório informar ao menos um serviço para a"
@@ -48,7 +48,7 @@ public interface AgendaHorarioMessages {
     PermissaoException SERVICO_SEM_PERMISSAO = new PermissaoException("Usuário sem permissão para visualizar"
         + " este serviço.");
     PermissaoException CADEIRA_LIVRE_SEM_PERMISSAO_INDISPONIBILIZAR =
-        new PermissaoException("Você não possui permissão para indisponibilizar as cadeiras livres com tempo expirado");
+        new PermissaoException("Você não possui permissão para indisponibilizar as cadeiras livres com tempo expirado.");
     PermissaoException CADEIRA_LIVRE_SEM_PERMISSAO_VISUALIZAR =
         new PermissaoException("Você não possui permissão para visualizar essa cadeira livre.");
 

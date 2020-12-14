@@ -207,7 +207,13 @@ public class CadeiraLivreService {
         validarCadeiraLivreInvalidaParaReserva(cadeiraLivre);
         validarClienteComDadosIncompletos(cliente);
         cadeiraLivre.reservarParaCliente(cliente);
-        return CadeiraLivreResponse.of(agendaRepository.save(cadeiraLivre));
+        agendaRepository.reservarAgendaParaCliente(cadeiraLivre.getId(),
+            cadeiraLivre.getClienteId(),
+            cadeiraLivre.getClienteNome(),
+            cadeiraLivre.getClienteEmail(),
+            cadeiraLivre.getClienteCpf(),
+            ESituacaoAgenda.RESERVA);
+        return CadeiraLivreResponse.of(agendaService.buscarAgendaPorId(cadeiraLivre.getId()));
     }
 
     private void validarCadeiraLivreInvalidaParaReserva(Agenda cadeiraLivre) {

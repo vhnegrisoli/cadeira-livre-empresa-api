@@ -47,7 +47,7 @@ public class AgendaTest {
         assertThat(agenda.getClienteNome()).isNull();
         assertThat(agenda.getClienteEmail()).isNull();
         assertThat(agenda.getClienteCpf()).isNull();
-        assertThat(agenda.getTotalDesconto()).isEqualTo(0.0);
+        assertThat(agenda.getTotalDesconto()).isEqualTo(7.500000298023224);
         assertThat(agenda.getTotalServico()).isEqualTo(25.0);
     }
 
@@ -117,7 +117,7 @@ public class AgendaTest {
         var agenda = umaAgendaCadeiraLivre();
         agenda.setSituacao(ESituacaoAgenda.DISPONIVEL);
         agenda.setDataCadastro(LocalDateTime.parse("2020-01-01T00:00:00"));
-        assertThat(agenda.informarHorarioExpiracao()).isEqualTo(LocalTime.parse("00:30:00"));
+        assertThat(agenda.informarHorarioExpiracao()).isEqualTo(LocalTime.parse("00:20:00"));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class AgendaTest {
         var agenda = umaAgendaCadeiraLivre();
         agenda.setSituacao(ESituacaoAgenda.DISPONIVEL);
         agenda.setDataCadastro(LocalDateTime.now().minusMinutes(5));
-        assertThat(agenda.informarTempoRestante()).isGreaterThan(20L);
+        assertThat(agenda.informarTempoRestante()).isGreaterThan(10L);
     }
 
     @Test

@@ -25,9 +25,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.AgendaMocks.umaAgendaCadeiraLivre;
+import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.AgendaMocks.umaCadeiraLivreReservaRequest;
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.NumeroUtil.converterParaDuasCasasDecimais;
 import static br.com.cadeiralivreempresaapi.modulos.jwt.mocks.JwtMocks.umJwtUsuarioResponse;
-import static br.com.cadeiralivreempresaapi.modulos.jwt.mocks.JwtMocks.umUsuarioLoginJwt;
 import static br.com.cadeiralivreempresaapi.modulos.jwt.util.JwtTestUtil.gerarTokenTeste;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -292,7 +292,6 @@ public class CadeiraLivreServiceIntegrationTest {
         verify(acessoService, times(1)).validarPermissoesDoUsuario(anyInt());
     }
 
-
     @Test
     @DisplayName("Deve lançar exception quando buscar por ID e empresa ID e não encontrar cadeira livre.")
     public void buscarCadeiraLivreResponsePorIdEPorEmpresaId_deveLancarException_quandoNaoEncontrarPorIdEPorEmpresaId() {
@@ -312,5 +311,145 @@ public class CadeiraLivreServiceIntegrationTest {
             .withMessage("A cadeira livre não foi encontrada.");
 
         verify(acessoService, times(1)).validarPermissoesDoUsuario(anyInt());
+    }
+
+    @Test
+    @DisplayName("Deve reservar cadeira livre quando informar dados do cliente.")
+    public void reservarCadeiraLivre_deveReservarCadeiraLivre_quandoInformarDadosCliente() {
+        agendaRepository.deleteAll();
+
+        when(jwtService.verificarUsuarioValidoComTokenValida(anyString())).thenReturn(true);
+        when(jwtService.recuperarDadosDoUsuarioDoToken(anyString())).thenReturn(umJwtUsuarioResponse());
+
+        var cadeiraLivre = umaAgendaCadeiraLivre();
+        cadeiraLivre.setId(null);
+        cadeiraLivre.setEmpresa(new Empresa(4));
+        agendaRepository.save(cadeiraLivre);
+        var idSalvo = agendaRepository.findAll().get(0).getId();
+
+        var cadeiraLivreSalva = agendaRepository.findById(idSalvo).get();
+
+        assertThat(cadeiraLivreSalva).isNotNull();
+        assertThat(cadeiraLivreSalva.isValida()).isTrue();
+        assertThat(cadeiraLivreSalva.isDisponivel()).isTrue();
+        assertThat(cadeiraLivreSalva.getClienteId()).isNull();
+        assertThat(cadeiraLivreSalva.getClienteNome()).isNull();
+        assertThat(cadeiraLivreSalva.getClienteEmail()).isNull();
+        assertThat(cadeiraLivreSalva.getClienteCpf()).isNull();
+
+        var reserva = umaCadeiraLivreReservaRequest();
+        reserva.setCadeiraLivreId(idSalvo);
+
+        var cadeiraLivreReservada = service.reservarCadeiraLivre(reserva);
+
+        assertThat(cadeiraLivreReservada).isNotNull();
+        assertThat(cadeiraLivreReservada.getSituacao()).isEqualTo("Reservada");
+        assertThat(cadeiraLivreReservada.getHorarioExpiracao()).isNull();
+        assertThat(cadeiraLivreReservada.getCliente()).isNotNull();
+        assertThat(cadeiraLivreReservada.getCliente().getId()).isNotNull();
+        assertThat(cadeiraLivreReservada.getCliente().getId()).isEqualTo("5cd48099-1009-43c4-b979-f68148a2a81d");
+        assertThat(cadeiraLivreReservada.getCliente().getNome()).isEqualTo("Victor Hugo Negrisoli");
+        assertThat(cadeiraLivreReservada.getCliente().getEmail()).isEqualTo("vhnegrisoli@gmail.com");
+        assertThat(cadeiraLivreReservada.getCliente().getCpf()).isEqualTo("103.324.589-54");
+
+        verify(jwtService, times(1)).verificarUsuarioValidoComTokenValida(anyString());
+        verify(jwtService, times(1)).recuperarDadosDoUsuarioDoToken(anyString());
+    }
+
+    @Test
+    @DisplayName("Deve reservar cadeira livre quando informar dados do cliente.")
+    public void reservarCadeiraLivreParaCliente_deveReservarCadeiraLivreViaRequest_quandoInformarDadosCliente() {
+        agendaRepository.deleteAll();
+
+        when(jwtService.verificarUsuarioValidoComTokenValida(anyString())).thenReturn(true);
+        when(jwtService.recuperarDadosDoUsuarioDoToken(anyString())).thenReturn(umJwtUsuarioResponse());
+
+        var cadeiraLivre = umaAgendaCadeiraLivre();
+        cadeiraLivre.setId(null);
+        cadeiraLivre.setEmpresa(new Empresa(4));
+        agendaRepository.save(cadeiraLivre);
+        var idSalvo = agendaRepository.findAll().get(0).getId();
+
+        var cadeiraLivreSalva = agendaRepository.findById(idSalvo).get();
+
+        assertThat(cadeiraLivreSalva).isNotNull();
+        assertThat(cadeiraLivreSalva.isValida()).isTrue();
+        assertThat(cadeiraLivreSalva.isDisponivel()).isTrue();
+        assertThat(cadeiraLivreSalva.getClienteId()).isNull();
+        assertThat(cadeiraLivreSalva.getClienteNome()).isNull();
+        assertThat(cadeiraLivreSalva.getClienteEmail()).isNull();
+        assertThat(cadeiraLivreSalva.getClienteCpf()).isNull();
+
+        var reserva = umaCadeiraLivreReservaRequest();
+        reserva.setCadeiraLivreId(idSalvo);
+
+        var cadeiraLivreReservada = service.reservarCadeiraLivreParaCliente(idSalvo, "token");
+
+        assertThat(cadeiraLivreReservada).isNotNull();
+        assertThat(cadeiraLivreReservada.getSituacao()).isEqualTo("Reservada");
+        assertThat(cadeiraLivreReservada.getHorarioExpiracao()).isNull();
+        assertThat(cadeiraLivreReservada.getCliente()).isNotNull();
+        assertThat(cadeiraLivreReservada.getCliente().getId()).isNotNull();
+        assertThat(cadeiraLivreReservada.getCliente().getId()).isEqualTo("5cd48099-1009-43c4-b979-f68148a2a81d");
+        assertThat(cadeiraLivreReservada.getCliente().getNome()).isEqualTo("Victor Hugo Negrisoli");
+        assertThat(cadeiraLivreReservada.getCliente().getEmail()).isEqualTo("vhnegrisoli@gmail.com");
+        assertThat(cadeiraLivreReservada.getCliente().getCpf()).isEqualTo("103.324.589-54");
+
+        verify(jwtService, times(1)).verificarUsuarioValidoComTokenValida(anyString());
+        verify(jwtService, times(1)).recuperarDadosDoUsuarioDoToken(anyString());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao tentar reservar cadeira livre que não está mais disponível.")
+    public void reservarCadeiraLivre_deveLancarException_quandoCadeiraLivreNaoEstiverMaisDisponivel() {
+        agendaRepository.deleteAll();
+
+        when(jwtService.verificarUsuarioValidoComTokenValida(anyString())).thenReturn(true);
+        when(jwtService.recuperarDadosDoUsuarioDoToken(anyString())).thenReturn(umJwtUsuarioResponse());
+
+        var cadeiraLivre = umaAgendaCadeiraLivre();
+        cadeiraLivre.setId(null);
+        cadeiraLivre.setEmpresa(new Empresa(4));
+        cadeiraLivre.reservarParaCliente(umJwtUsuarioResponse());
+        agendaRepository.save(cadeiraLivre);
+        var idSalvo = agendaRepository.findAll().get(0).getId();
+
+        var reserva = umaCadeiraLivreReservaRequest();
+        reserva.setCadeiraLivreId(idSalvo);
+
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> service.reservarCadeiraLivre(reserva))
+            .withMessage("Desculpe, mas esta cadeira livre não está mais disponível.");
+
+        verify(jwtService, times(1)).verificarUsuarioValidoComTokenValida(anyString());
+        verify(jwtService, times(1)).recuperarDadosDoUsuarioDoToken(anyString());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao tentar reservar cadeira livre com dados insuficientes do cliente.")
+    public void reservarCadeiraLivre_deveLancarException_quandoDadosDoClienteEstiveremIncompletos() {
+        agendaRepository.deleteAll();
+
+        when(jwtService.verificarUsuarioValidoComTokenValida(anyString())).thenReturn(true);
+        var clienteDadosFaltando = umJwtUsuarioResponse();
+        clienteDadosFaltando.setNome(null);
+        when(jwtService.recuperarDadosDoUsuarioDoToken(anyString())).thenReturn(clienteDadosFaltando);
+
+        var cadeiraLivre = umaAgendaCadeiraLivre();
+        cadeiraLivre.setId(null);
+        cadeiraLivre.setEmpresa(new Empresa(4));
+        agendaRepository.save(cadeiraLivre);
+        var idSalvo = agendaRepository.findAll().get(0).getId();
+
+        var reserva = umaCadeiraLivreReservaRequest();
+        reserva.setCadeiraLivreId(idSalvo);
+
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> service.reservarCadeiraLivre(reserva))
+            .withMessage("Para registrar uma cadeira livre são necessárias todas "
+                + "as seguintes informações: id, nome, CPF e e-mail.");
+
+        verify(jwtService, times(1)).verificarUsuarioValidoComTokenValida(anyString());
+        verify(jwtService, times(1)).recuperarDadosDoUsuarioDoToken(anyString());
     }
 }

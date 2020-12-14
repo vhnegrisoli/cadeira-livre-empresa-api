@@ -2,6 +2,7 @@ package br.com.cadeiralivreempresaapi.modulos.agenda.mocks;
 
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.AgendaRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreRequest;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreReservaRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
@@ -9,6 +10,7 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -46,7 +48,7 @@ public class AgendaMocks {
             .builder()
             .id(1)
             .horario(null)
-            .servicos(Set.of(umServico()))
+            .servicos(Collections.singleton(umServico()))
             .situacao(ESituacaoAgenda.DISPONIVEL)
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
             .desconto(23.1f)
@@ -79,6 +81,14 @@ public class AgendaMocks {
             .desconto(30.0f)
             .empresaId(1)
             .minutosDisponiveis(20)
+            .build();
+    }
+
+    public static CadeiraLivreReservaRequest umaCadeiraLivreReservaRequest() {
+        return CadeiraLivreReservaRequest
+            .builder()
+            .token("123")
+            .cadeiraLivreId(1)
             .build();
     }
 
