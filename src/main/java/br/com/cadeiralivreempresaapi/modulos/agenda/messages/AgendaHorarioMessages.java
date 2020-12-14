@@ -21,7 +21,7 @@ public interface AgendaHorarioMessages {
         + " por mais que 60 minutos.");
     ValidacaoException AGENDA_SEM_SERVICOS = new ValidacaoException("É obrigatório informar ao menos um serviço para a"
         + " agenda.");
-    ValidacaoException AGENDA_SEM_EMPRESA = new ValidacaoException("É obrigatório informar uma empresa para a agenda");
+    ValidacaoException AGENDA_SEM_EMPRESA = new ValidacaoException("É obrigatório informar uma empresa para a agenda.");
     ValidacaoException AGENDA_SEM_EMPRESA_VALIDA = new ValidacaoException("A empresa selecionada para a agenda está inválida.");
 
     ValidacaoException HORARIO_JA_EXISTENTE = new ValidacaoException("Este horário já está registrado para esta "

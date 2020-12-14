@@ -45,7 +45,7 @@ public class AgendaMocks {
         return Agenda
             .builder()
             .id(1)
-            .horario(umHorario())
+            .horario(null)
             .servicos(Set.of(umServico()))
             .situacao(ESituacaoAgenda.DISPONIVEL)
             .tipoAgenda(ETipoAgenda.CADEIRA_LIVRE)
@@ -56,6 +56,10 @@ public class AgendaMocks {
             .empresa(umaEmpresa())
             .horarioAgendamento(LocalTime.of(12, 0))
             .usuario(umUsuario())
+            .totalServico(25.00)
+            .totalPagamento(25.00)
+            .totalDesconto(12.00)
+            .minutosDisponiveis(20)
             .build();
     }
 
@@ -72,7 +76,9 @@ public class AgendaMocks {
         return CadeiraLivreRequest
             .builder()
             .servicosIds(List.of(1))
+            .desconto(30.0f)
             .empresaId(1)
+            .minutosDisponiveis(20)
             .build();
     }
 
