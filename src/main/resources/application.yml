@@ -72,7 +72,7 @@ app-config:
     reservar-cadeira-livre: reservar-cadeira-livre.queue
 
   firebase:
-    token: AAAAVbf7NBs:APA91bFrjTq4YN1YTLnXt79qkceKd01__afou2U7nkg5yZftEWpYToU8KWvKMfPtIgknDUvAtvF0hnIV6x59xAnwmZUFIQfZR3aQ5bDrP6IqV51bPSbGIrTocHcWdCuyxqolpOBkp99h
+    token: ${FIREBASE_TOKEN}
     bundleId: br.com.biot.maisdietaclube
 
   scheduler:
