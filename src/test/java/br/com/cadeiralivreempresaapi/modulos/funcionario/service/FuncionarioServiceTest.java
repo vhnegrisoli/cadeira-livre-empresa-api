@@ -1,6 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.funcionario.service;
 
 import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
+import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.model.Funcionario;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
@@ -12,6 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
+import static br.com.cadeiralivreempresaapi.modulos.funcionario.mocks.FuncionarioMocks.umFuncionario;
 import static br.com.cadeiralivreempresaapi.modulos.usuario.mocks.UsuarioMocks.*;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -116,5 +120,32 @@ public class FuncionarioServiceTest {
 
         verify(empresaService, times(0)).existeEmpresaParaUsuario(anyInt(), any());
         verify(funcionarioRepository, times(0)).save(any(Funcionario.class));
+    }
+
+    @Test
+    @DisplayName("Deve validar o usuário do funcionário quando solicitado por ID do usuário")
+    public void validarUsuario_deveValidarUsuarioDoFuncionario_quandoInformarUsuarioId() {
+        when(funcionarioRepository.findByUsuarioId(anyInt())).thenReturn(Optional.of(umFuncionario()));
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoFuncionario());
+
+        service.validarUsuario(1);
+
+        verify(funcionarioRepository, times(1)).findByUsuarioId(anyInt());
+        verify(autenticacaoService, times(1)).getUsuarioAutenticado();
+        verify(empresaService, times(0)).existeEmpresaParaUsuario(anyInt(), anyInt());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception quando tentar validar funcionário e não encontrar por usuário ID")
+    public void validarUsuario_deveLancarException_quandoNaoEncontrarFuncionarioPorUsuarioId() {
+        when(funcionarioRepository.findByUsuarioId(anyInt())).thenReturn(Optional.empty());
+
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> service.validarUsuario(1))
+            .withMessage("O funcionário não foi encontrado.");
+
+        verify(funcionarioRepository, times(1)).findByUsuarioId(anyInt());
+        verify(autenticacaoService, times(0)).getUsuarioAutenticado();
+        verify(empresaService, times(0)).existeEmpresaParaUsuario(anyInt(), anyInt());
     }
 }
