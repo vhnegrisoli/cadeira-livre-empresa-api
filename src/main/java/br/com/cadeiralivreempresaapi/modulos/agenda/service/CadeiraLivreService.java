@@ -90,7 +90,7 @@ public class CadeiraLivreService {
         notificacaoService.gerarDadosNotificacao(NotificacaoCorpoRequest.of(
             gerarMensagemNotificacaoCadeiraLivre(agendaSalva),
             Constantes.NOVA_CADEIRA_LIVRE_NOTIFICACAO,
-            Constantes.TOKEN_CADEIRA_LIVRE
+            Constantes.TOPIC_TODOS_CADEIRA_LIVRE
             )
         );
     }
