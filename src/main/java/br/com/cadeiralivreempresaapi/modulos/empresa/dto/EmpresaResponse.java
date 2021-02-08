@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,8 +49,8 @@ public class EmpresaResponse {
             .stream()
             .map(ProprietarioSocioResponse::of)
             .collect(Collectors.toList()));
-        response.setServicos(isEmpty(servicos) ? null : servicos);
-        response.setHorarios(isEmpty(horarios) ? null : horarios);
+        response.setServicos(isEmpty(servicos) ? Collections.emptyList() : servicos);
+        response.setHorarios(isEmpty(horarios) ? Collections.emptyList() : horarios);
         return response;
     }
 }
