@@ -70,6 +70,8 @@ public class ServicoServiceIntegrationTest {
     private PasswordEncoder passwordEncoder;
     @MockBean
     private PermissaoService permissaoService;
+    @MockBean
+    private HorarioService horarioService;
 
     @Test
     @DisplayName("Deve buscar serviços por ID quando usuário for admin")

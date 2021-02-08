@@ -73,6 +73,8 @@ public class CadeiraLivreServiceIntegrationTest {
     private NotificacaoService notificacaoService;
     @MockBean
     private PasswordEncoder encoder;
+    @MockBean
+    private HorarioService horarioService;
 
     @Test
     @DisplayName("Deve buscar cadeiras livres quando existirem sem filtrar por empresas")

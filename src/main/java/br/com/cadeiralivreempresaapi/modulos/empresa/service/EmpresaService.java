@@ -1,5 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.service;
 
+import br.com.cadeiralivreempresaapi.modulos.agenda.service.HorarioService;
+import br.com.cadeiralivreempresaapi.modulos.agenda.service.ServicoService;
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.comum.response.SuccessResponseDetails;
 import br.com.cadeiralivreempresaapi.modulos.empresa.dto.*;
@@ -31,6 +33,10 @@ public class EmpresaService {
     private UsuarioService usuarioService;
     @Autowired
     private AutenticacaoService autenticacaoService;
+    @Autowired
+    private ServicoService servicoService;
+    @Autowired
+    private HorarioService horarioService;
     @Autowired
     private JwtService jwtService;
 
@@ -98,7 +104,9 @@ public class EmpresaService {
 
     public EmpresaResponse buscarPorIdComSocios(Integer id) {
         var empresa = buscarPorId(id);
-        return EmpresaResponse.of(empresa);
+        var servicos = servicoService.buscarServicosPorEmpresa(empresa.getId());
+        var horarios = horarioService.buscarHorariosPorEmpresa(empresa.getId());
+        return EmpresaResponse.of(empresa, servicos, horarios);
     }
 
     public Page<EmpresaPageResponse> buscarTodas(PageRequest pageable, EmpresaFiltros filtros) {

@@ -1,5 +1,7 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.dto;
 
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.horario.HorarioResponse;
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.servico.ServicoResponse;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ETipoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.PatternUtil.DATE_TIME_PATTERN;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data
 @Builder
@@ -32,8 +35,12 @@ public class EmpresaResponse {
     private LocalDateTime dataCadastro;
     private ETipoEmpresa tipoEmpresa;
     private Integer tempoRefreshCadeiraLivre;
+    private List<ServicoResponse> servicos;
+    private List<HorarioResponse> horarios;
 
-    public static EmpresaResponse of(Empresa empresa) {
+    public static EmpresaResponse of(Empresa empresa,
+                                     List<ServicoResponse> servicos,
+                                     List<HorarioResponse> horarios) {
         var response = new EmpresaResponse();
         BeanUtils.copyProperties(empresa, response);
         response.setProprietarioSocios(empresa
@@ -41,6 +48,8 @@ public class EmpresaResponse {
             .stream()
             .map(ProprietarioSocioResponse::of)
             .collect(Collectors.toList()));
+        response.setServicos(isEmpty(servicos) ? null : servicos);
+        response.setHorarios(isEmpty(horarios) ? null : horarios);
         return response;
     }
 }
