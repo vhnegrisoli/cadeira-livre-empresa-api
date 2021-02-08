@@ -1,6 +1,8 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.service;
 
 import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
+import br.com.cadeiralivreempresaapi.modulos.agenda.service.HorarioService;
+import br.com.cadeiralivreempresaapi.modulos.agenda.service.ServicoService;
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaFiltros;
 import br.com.cadeiralivreempresaapi.modulos.empresa.dto.ProprietarioSocioClienteResponse;
@@ -48,6 +50,10 @@ public class EmpresaServiceIntegrationTest {
     private UsuarioService usuarioService;
     @MockBean
     private AutenticacaoService autenticacaoService;
+    @MockBean
+    private ServicoService servicoService;
+    @MockBean
+    private HorarioService horarioService;
 
     @Test
     @DisplayName("Deve salvar empresa quando dados estiverem corretos")

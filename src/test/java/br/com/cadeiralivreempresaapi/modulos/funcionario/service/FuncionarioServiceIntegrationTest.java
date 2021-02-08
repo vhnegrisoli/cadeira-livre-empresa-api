@@ -1,6 +1,8 @@
 package br.com.cadeiralivreempresaapi.modulos.funcionario.service;
 
 import br.com.cadeiralivreempresaapi.config.exception.PermissaoException;
+import br.com.cadeiralivreempresaapi.modulos.agenda.service.HorarioService;
+import br.com.cadeiralivreempresaapi.modulos.agenda.service.ServicoService;
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.dto.FuncionarioFiltros;
@@ -55,6 +57,10 @@ public class FuncionarioServiceIntegrationTest {
     private EmpresaService empresaService;
     @MockBean
     private AutenticacaoService autenticacaoService;
+    @MockBean
+    private ServicoService servicoService;
+    @MockBean
+    private HorarioService horarioService;
 
     @Test
     @DisplayName("Deve buscar por ID quando informar ID e usuário for admin")
