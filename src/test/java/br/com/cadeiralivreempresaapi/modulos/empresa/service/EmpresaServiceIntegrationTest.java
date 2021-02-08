@@ -209,6 +209,26 @@ public class EmpresaServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve ativar empresa quando empresa estiver inativa e usuário possuir permissão sendo proprietário")
+    public void alterarSituacao_deveInativarEmpresa_quandoUsuarioProprietarioPossirPermissaoEEmpresaEstiverAtiva() {
+        var proprietario = umUsuarioAutenticadoProprietario();
+        proprietario.setId(2);
+        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
+
+        var empresaAtiva = empresaRepository.findById(4).get();
+        assertThat(empresaAtiva.isAtiva()).isTrue();
+
+        var response = service.alterarSituacao(4);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getMessage()).isEqualTo("A situação da empresa foi alterada com sucesso!");
+
+        var empresaInativa = empresaRepository.findById(4).get();
+        assertThat(empresaAtiva.isAtiva()).isFalse();
+    }
+
+    @Test
     @DisplayName("Deve ativar empresa quando empresa estiver inativa e usuário possuir permissão sendo sócio")
     public void alterarSituacao_deveAtivarEmpresa_quandoUsuarioSocioPossirPermissaoEEmpresaEstiverInativa() {
         var socio = umUsuarioAutenticadoSocio();
