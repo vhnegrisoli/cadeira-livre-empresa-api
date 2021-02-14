@@ -110,6 +110,13 @@ public class ServicoService {
             .collect(Collectors.toList());
     }
 
+    public List<ServicoResponse> buscarServicosPorEmpresaParaCliente(Integer empresaId) {
+        return servicoRepository.findByEmpresaIdOrderByDescricao(empresaId)
+            .stream()
+            .map(ServicoResponse::of)
+            .collect(Collectors.toList());
+    }
+
     public Servico buscarPorId(Integer id) {
         return servicoRepository.findById(id)
             .orElseThrow(() -> SERVICO_NAO_ENCONTRADO);

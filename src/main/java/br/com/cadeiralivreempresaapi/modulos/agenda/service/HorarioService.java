@@ -98,6 +98,13 @@ public class HorarioService {
             .collect(Collectors.toList());
     }
 
+    public List<HorarioResponse> buscarHorariosPorEmpresaParaCliente(Integer empresaId) {
+        return horarioRepository.findByEmpresaIdOrderByHorario(empresaId)
+            .stream()
+            .map(HorarioResponse::of)
+            .collect(Collectors.toList());
+    }
+
     public Horario buscarPorId(Integer id) {
         var horario = horarioRepository.findById(id)
             .orElseThrow(() -> HORARIO_NAO_ENCONTRADO);
