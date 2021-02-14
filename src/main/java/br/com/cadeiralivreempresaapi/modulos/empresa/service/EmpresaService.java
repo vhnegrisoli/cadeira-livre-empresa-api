@@ -104,9 +104,7 @@ public class EmpresaService {
 
     public EmpresaResponse buscarPorIdComSocios(Integer id) {
         var empresa = buscarPorId(id);
-        var servicos = servicoService.buscarServicosPorEmpresa(empresa.getId());
-        var horarios = horarioService.buscarHorariosPorEmpresa(empresa.getId());
-        return EmpresaResponse.of(empresa, servicos, horarios);
+        return EmpresaResponse.of(empresa);
     }
 
     public Page<EmpresaPageResponse> buscarTodas(PageRequest pageable, EmpresaFiltros filtros) {
@@ -168,10 +166,12 @@ public class EmpresaService {
 
     public EmpresaClienteResponse buscarEmpresaPorId(Integer id, String token) {
         validarClienteComJwtValido(token);
-        return EmpresaClienteResponse.of(empresaRepository
+        var empresa = empresaRepository
             .findByIdAndSituacao(id, ESituacaoEmpresa.ATIVA)
-            .orElseThrow(() -> EMPRESA_NAO_ENCONTRADA)
-        );
+            .orElseThrow(() -> EMPRESA_NAO_ENCONTRADA);
+        var servicos = servicoService.buscarServicosPorEmpresaParaCliente(empresa.getId());
+        var horarios = horarioService.buscarHorariosPorEmpresaParaCliente(empresa.getId());
+        return EmpresaClienteResponse.of(empresa, servicos, horarios);
     }
 
     private void validarClienteComJwtValido(String jwtToken) {

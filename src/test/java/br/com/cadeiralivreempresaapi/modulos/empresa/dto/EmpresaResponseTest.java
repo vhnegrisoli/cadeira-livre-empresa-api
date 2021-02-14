@@ -4,10 +4,6 @@ import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-
-import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.HorarioMocks.umHorarioResponse;
-import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.ServicoMocks.umServicoResponse;
 import static br.com.cadeiralivreempresaapi.modulos.empresa.mocks.EmpresaMocks.umaEmpresa;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,8 +12,7 @@ public class EmpresaResponseTest {
     @Test
     @DisplayName("Deve converter para DTO de EmpresaResponse quando informar Model de Empresa")
     public void of_deveConverterParaResponseEmpresa_quandoInformarModelEmpresa() {
-        var response = EmpresaResponse.of(umaEmpresa(),
-            Collections.singletonList(umServicoResponse()), Collections.singletonList(umHorarioResponse()));
+        var response = EmpresaResponse.of(umaEmpresa());
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(1);
         assertThat(response.getNome()).isEqualTo("Empresa 01");
