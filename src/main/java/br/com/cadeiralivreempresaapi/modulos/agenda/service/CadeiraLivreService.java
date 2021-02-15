@@ -199,7 +199,6 @@ public class CadeiraLivreService {
             .build());
     }
 
-    @Transactional
     public CadeiraLivreResponse reservarCadeiraLivre(CadeiraLivreReservaRequest request) {
         validarClienteComJwtValido(request.getToken());
         var cliente = jwtService.recuperarDadosDoUsuarioDoToken(request.getToken());
