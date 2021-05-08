@@ -142,7 +142,6 @@ public class CadeiraLivreService {
         acessoService.validarPermissoesDoUsuario(empresaId);
         return agendaRepository.findByEmpresaIdAndTipoAgenda(empresaId, ETipoAgenda.CADEIRA_LIVRE)
             .stream()
-            .filter(Agenda::isValida)
             .map(CadeiraLivreResponse::of)
             .collect(Collectors.toList());
     }
