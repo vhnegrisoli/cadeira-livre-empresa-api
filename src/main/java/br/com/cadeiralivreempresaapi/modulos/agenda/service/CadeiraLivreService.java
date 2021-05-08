@@ -131,7 +131,8 @@ public class CadeiraLivreService {
         var cliente = jwtService.recuperarDadosDoUsuarioDoToken(jwtToken);
         var cadeiraLivre = agendaService.buscarAgendaPorId(id);
         if (!isEmpty(cadeiraLivre.getClienteId())
-            && !cadeiraLivre.getClienteId().equals(cliente.getId())) {
+            && !cadeiraLivre.getClienteId().equals(cliente.getId())
+            || cadeiraLivre.isCancelada()) {
             throw CADEIRA_LIVRE_SEM_PERMISSAO_VISUALIZAR;
         }
         return CadeiraLivreResponse.of(cadeiraLivre);
@@ -198,7 +199,6 @@ public class CadeiraLivreService {
             .build());
     }
 
-    @Transactional
     public CadeiraLivreResponse reservarCadeiraLivre(CadeiraLivreReservaRequest request) {
         validarClienteComJwtValido(request.getToken());
         var cliente = jwtService.recuperarDadosDoUsuarioDoToken(request.getToken());
