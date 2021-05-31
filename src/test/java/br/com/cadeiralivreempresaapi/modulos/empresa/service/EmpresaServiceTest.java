@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
 import java.util.Set;
@@ -36,6 +37,8 @@ public class EmpresaServiceTest {
     private UsuarioService usuarioService;
     @Mock
     private AutenticacaoService autenticacaoService;
+    @MockBean
+    private EnderecoService enderecoService;
 
     @Test
     @DisplayName("Deve salvar empresa quando dados estiverem corretos")
@@ -46,6 +49,7 @@ public class EmpresaServiceTest {
         when(usuarioService.buscarPorId(anyInt())).thenReturn(usuario);
         when(empresaRepository.existsByRazaoSocial(anyString())).thenReturn(false);
         when(empresaRepository.existsByCnpj(anyString())).thenReturn(false);
+        when(empresaRepository.save(any())).thenReturn(umaEmpresa());
 
         var response = service.salvar(umaEmpresaRequest());
         assertThat(response).isNotNull();
@@ -64,6 +68,22 @@ public class EmpresaServiceTest {
         assertThatExceptionOfType(ValidacaoException.class)
             .isThrownBy(() -> service.salvar(umaEmpresaRequest()))
             .withMessage("Para salvar uma empresa, o usuário deve ser um proprietário.");
+
+        verify(empresaRepository, times(0)).save(any(Empresa.class));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao salvar empresa quando razão social já existir")
+    public void salvar_deveLancarException_quandoJaExistirRazaoSocial() {
+        var usuario = umUsuario();
+        usuario.setPermissoes(Set.of(umaPermissaoSocio()));
+        when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(1);
+        when(usuarioService.buscarPorId(anyInt())).thenReturn(usuario);
+        when(empresaRepository.existsByRazaoSocial(anyString())).thenReturn(true);
+
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> service.salvar(umaEmpresaRequest()))
+            .withMessage("Razão social já existente para outra empresa.");
 
         verify(empresaRepository, times(0)).save(any(Empresa.class));
     }

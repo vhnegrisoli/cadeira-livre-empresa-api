@@ -54,6 +54,8 @@ public class EmpresaServiceIntegrationTest {
     private ServicoService servicoService;
     @MockBean
     private HorarioService horarioService;
+    @MockBean
+    private EnderecoService enderecoService;
 
     @Test
     @DisplayName("Deve salvar empresa quando dados estiverem corretos")

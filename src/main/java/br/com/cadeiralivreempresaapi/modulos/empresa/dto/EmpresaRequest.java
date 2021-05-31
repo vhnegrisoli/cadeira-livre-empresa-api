@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,4 +20,5 @@ public class EmpresaRequest {
     private String razaoSocial;
     private ETipoEmpresa tipoEmpresa;
     private Integer tempoRefreshCadeiraLivre;
+    private List<EnderecoRequest> enderecos;
 }

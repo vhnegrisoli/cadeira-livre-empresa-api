@@ -14,6 +14,7 @@ public interface EmpresaMessages {
         + "empresa inativa.");
     ValidacaoException USUARIO_NAO_PROPRIETARIO = new ValidacaoException("Para salvar uma empresa, o usuário deve ser "
         + "um proprietário.");
+    ValidacaoException EMPRESA_SEM_ENDERECO = new ValidacaoException("É necessário informar o endereço da empresa.");
     PermissaoException EMPRESA_USUARIO_SEM_PERMISSAO = new PermissaoException("Usuário sem permissão para visualizar "
         + "essa empresa.");
     SuccessResponseDetails EMPRESA_CRIADA_SUCESSO = new SuccessResponseDetails("A empresa foi criada com sucesso!");
