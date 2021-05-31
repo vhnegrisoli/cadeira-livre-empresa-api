@@ -211,24 +211,23 @@ public class CadeiraLivreService {
         var cadeiraLivre = agendaService.buscarAgendaPorId(request.getCadeiraLivreId());
         validarCadeiraLivreInvalidaParaReserva(cadeiraLivre);
         validarClienteComDadosIncompletos(cliente);
-        cadeiraLivre.reservarParaCliente(cliente);
-        reservarAgendaParaCliente(cadeiraLivre);
-        return tratarTransacaoCadeiraLivre(cadeiraLivre, cliente, request);
+        var transacao = tratarTransacaoCadeiraLivre(cadeiraLivre, cliente, request);
+        reservarAgendaParaCliente(cadeiraLivre, cliente);
+        return CadeiraLivreResponse.of(cadeiraLivre, transacao);
     }
 
-    private CadeiraLivreResponse tratarTransacaoCadeiraLivre(Agenda cadeiraLivre,
+    private TransacaoResponse tratarTransacaoCadeiraLivre(Agenda cadeiraLivre,
                                                              JwtUsuarioResponse cliente,
                                                              CadeiraLivreReservaRequest request) {
-        var cadeiraLivreSalva = agendaService.buscarAgendaPorId(cadeiraLivre.getId());
         var transacao = transacaoService
-            .realizarTransacao(cadeiraLivreSalva, request.getCartaoId(), cliente, request.getToken());
-        definirTransacaoParaCadeiraLivre(cadeiraLivreSalva,transacao);
-        return CadeiraLivreResponse.of(cadeiraLivreSalva, transacao);
-
+            .realizarTransacao(cadeiraLivre, request.getCartaoId(), cliente, request.getToken());
+        definirTransacaoParaCadeiraLivre(cadeiraLivre, transacao);
+        return transacao;
     }
 
     @Transactional
-    private void reservarAgendaParaCliente(Agenda cadeiraLivre) {
+    private void reservarAgendaParaCliente(Agenda cadeiraLivre, JwtUsuarioResponse cliente) {
+        cadeiraLivre.reservarParaCliente(cliente);
         agendaRepository.reservarAgendaParaCliente(cadeiraLivre.getId(),
             cadeiraLivre.getClienteId(),
             cadeiraLivre.getClienteNome(),
