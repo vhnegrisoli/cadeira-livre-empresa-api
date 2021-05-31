@@ -3,6 +3,7 @@ package br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.ClienteResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.agenda.ServicoAgendaResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
+import br.com.cadeiralivreempresaapi.modulos.transacao.dto.TransacaoResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,6 +45,7 @@ public class CadeiraLivreResponse {
     private Boolean cadeiraLivreValida;
     private String situacao;
     private ClienteResponse cliente;
+    private TransacaoResponse pagamento;
 
     @SuppressWarnings("MethodLength")
     public static CadeiraLivreResponse of(Agenda agenda) {
@@ -65,6 +67,30 @@ public class CadeiraLivreResponse {
             .servicos(tratarServicosDaAgenda(agenda))
             .situacao(agenda.getSituacao().getDescricaoSituacao())
             .cliente(agenda.isCadeiraLivreSemClienteVinculado() ? null : ClienteResponse.of(agenda))
+            .build();
+    }
+
+    @SuppressWarnings("MethodLength")
+    public static CadeiraLivreResponse of(Agenda agenda, TransacaoResponse transacaoResponse) {
+        return CadeiraLivreResponse
+            .builder()
+            .id(agenda.getId())
+            .empresaId(agenda.getEmpresa().getId())
+            .empresaNome(agenda.getEmpresa().getNome())
+            .empresaCnpj(agenda.getEmpresa().getCnpj())
+            .horario(agenda.getHorarioAgendamento())
+            .desconto(converterParaDuasCasasDecimais(agenda.getDesconto().doubleValue()))
+            .totalServico(converterParaDuasCasasDecimais(agenda.getTotalServico()))
+            .totalDesconto(converterParaDuasCasasDecimais(agenda.getTotalDesconto()))
+            .totalPagamento(converterParaDuasCasasDecimais(agenda.getTotalPagamento()))
+            .minutosDisponiveis(agenda.isValida() ? agenda.getMinutosDisponiveis() : null)
+            .horarioExpiracao(agenda.isValida() ? agenda.informarHorarioExpiracao() : null)
+            .minutosRestantes(agenda.isValida() ? agenda.informarTempoRestante() : null)
+            .cadeiraLivreValida(agenda.isValida())
+            .servicos(tratarServicosDaAgenda(agenda))
+            .situacao(agenda.getSituacao().getDescricaoSituacao())
+            .cliente(agenda.isCadeiraLivreSemClienteVinculado() ? null : ClienteResponse.of(agenda))
+            .pagamento(transacaoResponse)
             .build();
     }
 

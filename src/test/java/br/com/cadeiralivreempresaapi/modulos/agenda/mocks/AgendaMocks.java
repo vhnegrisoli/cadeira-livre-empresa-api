@@ -7,6 +7,7 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivr
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ESituacaoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.enums.ETipoAgenda;
 import br.com.cadeiralivreempresaapi.modulos.agenda.model.Agenda;
+import br.com.cadeiralivreempresaapi.modulos.transacao.dto.TransacaoResponse;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -89,10 +90,19 @@ public class AgendaMocks {
             .builder()
             .token("123")
             .cadeiraLivreId(1)
+            .cartaoId("casdasd")
             .build();
     }
 
     public static CadeiraLivreResponse umaCadeiraLivreResponse() {
         return CadeiraLivreResponse.of(umaAgendaCadeiraLivre());
     }
+
+    public static TransacaoResponse umaTransacaoResponse() {
+        return TransacaoResponse
+            .builder()
+            .transacaoPagarmeId(151651L)
+            .build();
+    }
+
 }

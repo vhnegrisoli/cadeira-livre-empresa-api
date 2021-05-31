@@ -14,6 +14,8 @@ import br.com.cadeiralivreempresaapi.modulos.jwt.dto.JwtUsuarioResponse;
 import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.dto.NotificacaoCorpoRequest;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.service.NotificacaoService;
+import br.com.cadeiralivreempresaapi.modulos.transacao.dto.TransacaoResponse;
+import br.com.cadeiralivreempresaapi.modulos.transacao.service.TransacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioAcessoService;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +51,8 @@ public class CadeiraLivreService {
     private UsuarioAcessoService acessoService;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private TransacaoService transacaoService;
 
     @Transactional
     public CadeiraLivreResponse disponibilizarCadeiraLivre(CadeiraLivreRequest request) {
@@ -135,7 +139,8 @@ public class CadeiraLivreService {
             || cadeiraLivre.isCancelada()) {
             throw CADEIRA_LIVRE_SEM_PERMISSAO_VISUALIZAR;
         }
-        return CadeiraLivreResponse.of(cadeiraLivre);
+        return CadeiraLivreResponse.of(cadeiraLivre,
+            transacaoService.buscarTransacao(cadeiraLivre.getTransacaoId(), jwtToken));
     }
 
     public List<CadeiraLivreResponse> buscarCadeirasLivresPorEmpresa(Integer empresaId) {
@@ -191,11 +196,12 @@ public class CadeiraLivreService {
         }
     }
 
-    public CadeiraLivreResponse reservarCadeiraLivreParaCliente(Integer id, String token) {
+    public CadeiraLivreResponse reservarCadeiraLivreParaCliente(Integer id, String token, String cartaoId) {
         return reservarCadeiraLivre(CadeiraLivreReservaRequest
             .builder()
             .cadeiraLivreId(id)
             .token(token)
+            .cartaoId(cartaoId)
             .build());
     }
 
@@ -206,13 +212,36 @@ public class CadeiraLivreService {
         validarCadeiraLivreInvalidaParaReserva(cadeiraLivre);
         validarClienteComDadosIncompletos(cliente);
         cadeiraLivre.reservarParaCliente(cliente);
+        reservarAgendaParaCliente(cadeiraLivre);
+        return tratarTransacaoCadeiraLivre(cadeiraLivre, cliente, request);
+    }
+
+    private CadeiraLivreResponse tratarTransacaoCadeiraLivre(Agenda cadeiraLivre,
+                                                             JwtUsuarioResponse cliente,
+                                                             CadeiraLivreReservaRequest request) {
+        var cadeiraLivreSalva = agendaService.buscarAgendaPorId(cadeiraLivre.getId());
+        var transacao = transacaoService
+            .realizarTransacao(cadeiraLivreSalva, request.getCartaoId(), cliente, request.getToken());
+        definirTransacaoParaCadeiraLivre(cadeiraLivreSalva,transacao);
+        return CadeiraLivreResponse.of(cadeiraLivreSalva, transacao);
+
+    }
+
+    @Transactional
+    private void reservarAgendaParaCliente(Agenda cadeiraLivre) {
         agendaRepository.reservarAgendaParaCliente(cadeiraLivre.getId(),
             cadeiraLivre.getClienteId(),
             cadeiraLivre.getClienteNome(),
             cadeiraLivre.getClienteEmail(),
             cadeiraLivre.getClienteCpf(),
             ESituacaoAgenda.RESERVA);
-        return CadeiraLivreResponse.of(agendaService.buscarAgendaPorId(cadeiraLivre.getId()));
+    }
+
+    @Transactional
+    private void definirTransacaoParaCadeiraLivre(Agenda cadeiraLivre,
+                                                    TransacaoResponse transacaoResponse) {
+        cadeiraLivre.setTransacaoId(transacaoResponse.getTransacaoPagarmeId());
+        agendaRepository.definirTransacaoIdParaCadeiraLivre(transacaoResponse.getTransacaoPagarmeId(), cadeiraLivre.getId());
     }
 
     private void validarCadeiraLivreInvalidaParaReserva(Agenda cadeiraLivre) {

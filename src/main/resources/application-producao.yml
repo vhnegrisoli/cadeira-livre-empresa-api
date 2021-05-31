@@ -36,6 +36,13 @@ spring:
       max-active: 120
       max-idle: 40
 
+app-config:
+
+  services:
+    integracao-pagarme:
+      transacao:
+        url: ${INTEGRACAO_PAGARME_BASE_URI}
+
 server:
   port: 8095
 

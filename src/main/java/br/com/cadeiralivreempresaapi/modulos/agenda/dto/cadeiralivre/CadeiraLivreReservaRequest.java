@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class CadeiraLivreReservaRequest {
 
     private String token;
+    private String cartaoId;
     private Integer cadeiraLivreId;
 }
