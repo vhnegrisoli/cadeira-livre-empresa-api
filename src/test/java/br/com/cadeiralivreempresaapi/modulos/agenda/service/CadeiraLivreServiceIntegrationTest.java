@@ -9,6 +9,7 @@ import br.com.cadeiralivreempresaapi.modulos.empresa.service.EnderecoService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
 import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.service.NotificacaoService;
+import br.com.cadeiralivreempresaapi.modulos.transacao.service.TransacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.AutenticacaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.PermissaoService;
 import br.com.cadeiralivreempresaapi.modulos.usuario.service.UsuarioAcessoService;
@@ -25,8 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.AgendaMocks.umaAgendaCadeiraLivre;
-import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.AgendaMocks.umaCadeiraLivreReservaRequest;
+import static br.com.cadeiralivreempresaapi.modulos.agenda.mocks.AgendaMocks.*;
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.NumeroUtil.converterParaDuasCasasDecimais;
 import static br.com.cadeiralivreempresaapi.modulos.jwt.mocks.JwtMocks.umJwtUsuarioResponse;
 import static br.com.cadeiralivreempresaapi.modulos.jwt.util.JwtTestUtil.gerarTokenTeste;
@@ -78,6 +78,8 @@ public class CadeiraLivreServiceIntegrationTest {
     private HorarioService horarioService;
     @MockBean
     private EnderecoService enderecoService;
+    @MockBean
+    private TransacaoService transacaoService;
 
     @Test
     @DisplayName("Deve buscar cadeiras livres quando existirem sem filtrar por empresas")
@@ -325,6 +327,8 @@ public class CadeiraLivreServiceIntegrationTest {
 
         when(jwtService.verificarUsuarioValidoComTokenValida(anyString())).thenReturn(true);
         when(jwtService.recuperarDadosDoUsuarioDoToken(anyString())).thenReturn(umJwtUsuarioResponse());
+        when(transacaoService.realizarTransacao(any(), any(), any(), any()))
+            .thenReturn(umaTransacaoResponse());
 
         var cadeiraLivre = umaAgendaCadeiraLivre();
         cadeiraLivre.setId(null);
@@ -368,6 +372,8 @@ public class CadeiraLivreServiceIntegrationTest {
 
         when(jwtService.verificarUsuarioValidoComTokenValida(anyString())).thenReturn(true);
         when(jwtService.recuperarDadosDoUsuarioDoToken(anyString())).thenReturn(umJwtUsuarioResponse());
+        when(transacaoService.realizarTransacao(any(), anyString(), any(), anyString()))
+            .thenReturn(umaTransacaoResponse());
 
         var cadeiraLivre = umaAgendaCadeiraLivre();
         cadeiraLivre.setId(null);
@@ -388,7 +394,7 @@ public class CadeiraLivreServiceIntegrationTest {
         var reserva = umaCadeiraLivreReservaRequest();
         reserva.setCadeiraLivreId(idSalvo);
 
-        var cadeiraLivreReservada = service.reservarCadeiraLivreParaCliente(idSalvo, "token");
+        var cadeiraLivreReservada = service.reservarCadeiraLivreParaCliente(idSalvo, "token", "cartaoId");
 
         assertThat(cadeiraLivreReservada).isNotNull();
         assertThat(cadeiraLivreReservada.getSituacao()).isEqualTo("Reservada");

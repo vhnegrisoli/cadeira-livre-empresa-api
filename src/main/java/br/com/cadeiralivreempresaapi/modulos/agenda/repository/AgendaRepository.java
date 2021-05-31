@@ -44,4 +44,12 @@ public interface AgendaRepository extends JpaRepository<Agenda, Integer> {
                                    String clienteEmail,
                                    String clienteCpf,
                                    ESituacaoAgenda situacao);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE Agenda a SET"
+        + " a.transacaoId = :transacaoId"
+        + " WHERE a.id = :id"
+    )
+    void definirTransacaoIdParaCadeiraLivre(Long transacaoId, Integer id);
 }

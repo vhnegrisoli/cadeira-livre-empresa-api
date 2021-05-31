@@ -3,7 +3,6 @@ package br.com.cadeiralivreempresaapi.modulos.cep.service;
 import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.cep.client.ViaCepClient;
 import br.com.cadeiralivreempresaapi.modulos.cep.dto.CepResponse;
-import br.com.cadeiralivreempresaapi.modulos.cep.dto.ViaCepResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

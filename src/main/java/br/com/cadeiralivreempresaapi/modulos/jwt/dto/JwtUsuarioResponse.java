@@ -20,6 +20,7 @@ public class JwtUsuarioResponse {
     private String nome;
     private String email;
     private String cpf;
+    private String telefone;
 
     public static JwtUsuarioResponse of(Claims dadosUsuario) {
         return JwtUsuarioResponse
@@ -28,6 +29,7 @@ public class JwtUsuarioResponse {
             .nome(getCampo(NOME, dadosUsuario))
             .email(getCampo(EMAIL, dadosUsuario))
             .cpf(getCampo(CPF, dadosUsuario))
+            .telefone(getCampo(TELEFONE, dadosUsuario))
             .build();
     }
 }

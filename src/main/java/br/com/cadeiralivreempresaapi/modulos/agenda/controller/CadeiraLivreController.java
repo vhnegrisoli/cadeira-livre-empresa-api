@@ -63,7 +63,8 @@ public class CadeiraLivreController {
 
     @PostMapping("{id}/cliente-api/reservar")
     public CadeiraLivreResponse reservarCadeiraLivreParaCliente(@PathVariable Integer id,
-                                                                @RequestParam("token") String token) {
-        return service.reservarCadeiraLivreParaCliente(id, token);
+                                                                @RequestParam("token") String token,
+                                                                @RequestParam("cartaoId") String cartaoId) {
+        return service.reservarCadeiraLivreParaCliente(id, token, cartaoId);
     }
 }

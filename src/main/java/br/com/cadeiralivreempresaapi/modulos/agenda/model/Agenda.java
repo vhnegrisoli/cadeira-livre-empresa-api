@@ -102,6 +102,9 @@ public class Agenda {
     @Column(name = "MINUTOS_DISPONIVEIS", nullable = false)
     private Integer minutosDisponiveis;
 
+    @Column(name = "TRANSACAO_ID")
+    private Long transacaoId;
+
     public static Agenda of(AgendaRequest request) {
         return Agenda
             .builder()
