@@ -72,13 +72,21 @@ app-config:
     reservar-cadeira-livre: reservar-cadeira-livre.queue
 
   firebase:
-    token: ${FIREBASE_TOKEN}
+    token: 123
     bundleId: br.com.biot.maisdietaclube
 
   scheduler:
     every-minute: 0 0/1 * * * *
     every-5-minutes: 0 0/5 * * * *
     every-20-minutes: 0 0/20 * * * *
+
+  services:
+    integracao-pagarme:
+      transacao:
+        url: http://localhost:8098/api/transacao
+
+    viacep:
+        url: https://viacep.com.br/ws
 
 management:
   health:

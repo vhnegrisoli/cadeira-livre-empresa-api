@@ -29,6 +29,7 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
     @SuppressWarnings({"checkstyle:methodlength"})
     public void configure(HttpSecurity http) throws Exception {
         String[] permitAll = {
+            "/",
             "/login/**",
             "/oauth/token",
             "/oauth/authorize",
@@ -42,7 +43,8 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
             "/api/jwt/**",
             "**cliente-api**",
             "/api/empresas/cliente-api",
-            "/api/empresas/{id}/cliente-api"
+            "/api/empresas/{id}/cliente-api",
+            "/api/cep/**"
         };
 
         http
