@@ -86,7 +86,10 @@ app-config:
         url: http://localhost:8098/api/transacao
 
     viacep:
-        url: https://viacep.com.br/ws
+      url: https://viacep.com.br/ws
+
+    ibge-localidade:
+      url: https://servicodados.ibge.gov.br/api/v1/localidades/estados
 
 management:
   health:

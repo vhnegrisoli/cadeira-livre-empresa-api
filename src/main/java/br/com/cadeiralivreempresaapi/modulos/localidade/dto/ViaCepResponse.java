@@ -1,4 +1,4 @@
-package br.com.cadeiralivreempresaapi.modulos.cep.dto;
+package br.com.cadeiralivreempresaapi.modulos.localidade.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

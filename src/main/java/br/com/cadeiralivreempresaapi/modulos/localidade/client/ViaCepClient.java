@@ -1,6 +1,6 @@
-package br.com.cadeiralivreempresaapi.modulos.cep.client;
+package br.com.cadeiralivreempresaapi.modulos.localidade.client;
 
-import br.com.cadeiralivreempresaapi.modulos.cep.dto.ViaCepResponse;
+import br.com.cadeiralivreempresaapi.modulos.localidade.dto.ViaCepResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
