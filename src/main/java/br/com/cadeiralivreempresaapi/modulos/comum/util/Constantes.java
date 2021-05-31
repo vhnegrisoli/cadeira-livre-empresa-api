@@ -19,4 +19,6 @@ public interface Constantes {
     String TEST_TOKEN_NOTIFICACAO = "123456";
     String TEST_PROFILE = "test";
     Integer TRINTA_SEGUNDOS_REFRESH_PADRAO = 30;
+    String PONTO = ".";
+    String TRACO = "-";
 }
