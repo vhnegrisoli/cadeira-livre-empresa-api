@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.empresa.messages.EmpresaMessages.*;
 import static br.com.cadeiralivreempresaapi.modulos.jwt.messages.JwtMessages.USUARIO_NAO_AUTENTICADO;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 public class EmpresaService {
@@ -39,18 +40,23 @@ public class EmpresaService {
     private HorarioService horarioService;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private EnderecoService enderecoService;
 
     @Transactional
     public SuccessResponseDetails salvar(EmpresaRequest request) {
+        validarEmpresaSemEndereco(request);
         var empresa = Empresa.of(request);
         empresa.adicionarProprietario(usuarioService.buscarPorId(autenticacaoService.getUsuarioAutenticadoId()));
         validarNovaEmpresa(empresa);
         empresaRepository.save(empresa);
+        enderecoService.salvarEndereco(request.getEnderecos(), empresa);
         return EMPRESA_CRIADA_SUCESSO;
     }
 
     @Transactional
     public SuccessResponseDetails editar(EmpresaRequest request, Integer id) {
+        validarEmpresaSemEndereco(request);
         var empresa = Empresa.of(request);
         empresa.setId(id);
         var empresaExistente = buscarPorId(id);
@@ -60,6 +66,12 @@ public class EmpresaService {
         empresa.setSituacao(empresaExistente.getSituacao());
         empresaRepository.save(empresa);
         return EMPRESA_ALTERADA_SUCESSO;
+    }
+
+    private void validarEmpresaSemEndereco(EmpresaRequest request) {
+        if (isEmpty(request.getEnderecos())) {
+            throw EMPRESA_SEM_ENDERECO;
+        }
     }
 
     private void validarNovaEmpresa(Empresa empresa) {
@@ -104,7 +116,9 @@ public class EmpresaService {
 
     public EmpresaResponse buscarPorIdComSocios(Integer id) {
         var empresa = buscarPorId(id);
-        return EmpresaResponse.of(empresa);
+        return EmpresaResponse.of(empresa,
+            enderecoService.buscarEnderecosDaEmpresa(empresa.getId())
+        );
     }
 
     public Page<EmpresaPageResponse> buscarTodas(PageRequest pageable, EmpresaFiltros filtros) {

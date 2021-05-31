@@ -1,14 +1,13 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.mocks;
 
-import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaPageResponse;
-import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaRequest;
-import br.com.cadeiralivreempresaapi.modulos.empresa.dto.EmpresaResponse;
-import br.com.cadeiralivreempresaapi.modulos.empresa.dto.ProprietarioSocioResponse;
+import br.com.cadeiralivreempresaapi.modulos.empresa.dto.*;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ESituacaoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.enums.ETipoEmpresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
+import br.com.cadeiralivreempresaapi.modulos.empresa.model.Endereco;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,6 +40,7 @@ public class EmpresaMocks {
             .razaoSocial("Empresa 01")
             .tipoEmpresa(ETipoEmpresa.BARBEARIA)
             .tempoRefreshCadeiraLivre(10)
+            .enderecos(Collections.singletonList(umEnderecoRequest()))
             .build();
     }
 
@@ -71,5 +71,46 @@ public class EmpresaMocks {
 
     public static ProprietarioSocioResponse umProprietarioSocioResponse() {
         return ProprietarioSocioResponse.of(umUsuario());
+    }
+
+    public static EnderecoRequest umEnderecoRequest() {
+        return EnderecoRequest
+            .builder()
+            .bairro("Gleba Fazenda Palhano")
+            .cep("86050523")
+            .cidade("Londrina")
+            .estado("pr")
+            .numeroRua("80")
+            .complemento("Apto 888")
+            .rua("Tereza Zanetti Lopes")
+            .build();
+    }
+
+    public static Endereco umEndereco() {
+        return Endereco
+            .builder()
+            .id(1)
+            .bairro("Gleba Fazenda Palhano")
+            .cep("86050523")
+            .cidade("Londrina")
+            .estado("pr")
+            .numeroRua("80")
+            .complemento("Apto 888")
+            .rua("Tereza Zanetti Lopes")
+            .build();
+    }
+
+    public static EnderecoResponse umEnderecoResponse() {
+        return EnderecoResponse
+            .builder()
+            .id(1)
+            .bairro("Gleba Fazenda Palhano")
+            .cep("86050523")
+            .cidade("Londrina")
+            .estado("pr")
+            .numeroRua("80")
+            .complemento("Apto 888")
+            .rua("Tereza Zanetti Lopes")
+            .build();
     }
 }

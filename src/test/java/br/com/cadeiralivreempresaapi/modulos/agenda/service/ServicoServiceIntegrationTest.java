@@ -5,6 +5,7 @@ import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.ServicoRepository;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
+import br.com.cadeiralivreempresaapi.modulos.empresa.service.EnderecoService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
 import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
@@ -72,6 +73,8 @@ public class ServicoServiceIntegrationTest {
     private PermissaoService permissaoService;
     @MockBean
     private HorarioService horarioService;
+    @MockBean
+    private EnderecoService enderecoService;
 
     @Test
     @DisplayName("Deve buscar serviços por ID quando usuário for admin")

@@ -5,6 +5,7 @@ import br.com.cadeiralivreempresaapi.modulos.agenda.service.HorarioService;
 import br.com.cadeiralivreempresaapi.modulos.agenda.service.ServicoService;
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
+import br.com.cadeiralivreempresaapi.modulos.empresa.service.EnderecoService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.dto.FuncionarioFiltros;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.repository.FuncionarioRepository;
 import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
@@ -61,6 +62,8 @@ public class FuncionarioServiceIntegrationTest {
     private ServicoService servicoService;
     @MockBean
     private HorarioService horarioService;
+    @MockBean
+    private EnderecoService enderecoService;
 
     @Test
     @DisplayName("Deve buscar por ID quando informar ID e usuário for admin")

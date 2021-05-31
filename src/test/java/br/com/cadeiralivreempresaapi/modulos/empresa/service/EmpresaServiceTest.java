@@ -36,6 +36,8 @@ public class EmpresaServiceTest {
     private UsuarioService usuarioService;
     @Mock
     private AutenticacaoService autenticacaoService;
+    @Mock
+    private EnderecoService enderecoService;
 
     @Test
     @DisplayName("Deve salvar empresa quando dados estiverem corretos")
@@ -46,8 +48,10 @@ public class EmpresaServiceTest {
         when(usuarioService.buscarPorId(anyInt())).thenReturn(usuario);
         when(empresaRepository.existsByRazaoSocial(anyString())).thenReturn(false);
         when(empresaRepository.existsByCnpj(anyString())).thenReturn(false);
+        when(empresaRepository.save(any())).thenReturn(umaEmpresa());
 
         var response = service.salvar(umaEmpresaRequest());
+
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getMessage()).isEqualTo("A empresa foi criada com sucesso!");
@@ -64,6 +68,18 @@ public class EmpresaServiceTest {
         assertThatExceptionOfType(ValidacaoException.class)
             .isThrownBy(() -> service.salvar(umaEmpresaRequest()))
             .withMessage("Para salvar uma empresa, o usuário deve ser um proprietário.");
+
+        verify(empresaRepository, times(0)).save(any(Empresa.class));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao salvar empresa quando não informar ao menos um endereço")
+    public void salvar_deveLancarException_quandoNaoInformarEndereco() {
+        var requestSemEndereco = umaEmpresaRequest();
+        requestSemEndereco.setEnderecos(null);
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> service.salvar(requestSemEndereco))
+            .withMessage("É necessário informar o endereço da empresa.");
 
         verify(empresaRepository, times(0)).save(any(Empresa.class));
     }

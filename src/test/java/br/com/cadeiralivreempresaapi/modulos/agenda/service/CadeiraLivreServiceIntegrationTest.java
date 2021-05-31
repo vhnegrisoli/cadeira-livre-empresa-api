@@ -5,6 +5,7 @@ import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.agenda.repository.AgendaRepository;
 import br.com.cadeiralivreempresaapi.modulos.empresa.model.Empresa;
 import br.com.cadeiralivreempresaapi.modulos.empresa.service.EmpresaService;
+import br.com.cadeiralivreempresaapi.modulos.empresa.service.EnderecoService;
 import br.com.cadeiralivreempresaapi.modulos.funcionario.service.FuncionarioService;
 import br.com.cadeiralivreempresaapi.modulos.jwt.service.JwtService;
 import br.com.cadeiralivreempresaapi.modulos.notificacao.service.NotificacaoService;
@@ -75,6 +76,8 @@ public class CadeiraLivreServiceIntegrationTest {
     private PasswordEncoder encoder;
     @MockBean
     private HorarioService horarioService;
+    @MockBean
+    private EnderecoService enderecoService;
 
     @Test
     @DisplayName("Deve buscar cadeiras livres quando existirem sem filtrar por empresas")
