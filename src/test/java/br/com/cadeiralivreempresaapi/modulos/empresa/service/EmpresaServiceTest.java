@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
 import java.util.Set;
@@ -37,7 +36,7 @@ public class EmpresaServiceTest {
     private UsuarioService usuarioService;
     @Mock
     private AutenticacaoService autenticacaoService;
-    @MockBean
+    @Mock
     private EnderecoService enderecoService;
 
     @Test
@@ -52,6 +51,7 @@ public class EmpresaServiceTest {
         when(empresaRepository.save(any())).thenReturn(umaEmpresa());
 
         var response = service.salvar(umaEmpresaRequest());
+
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getMessage()).isEqualTo("A empresa foi criada com sucesso!");
@@ -73,17 +73,13 @@ public class EmpresaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exception ao salvar empresa quando razão social já existir")
-    public void salvar_deveLancarException_quandoJaExistirRazaoSocial() {
-        var usuario = umUsuario();
-        usuario.setPermissoes(Set.of(umaPermissaoSocio()));
-        when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(1);
-        when(usuarioService.buscarPorId(anyInt())).thenReturn(usuario);
-        when(empresaRepository.existsByRazaoSocial(anyString())).thenReturn(true);
-
+    @DisplayName("Deve lançar exception ao salvar empresa quando não informar ao menos um endereço")
+    public void salvar_deveLancarException_quandoNaoInformarEndereco() {
+        var requestSemEndereco = umaEmpresaRequest();
+        requestSemEndereco.setEnderecos(null);
         assertThatExceptionOfType(ValidacaoException.class)
-            .isThrownBy(() -> service.salvar(umaEmpresaRequest()))
-            .withMessage("Razão social já existente para outra empresa.");
+            .isThrownBy(() -> service.salvar(requestSemEndereco))
+            .withMessage("É necessário informar o endereço da empresa.");
 
         verify(empresaRepository, times(0)).save(any(Empresa.class));
     }
