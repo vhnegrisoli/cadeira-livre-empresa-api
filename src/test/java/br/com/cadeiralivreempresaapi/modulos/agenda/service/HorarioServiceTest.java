@@ -293,7 +293,7 @@ public class HorarioServiceTest {
         assertThat(horario.getDiaDaSemana().getDiaNome()).isEqualTo("Segunda-feira");
         assertThat(horario.getEmpresa().getId()).isEqualTo(1);
         assertThat(horario.getEmpresa().getNome()).isEqualTo("Empresa 01");
-        assertThat(horario.getEmpresa().getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(horario.getEmpresa().getCpfCnpj()).isEqualTo("82.765.926/0001-32");
 
         verify(acessoService, times(1)).validarPermissoesDoUsuario(anyInt());
         verify(horarioRepository, times(1)).findById(anyInt());

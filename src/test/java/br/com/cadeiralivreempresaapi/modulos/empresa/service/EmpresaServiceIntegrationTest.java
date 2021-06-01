@@ -69,7 +69,7 @@ public class EmpresaServiceIntegrationTest {
         assertThat(empresa.getSocios().size()).isEqualTo(2);
         assertThat(empresa.getNome()).isEqualTo("Empresa 01 Edicao");
         assertThat(empresa.getRazaoSocial()).isEqualTo("Empresa 01");
-        assertThat(empresa.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(empresa.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
         assertThat(empresa.getTipoEmpresa()).isEqualTo(ETipoEmpresa.SALAO);
         assertThat(empresa.getSituacao()).isEqualTo(ESituacaoEmpresa.ATIVA);
     }
@@ -100,7 +100,7 @@ public class EmpresaServiceIntegrationTest {
         assertThat(response.getProprietarioSocios().get(1).getNome()).isEqualTo("Sócio 1 Update");
         assertThat(response.getNome()).isEqualTo("Empresa 01 Edicao");
         assertThat(response.getRazaoSocial()).isEqualTo("Empresa 01");
-        assertThat(response.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(response.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
         assertThat(response.getTipoEmpresa()).isEqualTo(ETipoEmpresa.SALAO);
         assertThat(response.getSituacao()).isEqualTo(ESituacaoEmpresa.ATIVA);
     }
@@ -123,7 +123,7 @@ public class EmpresaServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
         assertThat(service.buscarTodas(new PageRequest(), new EmpresaFiltros()))
-            .extracting("id", "cnpj", "nome", "tipoEmpresa", "situacao")
+            .extracting("id", "cpfCnpj", "nome", "tipoEmpresa", "situacao")
             .containsExactly(
                 tuple(4, "26.343.835/0001-38", "Empresa 01 Edicao", ETipoEmpresa.SALAO, ESituacaoEmpresa.ATIVA),
                 tuple(7, "49.579.794/0001-89", "Empresa 02", ETipoEmpresa.SALAO, ESituacaoEmpresa.ATIVA)
@@ -138,7 +138,7 @@ public class EmpresaServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
 
         assertThat(service.buscarTodas(new PageRequest(), new EmpresaFiltros()))
-            .extracting("id", "cnpj", "nome", "tipoEmpresa", "situacao")
+            .extracting("id", "cpfCnpj", "nome", "tipoEmpresa", "situacao")
             .containsExactly(
                 tuple(7, "49.579.794/0001-89", "Empresa 02", ETipoEmpresa.SALAO, ESituacaoEmpresa.ATIVA)
             );
@@ -152,7 +152,7 @@ public class EmpresaServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
 
         assertThat(service.buscarTodas(new PageRequest(), new EmpresaFiltros()))
-            .extracting("id", "cnpj", "nome", "tipoEmpresa", "situacao")
+            .extracting("id", "cpfCnpj", "nome", "tipoEmpresa", "situacao")
             .containsExactly(
                 tuple(7, "49.579.794/0001-89", "Empresa 02", ETipoEmpresa.SALAO, ESituacaoEmpresa.ATIVA)
             );
@@ -280,7 +280,7 @@ public class EmpresaServiceIntegrationTest {
     public void buscarEmpresasParaCliente_deveBuscarEmpresas_quandoInformarTokenValida() {
         var token = gerarTokenTeste();
         assertThat(service.buscarEmpresasParaCliente(token, new EmpresaFiltros()))
-            .extracting("id", "nome", "cnpj", "tipoEmpresa")
+            .extracting("id", "nome", "cpfCnpj", "tipoEmpresa")
             .containsExactly(
                 tuple(4, "Empresa 01 Edicao", "26.343.835/0001-38", "Salão de Beleza"),
                 tuple(7, "Empresa 02", "49.579.794/0001-89", "Salão de Beleza")
@@ -305,7 +305,7 @@ public class EmpresaServiceIntegrationTest {
         assertThat(empresa.getId()).isEqualTo(4);
         assertThat(empresa.getNome()).isEqualTo("Empresa 01 Edicao");
         assertThat(empresa.getRazaoSocial()).isEqualTo("Empresa 01");
-        assertThat(empresa.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(empresa.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
         assertThat(empresa.getTipoEmpresa()).isEqualTo("Salão de Beleza");
         assertThat(empresa.getProprietarioSocios()).isEqualTo(List.of(
             new ProprietarioSocioClienteResponse(2, "Proprietario 1", "Proprietário"),

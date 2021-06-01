@@ -2,6 +2,8 @@ package br.com.cadeiralivreempresaapi.modulos.transacao.util;
 
 import java.math.BigDecimal;
 
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.NumeroUtil.converterParaDuasCasasDecimais;
+
 public class PrecoUtil {
 
     private static final String PONTO = ".";
@@ -10,10 +12,11 @@ public class PrecoUtil {
 
     public static BigDecimal tratarValorTransacao(Double valor) {
         try {
-            var valorString = valor.toString();
-            valorString = valorString.replace(PONTO, VAZIO);
-            valorString = valorString.replace(VIRGULA, VAZIO);
-            return BigDecimal.valueOf(Long.parseLong(valorString));
+            var valorDuasCasas = converterParaDuasCasasDecimais(valor);
+            var valorDuasCasasString = valorDuasCasas.toString();
+            valorDuasCasasString = valorDuasCasasString.replace(PONTO, VAZIO);
+            valorDuasCasasString = valorDuasCasasString.replace(VIRGULA, VAZIO);
+            return converterParaDuasCasasDecimais(Long.parseLong(valorDuasCasasString));
         } catch (Exception ex) {
             return BigDecimal.ZERO;
         }

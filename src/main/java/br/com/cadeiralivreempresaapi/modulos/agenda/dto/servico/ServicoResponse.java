@@ -17,13 +17,13 @@ public class ServicoResponse {
     private String descricao;
     private Double preco;
     private String empresa;
-    private String cnpj;
+    private String cpfCnpj;
 
     public static ServicoResponse of(Servico servico) {
         var response = new ServicoResponse();
         BeanUtils.copyProperties(servico, response);
         response.setEmpresa(servico.getEmpresa().getNome());
-        response.setCnpj(servico.getEmpresa().getCnpj());
+        response.setCpfCnpj(servico.getEmpresa().getCpfCnpj());
         return response;
     }
 }

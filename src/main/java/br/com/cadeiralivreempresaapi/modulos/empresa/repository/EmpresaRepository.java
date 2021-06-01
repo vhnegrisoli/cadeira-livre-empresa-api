@@ -14,14 +14,6 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Integer>,
 
     Boolean existsByIdAndSociosId(Integer id, Integer usuarioId);
 
-    Boolean existsByRazaoSocial(String razaoSocial);
-
-    Boolean existsByRazaoSocialAndIdNot(String razaoSocial, Integer id);
-
-    Boolean existsByCnpj(String cnpj);
-
-    Boolean existsByCnpjAndIdNot(String cnpj, Integer id);
-
     List<Empresa> findAll(Predicate predicate);
 
     Optional<Empresa> findByIdAndSituacao(Integer id, ESituacaoEmpresa situacao);

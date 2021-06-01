@@ -16,6 +16,6 @@ public class ServicoResponseTest {
         assertThat(response.getPreco()).isEqualTo(25.00);
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01");
         assertThat(response.getDescricao()).isEqualTo("Corte de cabelo");
-        assertThat(response.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(response.getCpfCnpj()).isEqualTo("82.765.926/0001-32");
     }
 }

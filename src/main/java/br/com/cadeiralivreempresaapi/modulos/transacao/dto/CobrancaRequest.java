@@ -15,13 +15,17 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @AllArgsConstructor
 public class CobrancaRequest {
 
+    private Integer id;
     private String nome;
+    private String cpfCnpj;
     private EnderecoCobrancaRequest endereco;
 
     public static CobrancaRequest converterDe(Empresa empresa, Endereco endereco) {
         return CobrancaRequest
             .builder()
+            .id(empresa.getId())
             .nome(isEmpty(empresa.getRazaoSocial()) ? empresa.getNome() : empresa.getRazaoSocial())
+            .cpfCnpj(empresa.getCpfCnpj())
             .endereco(EnderecoCobrancaRequest.converterDe(endereco))
             .build();
     }

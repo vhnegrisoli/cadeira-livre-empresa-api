@@ -27,7 +27,7 @@ public class FuncionarioResponse {
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     private LocalDateTime ultimoAcesso;
     private String empresa;
-    private String cnpj;
+    private String cpfCnpj;
 
     public static FuncionarioResponse of(Funcionario funcionario) {
         return FuncionarioResponse
@@ -40,7 +40,7 @@ public class FuncionarioResponse {
             .situacao(funcionario.getUsuario().getSituacao())
             .ultimoAcesso(funcionario.getUsuario().getUltimoAcesso())
             .empresa(funcionario.getEmpresa().getNome())
-            .cnpj(funcionario.getEmpresa().getCnpj())
+            .cpfCnpj(funcionario.getEmpresa().getCpfCnpj())
             .build();
     }
 }

@@ -20,7 +20,7 @@ public class EmpresaMocks {
         return Empresa
             .builder()
             .id(1)
-            .cnpj("82.765.926/0001-32")
+            .cpfCnpj("82.765.926/0001-32")
             .dataCadastro(LocalDateTime.now())
             .nome("Empresa 01")
             .razaoSocial("Empresa 01")
@@ -35,7 +35,7 @@ public class EmpresaMocks {
         return EmpresaRequest
             .builder()
             .id(1)
-            .cnpj("82.765.926/0001-32")
+            .cpfCnpj("82.765.926/0001-32")
             .nome("Empresa 01")
             .razaoSocial("Empresa 01")
             .tipoEmpresa(ETipoEmpresa.BARBEARIA)
@@ -48,7 +48,7 @@ public class EmpresaMocks {
         return EmpresaPageResponse
             .builder()
             .id(1)
-            .cnpj("82.765.926/0001-32")
+            .cpfCnpj("82.765.926/0001-32")
             .nome("Empresa 01")
             .tipoEmpresa(ETipoEmpresa.BARBEARIA)
             .situacao(ESituacaoEmpresa.ATIVA)
@@ -59,7 +59,7 @@ public class EmpresaMocks {
         return EmpresaResponse
             .builder()
             .id(1)
-            .cnpj("82.765.926/0001-32")
+            .cpfCnpj("82.765.926/0001-32")
             .dataCadastro(LocalDateTime.now())
             .nome("Empresa 01")
             .razaoSocial("Empresa 01")

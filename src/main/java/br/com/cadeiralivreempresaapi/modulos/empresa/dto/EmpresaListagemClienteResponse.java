@@ -15,7 +15,7 @@ public class EmpresaListagemClienteResponse {
 
     private Integer id;
     private String nome;
-    private String cnpj;
+    private String cpfCnpj;
     private String tipoEmpresa;
 
     public static EmpresaListagemClienteResponse of(Empresa empresa) {

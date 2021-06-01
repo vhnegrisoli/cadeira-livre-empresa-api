@@ -78,7 +78,7 @@ public class FuncionarioServiceIntegrationTest {
         assertThat(response.getEmail()).isEqualTo("funcionario1@gmail.com");
         assertThat(response.getCpf()).isEqualTo("192.393.640-99");
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01 Edicao");
-        assertThat(response.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(response.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
         assertThat(response.getSituacao()).isEqualTo(ESituacaoUsuario.INATIVO);
     }
 
@@ -97,7 +97,7 @@ public class FuncionarioServiceIntegrationTest {
         assertThat(response.getEmail()).isEqualTo("funcionario1@gmail.com");
         assertThat(response.getCpf()).isEqualTo("192.393.640-99");
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01 Edicao");
-        assertThat(response.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(response.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
         assertThat(response.getSituacao()).isEqualTo(ESituacaoUsuario.INATIVO);
     }
 
@@ -116,7 +116,7 @@ public class FuncionarioServiceIntegrationTest {
         assertThat(response.getEmail()).isEqualTo("funcionario1@gmail.com");
         assertThat(response.getCpf()).isEqualTo("192.393.640-99");
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01 Edicao");
-        assertThat(response.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(response.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
         assertThat(response.getSituacao()).isEqualTo(ESituacaoUsuario.INATIVO);
     }
 
@@ -135,7 +135,7 @@ public class FuncionarioServiceIntegrationTest {
         assertThat(response.getEmail()).isEqualTo("funcionario1@gmail.com");
         assertThat(response.getCpf()).isEqualTo("192.393.640-99");
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01 Edicao");
-        assertThat(response.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(response.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
         assertThat(response.getSituacao()).isEqualTo(ESituacaoUsuario.INATIVO);
     }
 
@@ -181,7 +181,7 @@ public class FuncionarioServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
         assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()))
-            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .extracting("id", "nome", "email", "situacao", "empresa", "cpfCnpj")
             .containsExactly(
                 tuple(11, "Funcionário 1", "funcionario1@gmail.com",
                     ESituacaoUsuario.INATIVO, "Empresa 01 Edicao", "26.343.835/0001-38"),
@@ -197,9 +197,9 @@ public class FuncionarioServiceIntegrationTest {
 
         var filtros = new FuncionarioFiltros();
         filtros.setCpf("192");
-        filtros.setCnpj("343");
+        filtros.setCpfCnpj("343");
         assertThat(service.buscarTodos(new PageRequest(), filtros))
-            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .extracting("id", "nome", "email", "situacao", "empresa", "cpfCnpj")
             .containsExactly(
                 tuple(11, "Funcionário 1", "funcionario1@gmail.com",
                     ESituacaoUsuario.INATIVO, "Empresa 01 Edicao", "26.343.835/0001-38")
@@ -214,7 +214,7 @@ public class FuncionarioServiceIntegrationTest {
         var filtros = new FuncionarioFiltros();
         filtros.setSituacao(ESituacaoUsuario.ATIVO);
         assertThat(service.buscarTodos(new PageRequest(), filtros))
-            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .extracting("id", "nome", "email", "situacao", "empresa", "cpfCnpj")
             .containsExactly(
                 tuple(14, "Funcionário 2", "funcionario2@gmail.com",
                     ESituacaoUsuario.ATIVO, "Empresa 02", "49.579.794/0001-89")
@@ -229,7 +229,7 @@ public class FuncionarioServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
 
         assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()))
-            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .extracting("id", "nome", "email", "situacao", "empresa", "cpfCnpj")
             .containsExactly(
                 tuple(11, "Funcionário 1", "funcionario1@gmail.com",
                     ESituacaoUsuario.INATIVO, "Empresa 01 Edicao", "26.343.835/0001-38")
@@ -244,7 +244,7 @@ public class FuncionarioServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(socio);
 
         assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()))
-            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .extracting("id", "nome", "email", "situacao", "empresa", "cpfCnpj")
             .containsExactly(
                 tuple(11, "Funcionário 1", "funcionario1@gmail.com",
                     ESituacaoUsuario.INATIVO, "Empresa 01 Edicao", "26.343.835/0001-38")
@@ -259,7 +259,7 @@ public class FuncionarioServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(funcionario);
 
         assertThat(service.buscarTodos(new PageRequest(), new FuncionarioFiltros()))
-            .extracting("id", "nome", "email", "situacao", "empresa", "cnpj")
+            .extracting("id", "nome", "email", "situacao", "empresa", "cpfCnpj")
             .containsExactly(
                 tuple(11, "Funcionário 1", "funcionario1@gmail.com",
                     ESituacaoUsuario.INATIVO, "Empresa 01 Edicao", "26.343.835/0001-38")

@@ -23,7 +23,7 @@ public class EmpresaClienteResponse {
 
     private Integer id;
     private String nome;
-    private String cnpj;
+    private String cpfCnpj;
     private String razaoSocial;
     private List<ProprietarioSocioClienteResponse> proprietarioSocios;
     private String tipoEmpresa;

@@ -25,7 +25,7 @@ public class EmpresaClienteResponseTest {
         assertThat(response.getId()).isEqualTo(1);
         assertThat(response.getNome()).isEqualTo("Empresa 01");
         assertThat(response.getRazaoSocial()).isEqualTo("Empresa 01");
-        assertThat(response.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(response.getCpfCnpj()).isEqualTo("82.765.926/0001-32");
         assertThat(response.getTipoEmpresa()).isEqualTo("Barbearia");
         assertThat(response.getProprietarioSocios()).isEqualTo(List.of(
             new ProprietarioSocioClienteResponse(1, "Usuario", "Sócio")

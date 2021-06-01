@@ -46,8 +46,6 @@ public class EmpresaServiceTest {
         usuario.setPermissoes(Set.of(umaPermissaoSocio()));
         when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(1);
         when(usuarioService.buscarPorId(anyInt())).thenReturn(usuario);
-        when(empresaRepository.existsByRazaoSocial(anyString())).thenReturn(false);
-        when(empresaRepository.existsByCnpj(anyString())).thenReturn(false);
         when(empresaRepository.save(any())).thenReturn(umaEmpresa());
 
         var response = service.salvar(umaEmpresaRequest());
@@ -57,6 +55,32 @@ public class EmpresaServiceTest {
         assertThat(response.getMessage()).isEqualTo("A empresa foi criada com sucesso!");
 
         verify(empresaRepository, times(1)).save(any(Empresa.class));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao salvar empresa quando usuário não informar o nome da empresa")
+    public void salvar_deveLancarException_quandoUsuarioNaoInformarNomeDaEmpresa() {
+        var empresaSemNome = umaEmpresaRequest();
+        empresaSemNome.setNome(null);
+
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> service.salvar(empresaSemNome))
+            .withMessage("É obrigatório informar o nome da empresa.");
+
+        verify(empresaRepository, times(0)).save(any(Empresa.class));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception ao salvar empresa quando usuário não informar o CPF/CNPJ da empresa")
+    public void salvar_deveLancarException_quandoUsuarioNaoInformarCpfCnpjDaEmpresa() {
+        var empresaSemCpfCnpj = umaEmpresaRequest();
+        empresaSemCpfCnpj.setCpfCnpj(null);
+
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> service.salvar(empresaSemCpfCnpj))
+            .withMessage("É obrigatório informar o CPF ou CNPJ da empresa.");
+
+        verify(empresaRepository, times(0)).save(any(Empresa.class));
     }
 
     @Test
@@ -85,39 +109,6 @@ public class EmpresaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exception ao salvar empresa quando razão social já existir")
-    public void salvar_deveLancarException_quandoJaExistirRazaoSocial() {
-        var usuario = umUsuario();
-        usuario.setPermissoes(Set.of(umaPermissaoSocio()));
-        when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(1);
-        when(usuarioService.buscarPorId(anyInt())).thenReturn(usuario);
-        when(empresaRepository.existsByRazaoSocial(anyString())).thenReturn(true);
-
-        assertThatExceptionOfType(ValidacaoException.class)
-            .isThrownBy(() -> service.salvar(umaEmpresaRequest()))
-            .withMessage("Razão social já existente para outra empresa.");
-
-        verify(empresaRepository, times(0)).save(any(Empresa.class));
-    }
-
-    @Test
-    @DisplayName("Deve lançar exception ao salvar empresa quando cnpj já existir")
-    public void salvar_deveLancarException_quandoJaExistirCnpj() {
-        var usuario = umUsuario();
-        usuario.setPermissoes(Set.of(umaPermissaoSocio()));
-        when(autenticacaoService.getUsuarioAutenticadoId()).thenReturn(1);
-        when(usuarioService.buscarPorId(anyInt())).thenReturn(usuario);
-        when(empresaRepository.existsByRazaoSocial(anyString())).thenReturn(false);
-        when(empresaRepository.existsByCnpj(anyString())).thenReturn(true);
-
-        assertThatExceptionOfType(ValidacaoException.class)
-            .isThrownBy(() -> service.salvar(umaEmpresaRequest()))
-            .withMessage("Cnpj já existente para outra empresa.");
-
-        verify(empresaRepository, times(0)).save(any(Empresa.class));
-    }
-
-    @Test
     @DisplayName("Deve editar com quando dados estiverem corretos e usuário possuir permissão")
     public void editar_deveEditarEmpresa_quandoDadosEstiveremCorretosEUsuarioPossuirPermissao() {
         var usuario = umUsuario();
@@ -125,8 +116,6 @@ public class EmpresaServiceTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoSocio());
         when(empresaRepository.existsByIdAndSociosId(anyInt(), anyInt())).thenReturn(true);
         when(empresaRepository.findById(anyInt())).thenReturn(Optional.of(umaEmpresa()));
-        when(empresaRepository.existsByRazaoSocialAndIdNot(anyString(), anyInt())).thenReturn(false);
-        when(empresaRepository.existsByCnpjAndIdNot(anyString(), anyInt())).thenReturn(false);
 
         var response = service.editar(umaEmpresaRequest(), 1);
         assertThat(response).isNotNull();
@@ -153,41 +142,6 @@ public class EmpresaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exception quando tentar editar empresa e razão social for de outra empresa")
-    public void editar_deveLancarException_quandoJaExistirOutraEmpresaComRazaoSocialInformada() {
-        var usuario = umUsuario();
-        usuario.setPermissoes(Set.of(umaPermissaoSocio()));
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoSocio());
-        when(empresaRepository.existsByIdAndSociosId(anyInt(), anyInt())).thenReturn(true);
-        when(empresaRepository.findById(anyInt())).thenReturn(Optional.of(umaEmpresa()));
-        when(empresaRepository.existsByRazaoSocialAndIdNot(anyString(), anyInt())).thenReturn(true);
-
-        assertThatExceptionOfType(ValidacaoException.class)
-            .isThrownBy(() -> service.editar(umaEmpresaRequest(), 1))
-            .withMessage("Razão social já existente para outra empresa.");
-
-        verify(empresaRepository, times(0)).save(any(Empresa.class));
-    }
-
-    @Test
-    @DisplayName("Deve lançar exception quando tentar editar empresa e cnpj for de outra empresa")
-    public void editar_deveLancarException_quandoJaExistirOutraEmpresaComCnpjInformado() {
-        var usuario = umUsuario();
-        usuario.setPermissoes(Set.of(umaPermissaoSocio()));
-        when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoSocio());
-        when(empresaRepository.existsByIdAndSociosId(anyInt(), anyInt())).thenReturn(true);
-        when(empresaRepository.findById(anyInt())).thenReturn(Optional.of(umaEmpresa()));
-        when(empresaRepository.existsByRazaoSocialAndIdNot(anyString(), anyInt())).thenReturn(false);
-        when(empresaRepository.existsByCnpjAndIdNot(anyString(), anyInt())).thenReturn(true);
-
-        assertThatExceptionOfType(ValidacaoException.class)
-            .isThrownBy(() -> service.editar(umaEmpresaRequest(), 1))
-            .withMessage("Cnpj já existente para outra empresa.");
-
-        verify(empresaRepository, times(0)).save(any(Empresa.class));
-    }
-
-    @Test
     @DisplayName("Deve lançar exception quando tentar editar empresa inativa")
     public void editar_deveLancarException_quandoEmpresaEstiverInativa() {
         var usuario = umUsuario();
@@ -197,8 +151,6 @@ public class EmpresaServiceTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoSocio());
         when(empresaRepository.existsByIdAndSociosId(anyInt(), anyInt())).thenReturn(true);
         when(empresaRepository.findById(anyInt())).thenReturn(Optional.of(empresa));
-        when(empresaRepository.existsByRazaoSocialAndIdNot(anyString(), anyInt())).thenReturn(false);
-        when(empresaRepository.existsByCnpjAndIdNot(anyString(), anyInt())).thenReturn(false);
 
         assertThatExceptionOfType(ValidacaoException.class)
             .isThrownBy(() -> service.editar(umaEmpresaRequest(), 1))

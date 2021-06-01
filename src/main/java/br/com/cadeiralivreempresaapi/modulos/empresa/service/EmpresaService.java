@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.empresa.service;
 
+import br.com.cadeiralivreempresaapi.config.exception.ValidacaoException;
 import br.com.cadeiralivreempresaapi.modulos.agenda.service.HorarioService;
 import br.com.cadeiralivreempresaapi.modulos.agenda.service.ServicoService;
 import br.com.cadeiralivreempresaapi.modulos.comum.dto.PageRequest;
@@ -46,9 +47,9 @@ public class EmpresaService {
     @Transactional
     public SuccessResponseDetails salvar(EmpresaRequest request) {
         validarEmpresaSemEndereco(request);
+        validarDadosDaEmpresa(request);
         var empresa = Empresa.of(request);
         empresa.adicionarProprietario(usuarioService.buscarPorId(autenticacaoService.getUsuarioAutenticadoId()));
-        validarNovaEmpresa(empresa);
         empresaRepository.save(empresa);
         enderecoService.salvarEndereco(request.getEnderecos(), empresa);
         return EMPRESA_CRIADA_SUCESSO;
@@ -57,10 +58,10 @@ public class EmpresaService {
     @Transactional
     public SuccessResponseDetails editar(EmpresaRequest request, Integer id) {
         validarEmpresaSemEndereco(request);
+        validarDadosDaEmpresa(request);
         var empresa = Empresa.of(request);
         empresa.setId(id);
         var empresaExistente = buscarPorId(id);
-        validarEdicaoEmpresa(empresa);
         validarEmpresaAtiva(empresaExistente);
         empresa.setSocios(empresaExistente.getSocios());
         empresa.setSituacao(empresaExistente.getSituacao());
@@ -68,43 +69,21 @@ public class EmpresaService {
         return EMPRESA_ALTERADA_SUCESSO;
     }
 
+    private void validarDadosDaEmpresa(EmpresaRequest empresaRequest) {
+        if (isEmpty(empresaRequest.getNome())) {
+            throw new ValidacaoException("É obrigatório informar o nome da empresa.");
+        }
+        if (isEmpty(empresaRequest.getCpfCnpj())) {
+            throw new ValidacaoException("É obrigatório informar o CPF ou CNPJ da empresa.");
+        }
+        if (isEmpty(empresaRequest.getRazaoSocial())) {
+            empresaRequest.setRazaoSocial(empresaRequest.getNome());
+        }
+    }
+
     private void validarEmpresaSemEndereco(EmpresaRequest request) {
         if (isEmpty(request.getEnderecos())) {
             throw EMPRESA_SEM_ENDERECO;
-        }
-    }
-
-    private void validarNovaEmpresa(Empresa empresa) {
-        validarEmpresaExistentePorRazaoSocialAoSalvar(empresa);
-        validarEmpresaExistentePorCnpjAoSalvar(empresa);
-    }
-
-    private void validarEdicaoEmpresa(Empresa empresa) {
-        validarEmpresaExistentePorRazaoSocialAoEditar(empresa);
-        validarEmpresaExistentePorCnpjAoEditar(empresa);
-    }
-
-    private void validarEmpresaExistentePorRazaoSocialAoSalvar(Empresa empresa) {
-        if (empresaRepository.existsByRazaoSocial(empresa.getRazaoSocial())) {
-            throw RAZAO_SOCIAL_EXISTENTE;
-        }
-    }
-
-    private void validarEmpresaExistentePorCnpjAoSalvar(Empresa empresa) {
-        if (empresaRepository.existsByCnpj(empresa.getCnpj())) {
-            throw CNPJ_EXISTENTE;
-        }
-    }
-
-    private void validarEmpresaExistentePorRazaoSocialAoEditar(Empresa empresa) {
-        if (empresaRepository.existsByRazaoSocialAndIdNot(empresa.getRazaoSocial(), empresa.getId())) {
-            throw RAZAO_SOCIAL_EXISTENTE;
-        }
-    }
-
-    private void validarEmpresaExistentePorCnpjAoEditar(Empresa empresa) {
-        if (empresaRepository.existsByCnpjAndIdNot(empresa.getCnpj(), empresa.getId())) {
-            throw CNPJ_EXISTENTE;
         }
     }
 

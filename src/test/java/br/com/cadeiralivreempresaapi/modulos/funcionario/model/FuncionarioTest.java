@@ -21,6 +21,6 @@ public class FuncionarioTest {
         assertThat(funcionario.getUsuario().getCpf()).isEqualTo("332.368.250-57");
         assertThat(funcionario.getUsuario().getSituacao()).isEqualTo(ESituacaoUsuario.ATIVO);
         assertThat(funcionario.getEmpresa().getNome()).isEqualTo("Empresa 01");
-        assertThat(funcionario.getEmpresa().getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(funcionario.getEmpresa().getCpfCnpj()).isEqualTo("82.765.926/0001-32");
     }
 }

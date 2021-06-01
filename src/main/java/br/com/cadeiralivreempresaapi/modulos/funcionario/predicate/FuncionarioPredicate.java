@@ -45,7 +45,7 @@ public class FuncionarioPredicate extends PredicateBase {
 
     public FuncionarioPredicate comCnpj(String cnpj) {
         if (!isEmpty(cnpj)) {
-            builder.and(funcionario.empresa.cnpj.containsIgnoreCase(cnpj));
+            builder.and(funcionario.empresa.cpfCnpj.containsIgnoreCase(cnpj));
         }
         return this;
     }

@@ -19,7 +19,7 @@ public class EmpresaPredicate extends PredicateBase {
 
     public EmpresaPredicate comCnpj(String cnpj) {
         if (!isEmpty(cnpj)) {
-            builder.and(empresa.cnpj.containsIgnoreCase(cnpj));
+            builder.and(empresa.cpfCnpj.containsIgnoreCase(cnpj));
         }
         return this;
     }

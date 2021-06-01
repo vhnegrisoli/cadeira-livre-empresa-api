@@ -34,7 +34,7 @@ public class ServicoMocks {
             .id(1)
             .descricao("Corte de cabelo")
             .empresa(empresa.getNome())
-            .cnpj(empresa.getCnpj())
+            .cpfCnpj(empresa.getCpfCnpj())
             .preco(25.00)
             .build();
     }

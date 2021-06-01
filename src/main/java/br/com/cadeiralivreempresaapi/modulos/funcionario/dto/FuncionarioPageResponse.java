@@ -18,7 +18,7 @@ public class FuncionarioPageResponse {
     private String email;
     private ESituacaoUsuario situacao;
     private String empresa;
-    private String cnpj;
+    private String cpfCnpj;
 
     public static FuncionarioPageResponse of(Funcionario funcionario) {
         return FuncionarioPageResponse
@@ -28,7 +28,7 @@ public class FuncionarioPageResponse {
             .email(funcionario.getUsuario().getEmail())
             .situacao(funcionario.getUsuario().getSituacao())
             .empresa(funcionario.getEmpresa().getNome())
-            .cnpj(funcionario.getEmpresa().getCnpj())
+            .cpfCnpj(funcionario.getEmpresa().getCpfCnpj())
             .build();
     }
 }

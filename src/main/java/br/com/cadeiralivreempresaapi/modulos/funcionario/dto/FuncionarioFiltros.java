@@ -20,7 +20,7 @@ public class FuncionarioFiltros {
     private ESituacaoUsuario situacao;
     private String empresa;
     private String razaoSocial;
-    private String cnpj;
+    private String cpfCnpj;
     private Integer socioId;
 
     public FuncionarioPredicate toPredicate() {
@@ -32,7 +32,7 @@ public class FuncionarioFiltros {
             .comSituacao(situacao)
             .comEmpresa(empresa)
             .comRazaoSocial(razaoSocial)
-            .comCnpj(cnpj)
+            .comCnpj(cpfCnpj)
             .comSocioId(socioId);
     }
 }

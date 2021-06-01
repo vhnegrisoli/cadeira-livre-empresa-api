@@ -51,8 +51,8 @@ public class Empresa {
     @Column(name = "RAZAO_SOCIAL", nullable = false)
     private String razaoSocial;
 
-    @Column(name = "CNPJ", nullable = false)
-    private String cnpj;
+    @Column(name = "CPF_CNPJ", nullable = false)
+    private String cpfCnpj;
 
     @Column(name = "TIPO_EMPRESA", nullable = false)
     @Enumerated(EnumType.STRING)

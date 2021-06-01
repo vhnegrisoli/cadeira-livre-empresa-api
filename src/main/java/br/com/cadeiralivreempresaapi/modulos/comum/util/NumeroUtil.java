@@ -24,6 +24,12 @@ public class NumeroUtil {
             .setScale(DUAS_CASAS_DECIMAIS, RoundingMode.HALF_UP);
     }
 
+    public static BigDecimal converterParaDuasCasasDecimais(Long numero) {
+        return BigDecimal
+            .valueOf(numero)
+            .setScale(DUAS_CASAS_DECIMAIS, RoundingMode.HALF_UP);
+    }
+
     public static BigDecimal converterParaDuasCasasDecimais(BigDecimal numero) {
         return numero.setScale(DUAS_CASAS_DECIMAIS, RoundingMode.HALF_UP);
     }

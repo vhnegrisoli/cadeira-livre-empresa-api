@@ -25,7 +25,7 @@ public class EmpresaResponse {
 
     private Integer id;
     private String nome;
-    private String cnpj;
+    private String cpfCnpj;
     private String razaoSocial;
     private ESituacaoEmpresa situacao;
     private List<ProprietarioSocioResponse> proprietarioSocios;

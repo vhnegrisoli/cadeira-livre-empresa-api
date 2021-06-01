@@ -88,7 +88,7 @@ public class ServicoServiceIntegrationTest {
         assertThat(response.getDescricao()).isEqualTo("Corte exclusivo");
         assertThat(response.getPreco()).isEqualTo(15.90);
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01 Edicao");
-        assertThat(response.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(response.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
     }
 
     @Test
@@ -105,7 +105,7 @@ public class ServicoServiceIntegrationTest {
         assertThat(response.getDescricao()).isEqualTo("Corte exclusivo");
         assertThat(response.getPreco()).isEqualTo(15.90);
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01 Edicao");
-        assertThat(response.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(response.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
     }
 
     @Test
@@ -122,7 +122,7 @@ public class ServicoServiceIntegrationTest {
         assertThat(response.getDescricao()).isEqualTo("Corte exclusivo");
         assertThat(response.getPreco()).isEqualTo(15.90);
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01 Edicao");
-        assertThat(response.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(response.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
     }
 
     @Test
@@ -139,7 +139,7 @@ public class ServicoServiceIntegrationTest {
         assertThat(response.getDescricao()).isEqualTo("Corte exclusivo");
         assertThat(response.getPreco()).isEqualTo(15.90);
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01 Edicao");
-        assertThat(response.getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(response.getCpfCnpj()).isEqualTo("26.343.835/0001-38");
     }
 
     @Test
@@ -188,7 +188,7 @@ public class ServicoServiceIntegrationTest {
         assertThat(servico.getDescricao()).isEqualTo("Corte exclusivo");
         assertThat(servico.getPreco()).isEqualTo(15.90);
         assertThat(servico.getEmpresa().getNome()).isEqualTo("Empresa 01 Edicao");
-        assertThat(servico.getEmpresa().getCnpj()).isEqualTo("26.343.835/0001-38");
+        assertThat(servico.getEmpresa().getCpfCnpj()).isEqualTo("26.343.835/0001-38");
     }
 
     @Test
@@ -205,7 +205,7 @@ public class ServicoServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(umUsuarioAutenticadoAdmin());
 
         assertThat(service.buscarServicosPorEmpresa(4))
-            .extracting("id", "descricao", "preco", "empresa", "cnpj")
+            .extracting("id", "descricao", "preco", "empresa", "cpfCnpj")
             .containsExactly(
                 tuple(3, "Corte e lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
                 tuple(1, "Corte exclusivo", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
@@ -222,7 +222,7 @@ public class ServicoServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(proprietario);
 
         assertThat(service.buscarServicosPorEmpresa(4))
-            .extracting("id", "descricao", "preco", "empresa", "cnpj")
+            .extracting("id", "descricao", "preco", "empresa", "cpfCnpj")
             .containsExactly(
                 tuple(3, "Corte e lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
                 tuple(1, "Corte exclusivo", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
@@ -239,7 +239,7 @@ public class ServicoServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(socio);
 
         assertThat(service.buscarServicosPorEmpresa(4))
-            .extracting("id", "descricao", "preco", "empresa", "cnpj")
+            .extracting("id", "descricao", "preco", "empresa", "cpfCnpj")
             .containsExactly(
                 tuple(3, "Corte e lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
                 tuple(1, "Corte exclusivo", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
@@ -256,7 +256,7 @@ public class ServicoServiceIntegrationTest {
         when(autenticacaoService.getUsuarioAutenticado()).thenReturn(funcionario);
 
         assertThat(service.buscarServicosPorEmpresa(4))
-            .extracting("id", "descricao", "preco", "empresa", "cnpj")
+            .extracting("id", "descricao", "preco", "empresa", "cpfCnpj")
             .containsExactly(
                 tuple(3, "Corte e lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
                 tuple(1, "Corte exclusivo", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
@@ -269,7 +269,7 @@ public class ServicoServiceIntegrationTest {
     @DisplayName("Deve buscar set de serviços quando solicitar por IDs")
     public void buscarServicosPorIds_deveRetornarSetComServicos_quandoSolicitadoPorIds() {
         assertThat(service.buscarServicosPorIds(List.of(1, 3, 4, 7)))
-            .extracting("id", "descricao", "preco", "empresa.nome", "empresa.cnpj")
+            .extracting("id", "descricao", "preco", "empresa.nome", "empresa.cpfCnpj")
             .containsExactlyInAnyOrder(
                 tuple(3, "Corte e lavagem", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),
                 tuple(1, "Corte exclusivo", 15.9, "Empresa 01 Edicao", "26.343.835/0001-38"),

@@ -17,7 +17,7 @@ public class EmpresaPageResponse {
 
     private Integer id;
     private String nome;
-    private String cnpj;
+    private String cpfCnpj;
     private ETipoEmpresa tipoEmpresa;
     private ESituacaoEmpresa situacao;
     private Integer tempoRefreshCadeiraLivre;

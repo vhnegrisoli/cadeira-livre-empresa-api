@@ -48,7 +48,7 @@ public class ServicoServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(1);
         assertThat(response.getDescricao()).isEqualTo("Corte de cabelo");
-        assertThat(response.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(response.getCpfCnpj()).isEqualTo("82.765.926/0001-32");
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01");
         assertThat(response.getPreco()).isEqualTo(25.00);
 
@@ -165,7 +165,7 @@ public class ServicoServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(1);
         assertThat(response.getDescricao()).isEqualTo("Corte de cabelo");
-        assertThat(response.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(response.getCpfCnpj()).isEqualTo("82.765.926/0001-32");
         assertThat(response.getEmpresa()).isEqualTo("Empresa 01");
         assertThat(response.getPreco()).isEqualTo(25.00);
 

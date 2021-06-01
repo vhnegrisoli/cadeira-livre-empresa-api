@@ -17,6 +17,6 @@ public class EmpresaPageResponseTest {
         assertThat(response.getId()).isEqualTo(1);
         assertThat(response.getNome()).isEqualTo("Empresa 01");
         assertThat(response.getSituacao()).isEqualTo(ESituacaoEmpresa.ATIVA);
-        assertThat(response.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(response.getCpfCnpj()).isEqualTo("82.765.926/0001-32");
     }
 }

@@ -41,7 +41,7 @@ public class EmpresaTest {
         assertThat(empresa.getId()).isEqualTo(1);
         assertThat(empresa.getNome()).isEqualTo("Empresa 01");
         assertThat(empresa.getRazaoSocial()).isEqualTo("Empresa 01");
-        assertThat(empresa.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(empresa.getCpfCnpj()).isEqualTo("82.765.926/0001-32");
         assertThat(empresa.getTempoRefreshCadeiraLivre()).isEqualTo(30);
     }
 
@@ -55,7 +55,7 @@ public class EmpresaTest {
         assertThat(empresa.getId()).isEqualTo(1);
         assertThat(empresa.getNome()).isEqualTo("Empresa 01");
         assertThat(empresa.getRazaoSocial()).isEqualTo("Empresa 01");
-        assertThat(empresa.getCnpj()).isEqualTo("82.765.926/0001-32");
+        assertThat(empresa.getCpfCnpj()).isEqualTo("82.765.926/0001-32");
         assertThat(empresa.getTempoRefreshCadeiraLivre()).isEqualTo(10);
     }
 
