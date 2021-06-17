@@ -93,7 +93,7 @@ public class CadeiraLivreServiceIntegrationTest {
         cadeiraLivre.setEmpresa(new Empresa(4));
         agendaRepository.save(cadeiraLivre);
 
-        assertThat(service.buscarCadeirasLivresDisponiveis("jwtValida", null))
+        assertThat(service.buscarCadeirasLivresDisponiveis("jwtValida", null).getCadeirasLivres())
             .extracting("situacao", "minutosDisponiveis", "totalPagamento", "totalDesconto", "totalServico")
             .containsExactlyInAnyOrder(
                 tuple("Disponível",
@@ -118,7 +118,7 @@ public class CadeiraLivreServiceIntegrationTest {
         cadeiraLivre.setEmpresa(new Empresa(4));
         agendaRepository.save(cadeiraLivre);
 
-        assertThat(service.buscarCadeirasLivresDisponiveis("jwtValida", 4))
+        assertThat(service.buscarCadeirasLivresDisponiveis("jwtValida", 4).getCadeirasLivres())
             .extracting("situacao", "minutosDisponiveis", "totalPagamento", "totalDesconto", "totalServico")
             .containsExactlyInAnyOrder(
                 tuple("Disponível",
@@ -128,7 +128,7 @@ public class CadeiraLivreServiceIntegrationTest {
                     converterParaDuasCasasDecimais(25.00))
             );
 
-        assertThat(service.buscarCadeirasLivresDisponiveis(gerarTokenTeste(), 7)).isEmpty();
+        assertThat(service.buscarCadeirasLivresDisponiveis(gerarTokenTeste(), 7).getCadeirasLivres()).isEmpty();
 
         verify(jwtService, times(2)).verificarUsuarioValidoComTokenValida(anyString());
     }
@@ -166,7 +166,7 @@ public class CadeiraLivreServiceIntegrationTest {
         cadeiraLivre.reservarParaCliente(umJwtUsuarioResponse());
         agendaRepository.save(cadeiraLivre);
 
-        assertThat(service.buscarCadeirasLivresDoCliente("jwtValida"))
+        assertThat(service.buscarCadeirasLivresDoCliente("jwtValida").getCadeirasLivres())
             .extracting("situacao", "minutosDisponiveis", "totalPagamento", "totalDesconto", "totalServico",
                 "cliente.id", "cliente.nome", "cliente.email", "cliente.cpf")
             .containsExactlyInAnyOrder(

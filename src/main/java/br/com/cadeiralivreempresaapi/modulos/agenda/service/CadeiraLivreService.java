@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.service;
 
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreClienteResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreReservaRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreResponse;
@@ -109,25 +110,30 @@ public class CadeiraLivreService {
             .concat("% de desconto!");
     }
 
-    public List<CadeiraLivreResponse> buscarCadeirasLivresDisponiveis(String jwtToken, Integer empresaId) {
+    public CadeiraLivreClienteResponse buscarCadeirasLivresDisponiveis(String jwtToken, Integer empresaId) {
         validarClienteComJwtValido(jwtToken);
         var cadeirasLivres = isEmpty(empresaId)
             ? agendaRepository.findBySituacao(ESituacaoAgenda.DISPONIVEL)
             : agendaRepository.findByEmpresaIdAndSituacao(empresaId, ESituacaoAgenda.DISPONIVEL);
-        return cadeirasLivres
-            .stream()
-            .filter(Agenda::isValida)
-            .map(CadeiraLivreResponse::of)
-            .collect(Collectors.toList());
+        return CadeiraLivreClienteResponse.converterDe(
+            cadeirasLivres
+                .stream()
+                .filter(Agenda::isValida)
+                .map(CadeiraLivreResponse::of)
+                .collect(Collectors.toList())
+        );
     }
 
-    public List<CadeiraLivreResponse> buscarCadeirasLivresDoCliente(String jwtToken) {
+    public CadeiraLivreClienteResponse buscarCadeirasLivresDoCliente(String jwtToken) {
         validarClienteComJwtValido(jwtToken);
         var cliente = jwtService.recuperarDadosDoUsuarioDoToken(jwtToken);
-        return agendaRepository.findByClienteIdAndTipoAgenda(cliente.getId(), ETipoAgenda.CADEIRA_LIVRE)
-            .stream()
-            .map(CadeiraLivreResponse::of)
-            .collect(Collectors.toList());
+        return CadeiraLivreClienteResponse.converterDe(
+            agendaRepository
+                .findByClienteIdAndTipoAgenda(cliente.getId(), ETipoAgenda.CADEIRA_LIVRE)
+                .stream()
+                .map(CadeiraLivreResponse::of)
+                .collect(Collectors.toList())
+        );
     }
 
     public CadeiraLivreResponse buscarCadeiraLivrePorId(Integer id, String jwtToken) {

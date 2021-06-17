@@ -1,5 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.agenda.controller;
 
+import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreClienteResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreRequest;
 import br.com.cadeiralivreempresaapi.modulos.agenda.dto.cadeiralivre.CadeiraLivreResponse;
 import br.com.cadeiralivreempresaapi.modulos.agenda.service.CadeiraLivreService;
@@ -44,14 +45,14 @@ public class CadeiraLivreController {
     }
 
     @GetMapping("cliente-api")
-    public List<CadeiraLivreResponse> buscarCadeirasLivresDoCliente(@RequestParam("token") String token) {
+    public CadeiraLivreClienteResponse buscarCadeirasLivresDoCliente(@RequestParam("token") String token) {
         return service.buscarCadeirasLivresDoCliente(token);
     }
 
     @GetMapping("disponiveis/cliente-api")
-    public List<CadeiraLivreResponse> buscarCadeirasLivresDisponiveis(@RequestParam("token") String token,
-                                                                      @RequestParam(value = "empresaId", required = false)
-                                                                          Integer empresaId) {
+    public CadeiraLivreClienteResponse buscarCadeirasLivresDisponiveis(@RequestParam("token") String token,
+                                                                       @RequestParam(value = "empresaId", required = false)
+                                                                           Integer empresaId) {
         return service.buscarCadeirasLivresDisponiveis(token, empresaId);
     }
 
