@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -120,6 +121,7 @@ public class CadeiraLivreService {
                 .stream()
                 .filter(Agenda::isValida)
                 .map(CadeiraLivreResponse::of)
+                .sorted(Comparator.comparing(CadeiraLivreResponse::getDataCadastro).reversed())
                 .collect(Collectors.toList())
         );
     }
@@ -132,6 +134,7 @@ public class CadeiraLivreService {
                 .findByClienteIdAndTipoAgenda(cliente.getId(), ETipoAgenda.CADEIRA_LIVRE)
                 .stream()
                 .map(CadeiraLivreResponse::of)
+                .sorted(Comparator.comparing(CadeiraLivreResponse::getDataCadastro).reversed())
                 .collect(Collectors.toList())
         );
     }
@@ -154,6 +157,7 @@ public class CadeiraLivreService {
         return agendaRepository.findByEmpresaIdAndTipoAgenda(empresaId, ETipoAgenda.CADEIRA_LIVRE)
             .stream()
             .map(CadeiraLivreResponse::of)
+            .sorted(Comparator.comparing(CadeiraLivreResponse::getDataCadastro).reversed())
             .collect(Collectors.toList());
     }
 

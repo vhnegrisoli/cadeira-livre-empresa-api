@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.NumeroUtil.converterParaDuasCasasDecimais;
+import static br.com.cadeiralivreempresaapi.modulos.comum.util.PatternUtil.DATE_TIME_PATTERN;
 import static br.com.cadeiralivreempresaapi.modulos.comum.util.PatternUtil.TIME_PATTERN;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -46,6 +48,8 @@ public class CadeiraLivreResponse {
     private String situacao;
     private ClienteResponse cliente;
     private TransacaoResponse pagamento;
+    @JsonFormat(pattern = DATE_TIME_PATTERN)
+    private LocalDateTime dataCadastro;
 
     @SuppressWarnings("MethodLength")
     public static CadeiraLivreResponse of(Agenda agenda) {
@@ -67,6 +71,7 @@ public class CadeiraLivreResponse {
             .servicos(tratarServicosDaAgenda(agenda))
             .situacao(agenda.getSituacao().getDescricaoSituacao())
             .cliente(agenda.isCadeiraLivreSemClienteVinculado() ? null : ClienteResponse.of(agenda))
+            .dataCadastro(agenda.getDataCadastro())
             .build();
     }
 
@@ -91,6 +96,7 @@ public class CadeiraLivreResponse {
             .situacao(agenda.getSituacao().getDescricaoSituacao())
             .cliente(agenda.isCadeiraLivreSemClienteVinculado() ? null : ClienteResponse.of(agenda))
             .pagamento(transacaoResponse)
+            .dataCadastro(agenda.getDataCadastro())
             .build();
     }
 
