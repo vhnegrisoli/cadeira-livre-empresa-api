@@ -44,7 +44,7 @@ public class AgendaServiceTest {
     private HorarioService horarioService;
 
     @Test
-    public void buscarAgendaPorId_deveBuscarAgenda_quandoInformarPorId() {
+    public void     buscarAgendaPorId_deveBuscarAgenda_quandoInformarPorId() {
         var agenda = service.buscarAgendaPorId(1);
     }
 }
