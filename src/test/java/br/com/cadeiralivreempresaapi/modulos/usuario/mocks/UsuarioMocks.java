@@ -4,7 +4,6 @@ import br.com.cadeiralivreempresaapi.config.auth.UserDetailsImpl;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioRequest;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao;
-import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Permissao;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
@@ -26,7 +25,6 @@ public class UsuarioMocks {
             .email("admin@gmail.com")
             .id(1)
             .permissoes(List.of(EPermissao.ADMIN.name()))
-            .sexo(ESexo.MASCULINO)
             .situacao(ESituacaoUsuario.ATIVO)
             .ultimoAcesso(LocalDateTime.now())
             .build();
@@ -40,7 +38,6 @@ public class UsuarioMocks {
             .email("proprietario@gmail.com")
             .id(1)
             .permissoes(List.of(EPermissao.PROPRIETARIO.name()))
-            .sexo(ESexo.MASCULINO)
             .situacao(ESituacaoUsuario.ATIVO)
             .ultimoAcesso(LocalDateTime.now())
             .build();
@@ -54,7 +51,6 @@ public class UsuarioMocks {
             .email("socio@gmail.com")
             .id(1)
             .permissoes(List.of(EPermissao.SOCIO.name()))
-            .sexo(ESexo.MASCULINO)
             .situacao(ESituacaoUsuario.ATIVO)
             .ultimoAcesso(LocalDateTime.now())
             .build();
@@ -68,7 +64,6 @@ public class UsuarioMocks {
             .email("funcionario@gmail.com")
             .id(1)
             .permissoes(List.of(EPermissao.FUNCIONARIO.name()))
-            .sexo(ESexo.MASCULINO)
             .situacao(ESituacaoUsuario.ATIVO)
             .ultimoAcesso(LocalDateTime.now())
             .build();
@@ -85,7 +80,6 @@ public class UsuarioMocks {
             .permissoes(Collections.singleton(umaPermissaoAdmin()))
             .nome("Usuario")
             .senha("123456")
-            .sexo(ESexo.MASCULINO)
             .tokenNotificacao("123456")
             .situacao(ESituacaoUsuario.ATIVO)
             .ultimoAcesso(LocalDateTime.now())
@@ -137,7 +131,6 @@ public class UsuarioMocks {
             .email("usuario@gmail.com")
             .nome("Usuario")
             .senha("123456")
-            .sexo(ESexo.MASCULINO)
             .build();
     }
 

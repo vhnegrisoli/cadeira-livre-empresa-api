@@ -1,6 +1,5 @@
 package br.com.cadeiralivreempresaapi.modulos.usuario.models;
 
-import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
 import org.junit.jupiter.api.DisplayName;
@@ -172,7 +171,6 @@ public class UsuarioTest {
         assertThat(usuario.getEmail()).isEqualTo("usuario@gmail.com");
         assertThat(usuario.getNome()).isEqualTo("Usuario");
         assertThat(usuario.getSenha()).isEqualTo("123456");
-        assertThat(usuario.getSexo()).isEqualTo(ESexo.MASCULINO);
         assertThat(usuario.getDataNascimento()).isEqualTo(LocalDate.parse("1998-01-01"));
     }
 

@@ -1,7 +1,6 @@
 package br.com.cadeiralivreempresaapi.modulos.usuario.dto;
 
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.EPermissao;
-import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Permissao;
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
@@ -30,7 +29,6 @@ public class UsuarioAutenticado {
     private String nome;
     private String email;
     private String cpf;
-    private ESexo sexo;
     private List<String> permissoes;
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     private LocalDateTime ultimoAcesso;

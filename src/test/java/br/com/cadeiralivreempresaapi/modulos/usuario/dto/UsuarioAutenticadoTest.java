@@ -1,6 +1,5 @@
 package br.com.cadeiralivreempresaapi.modulos.usuario.dto;
 
-import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -62,7 +61,6 @@ public class UsuarioAutenticadoTest {
         assertThat(usuario.getCpf()).isEqualTo("332.368.250-57");
         assertThat(usuario.getEmail()).isEqualTo("usuario@gmail.com");
         assertThat(usuario.getNome()).isEqualTo("Usuario");
-        assertThat(usuario.getSexo()).isEqualTo(ESexo.MASCULINO);
         assertThat(usuario.getPermissoes()).isEqualTo(List.of("ADMIN"));
     }
 
@@ -75,7 +73,6 @@ public class UsuarioAutenticadoTest {
         assertThat(usuario.getCpf()).isEqualTo("332.368.250-57");
         assertThat(usuario.getEmail()).isEqualTo("usuario@gmail.com");
         assertThat(usuario.getNome()).isEqualTo("Usuario");
-        assertThat(usuario.getSexo()).isEqualTo(ESexo.MASCULINO);
         assertThat(usuario.getPermissoes()).isEqualTo(List.of("ADMIN"));
     }
 }

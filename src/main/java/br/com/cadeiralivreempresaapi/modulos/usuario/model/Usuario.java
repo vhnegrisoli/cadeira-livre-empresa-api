@@ -2,7 +2,6 @@ package br.com.cadeiralivreempresaapi.modulos.usuario.model;
 
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioAutenticado;
 import br.com.cadeiralivreempresaapi.modulos.usuario.dto.UsuarioRequest;
-import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo;
 import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESituacaoUsuario;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -53,10 +52,6 @@ public class Usuario {
 
     @Column(name = "DATA_NASCIMENTO", nullable = false)
     private LocalDate dataNascimento;
-
-    @Column(name = "SEXO", nullable = false, length = 10)
-    @Enumerated(EnumType.STRING)
-    private ESexo sexo;
 
     @NotNull
     @JoinTable(name = "USUARIO_PERMISSAO", joinColumns = {

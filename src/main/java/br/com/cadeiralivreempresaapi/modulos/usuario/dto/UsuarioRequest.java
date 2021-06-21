@@ -1,6 +1,5 @@
 package br.com.cadeiralivreempresaapi.modulos.usuario.dto;
 
-import br.com.cadeiralivreempresaapi.modulos.usuario.enums.ESexo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +19,4 @@ public class UsuarioRequest {
     private String cpf;
     private String senha;
     private LocalDate dataNascimento;
-    private ESexo sexo;
 }
