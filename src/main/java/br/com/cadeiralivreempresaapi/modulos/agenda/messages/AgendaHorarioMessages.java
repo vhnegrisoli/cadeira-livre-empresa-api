@@ -17,6 +17,8 @@ public interface AgendaHorarioMessages {
         + "mais disponível.");
     ValidacaoException CADEIRA_LIVRE_DADOS_INCOMPLETOS = new ValidacaoException("Para registrar uma cadeira livre são "
         + "necessárias todas as seguintes informações: id, nome, CPF e e-mail.");
+    ValidacaoException CADEIRA_LIVRE_MINUTOS_NEGATIVOS = new ValidacaoException(
+        "Os minutos disponíveis não podem ser negativos.");
     ValidacaoException CADEIRA_LIVRE_MAIOR_60_MINUTOS = new ValidacaoException("A cadeira livre não pode ficar disponível"
         + " por mais que 60 minutos.");
     ValidacaoException AGENDA_SEM_SERVICOS = new ValidacaoException("É obrigatório informar ao menos um serviço para a"

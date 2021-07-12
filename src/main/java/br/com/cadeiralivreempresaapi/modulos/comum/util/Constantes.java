@@ -13,7 +13,7 @@ public interface Constantes {
     String EMAIL = "email";
     String CPF = "cpf";
     String TELEFONE = "telefone";
-    Long TRINTA_MINUTOS = 30L;
+    Integer TRINTA_MINUTOS = 30;
     Integer SESSENTA_MINUTOS = 60;
     String TEST_TOKEN_SECRET = "Y2FkZWlyYS1saXZyZS11c3VhcmlvLWFwaS10ZXN0ZQ==";
     String TEST_TOKEN_NOTIFICACAO = "123456";

@@ -260,6 +260,16 @@ public class AgendaTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exception quando campo no request com valor menor que 0")
+    public void definirMinutosDisponiveis_deveLancarException_quandoCampoNoRequestForMorQueZero() {
+        var request = umaCadeiraLivreRequest();
+        request.setMinutosDisponiveis(-3);
+        assertThatExceptionOfType(ValidacaoException.class)
+            .isThrownBy(() -> Agenda.of(request, umUsuarioAutenticadoAdmin(), Set.of(umServico())))
+            .withMessage("Os minutos disponíveis não podem ser negativos.");
+    }
+
+    @Test
     @DisplayName("Deve reservar dados do cliente quando informar objeto de dados do JWT")
     public void reservarParaClientes_deveGerarDadosDoCliente_quandoInformarDadosDoJwt() {
         var agenda = umaAgendaCadeiraLivre();
