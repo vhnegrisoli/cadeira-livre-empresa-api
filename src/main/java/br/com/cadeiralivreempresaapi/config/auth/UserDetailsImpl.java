@@ -5,11 +5,13 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
-@Data
-public class UserDetailsImpl extends User {
+public class UserDetailsImpl extends User implements Serializable {
+
+    private static final long serialVersionUID = -6234411737916275471L;
 
     private Integer id;
     private String nome;
@@ -31,5 +33,45 @@ public class UserDetailsImpl extends User {
         this.email = usuario.getEmail();
         this.cpf = usuario.getCpf();
         this.ultimoAcesso = usuario.getUltimoAcesso();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public LocalDateTime getUltimoAcesso() {
+        return ultimoAcesso;
+    }
+
+    public void setUltimoAcesso(LocalDateTime ultimoAcesso) {
+        this.ultimoAcesso = ultimoAcesso;
     }
 }
