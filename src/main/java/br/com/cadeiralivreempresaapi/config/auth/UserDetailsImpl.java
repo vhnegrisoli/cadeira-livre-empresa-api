@@ -1,7 +1,6 @@
 package br.com.cadeiralivreempresaapi.config.auth;
 
 import br.com.cadeiralivreempresaapi.modulos.usuario.model.Usuario;
-import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
